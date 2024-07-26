@@ -4,7 +4,7 @@ This repo is a fork of the [JustLeveling](https://www.curseforge.com/minecraft/m
 The idea behind this fork is fix some bugs, performance issues and allow other persons to contribute to it, so we can get a good mod (:
 
 ## Installation
-The mod requires the next libraries:
+The mod requires the next libraries:<br>
 [ClothConfig](https://www.curseforge.com/minecraft/mc-mods/cloth-config)<br>
 [Curios API](https://www.curseforge.com/minecraft/mc-mods/curios)<br>
 If you're using BetterCombat you require the next library:<br>
