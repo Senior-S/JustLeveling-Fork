@@ -8,4 +8,4 @@ The original mod does have a lot of great features, but sadly it have a lot of p
 Feel free to contribute to it, so we can make this fork a better version of what originally was ^^
 
 Screenshot of last message of the creator in his own discord.
-![Screenshot 2024-07-24 222909](https://github.com/user-attachments/assets/91d0b75a-9b7c-46e3-b816-43cf8e63d6e0)
+![Screenshot 2024-07-24 222909](https://github.com/user-attachments/assets/d1b7b079-1a0d-428c-b61b-3e72d79e2f98)
