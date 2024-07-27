@@ -3,6 +3,8 @@ This repo is a fork of the [JustLeveling](https://www.curseforge.com/minecraft/m
 
 The idea behind this fork is fix some bugs, performance issues and allow other persons to contribute to it, so we can get a good mod (:
 
+[![](https://dcbadge.limes.pink/api/server/https://discord.gg/6c6cDU2mKj)](https://discord.gg/6c6cDU2mKj)
+
 ## Installation
 The mod requires the next libraries:<br>
 [ClothConfig](https://www.curseforge.com/minecraft/mc-mods/cloth-config)<br>
