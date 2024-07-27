@@ -95,7 +95,6 @@
    }
    
    public static AptitudeCapability get() {
-     assert (Minecraft.getInstance()).player != null;
      return (Minecraft.getInstance()).player.getCapability(RegistryCapabilities.APTITUDE).orElseThrow(() -> new IllegalArgumentException("Player does not have Capabilities!"));
    }
    
@@ -214,19 +213,19 @@
    
    public void deserializeNBT(CompoundTag nbt) {
      int i;
-     for (i = 0; i < RegistryAptitudes.APTITUDES_REGISTRY.get().getValues().stream().toList().size(); i++) {
+     for (i = 0; i < RegistryAptitudes.APTITUDES_REGISTRY.get().getValues().toArray().length; i++) {
        Aptitude aptitude = RegistryAptitudes.APTITUDES_REGISTRY.get().getValues().stream().toList().get(i);
        this.aptitudeLevel.put(aptitude.getName(), nbt.getInt("aptitude." + aptitude.getName()));
      } 
-     for (i = 0; i < RegistryPassives.PASSIVES_REGISTRY.get().getValues().stream().toList().size(); i++) {
+     for (i = 0; i < RegistryPassives.PASSIVES_REGISTRY.get().getValues().toArray().length; i++) {
        Passive passive = RegistryPassives.PASSIVES_REGISTRY.get().getValues().stream().toList().get(i);
        this.passiveLevel.put(passive.getName(),nbt.getInt("passive." + passive.getName()));
      } 
-     for (i = 0; i < RegistrySkills.SKILLS_REGISTRY.get().getValues().stream().toList().size(); i++) {
+     for (i = 0; i < RegistrySkills.SKILLS_REGISTRY.get().getValues().toArray().length; i++) {
        Skill skill = RegistrySkills.SKILLS_REGISTRY.get().getValues().stream().toList().get(i);
        this.toggleSkill.put(skill.getName(), nbt.getBoolean("skill." + skill.getName()));
      } 
-     for (i = 0; i < RegistryTitles.TITLES_REGISTRY.get().getValues().stream().toList().size(); i++) {
+     for (i = 0; i < RegistryTitles.TITLES_REGISTRY.get().getValues().toArray().length; i++) {
        Title title = RegistryTitles.TITLES_REGISTRY.get().getValues().stream().toList().get(i);
        this.unlockTitle.put(title.getName(), nbt.getBoolean("title." + title.getName()));
      } 

@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -336,13 +337,12 @@ public class RegistryCommonEvents {
                     LivingEntity livingEntity1 = event.getEntity();
                     if (livingEntity1 instanceof ServerPlayer player) {
                         if (RegistrySkills.COUNTER_ATTACK.get().isEnabled(player)) {
-                            player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> CounterAttackSP.send(true, (float) (sourceDamage * RegistrySkills.COUNTER_ATTACK.get().getValue()[1] / 100.0D)));
+                            player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> CounterAttackSP.sendToPlayer(true, (float) (sourceDamage * RegistrySkills.COUNTER_ATTACK.get().getValue()[1] / 100.0D), player));
                         }
                     }
 
                 }
             }
-
         }
     }
 
@@ -479,5 +479,3 @@ public class RegistryCommonEvents {
         server.submit(new TickTask(server.getTickCount() + delay, task));
     }
 }
-
-

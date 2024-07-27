@@ -32,16 +32,17 @@ public class CounterAttackSP {
         buffer.writeFloat(this.modifier);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
+    public static void handle(CounterAttackSP msg, Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player != null) {
                 AptitudeCapability aptitude = AptitudeCapability.get(player);
-                aptitude.setCounterAttack(this.isCounterAttack);
-                (new RegistryAttributes.registerAttribute(player, Attributes.ATTACK_DAMAGE, this.modifier, UUID.fromString("55550aa2-eff2-4a81-b92b-a1cb95f15590"))).amplifyAttribute(true);
-                if (!this.isCounterAttack)
+                aptitude.setCounterAttack(msg.isCounterAttack);
+                new RegistryAttributes.registerAttribute(player, Attributes.ATTACK_DAMAGE, msg.modifier, UUID.fromString("55550aa2-eff2-4a81-b92b-a1cb95f15590")).amplifyAttribute(true);
+                if (!msg.isCounterAttack) {
                     aptitude.setCounterAttackTimer(0);
+                }
                 SyncAptitudeCapabilityCP.send(player);
             }
         });
@@ -50,6 +51,10 @@ public class CounterAttackSP {
 
     public static void send(boolean isCounterAttack, float modifier) {
         ServerNetworking.sendToServer(new CounterAttackSP(isCounterAttack, modifier));
+    }
+
+    public static void sendToPlayer(boolean isCounterAttack, float modifier, ServerPlayer serverPlayer){
+        ServerNetworking.sendToPlayer(new CounterAttackSP(isCounterAttack, modifier), serverPlayer);
     }
 }
 

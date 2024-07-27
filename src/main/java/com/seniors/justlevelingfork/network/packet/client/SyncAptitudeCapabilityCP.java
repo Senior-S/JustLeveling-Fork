@@ -5,6 +5,7 @@ import com.seniors.justlevelingfork.network.ServerNetworking;
 
 import java.util.function.Supplier;
 
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,7 +30,6 @@ public class SyncAptitudeCapabilityCP {
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> AptitudeCapability.get().deserializeNBT(this.nbt));
-
 
         context.setPacketHandled(true);
     }
