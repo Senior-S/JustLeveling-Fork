@@ -6,7 +6,7 @@
  import net.minecraftforge.common.capabilities.CapabilityToken;
  
  public class RegistryCapabilities {
-   public static Capability<AptitudeCapability> APTITUDE = CapabilityManager.get(new CapabilityToken<>() {
+   public static Capability<AptitudeCapability> APTITUDE = CapabilityManager.get(new CapabilityToken<AptitudeCapability>() {
 
    });
  }

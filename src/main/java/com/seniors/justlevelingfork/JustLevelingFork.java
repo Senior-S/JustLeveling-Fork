@@ -25,7 +25,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
-@Mod("justlevelingfork")
+@Mod(JustLevelingFork.MOD_ID)
 public class JustLevelingFork {
     public static final String MOD_ID = "justlevelingfork";
     public static final String MOD_NAME = "just_leveling_fork";
@@ -39,6 +39,7 @@ public class JustLevelingFork {
     public JustLevelingFork() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::attributeSetup);
+
         RegistryItems.load(eventBus);
         RegistryAptitudes.load(eventBus);
         RegistryPassives.load(eventBus);

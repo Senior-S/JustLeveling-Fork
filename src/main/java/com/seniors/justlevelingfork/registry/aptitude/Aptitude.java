@@ -87,26 +87,22 @@ public class Aptitude {
     }
 
     public ResourceLocation getLockedTexture(int fromLevel) {
-        int index = 0;
         int size = HandlerConfigCommon.aptitudeMaxLevel.get();
         int textureListSize = this.lockedTexture.length;
-        for (int i = 0; i < size; i++) {
-            if (i <= fromLevel) {
-                index = (i - i % size / textureListSize) / size / textureListSize;
-            }
-        }
+
+        int index = Math.floorDiv((fromLevel * textureListSize), size);
+        index = index == textureListSize ? index - 1 : index;
+
         return this.lockedTexture[index];
     }
 
     public ResourceLocation getLockedTexture() {
-        int index = 0;
         int size = HandlerConfigCommon.aptitudeMaxLevel.get();
         int textureListSize = this.lockedTexture.length;
-        for (int i = 0; i < size; i++) {
-            if (i <= getLevel()) {
-                index = (i - i % size / textureListSize) / size / textureListSize;
-            }
-        }
+
+        int index = Math.floorDiv((getLevel() * textureListSize), size);
+        index = index == textureListSize ? index - 1 : index;
+
         return this.lockedTexture[index];
     }
 }

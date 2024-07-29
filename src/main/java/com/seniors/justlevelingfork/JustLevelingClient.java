@@ -24,7 +24,7 @@ public class JustLevelingClient {
 
     public static KeyMapping OPEN_JUSTLEVELING_SCREEN = new KeyMapping("key.justlevelingfork.open_aptitudes", InputConstants.Type.KEYSYM, 89, "key.justlevelingfork.title");
 
-    @EventBusSubscriber(modid = "justlevelingfork", value = {Dist.CLIENT})
+    @EventBusSubscriber(modid = JustLevelingFork.MOD_ID, value = {Dist.CLIENT})
     public static class ClientForgeEvents {
         @SubscribeEvent
         public static void checkKeyboard(InputEvent.Key event) {
@@ -34,7 +34,7 @@ public class JustLevelingClient {
         }
     }
 
-    @EventBusSubscriber(modid = "justlevelingfork", value = {Dist.CLIENT}, bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = JustLevelingFork.MOD_ID, value = {Dist.CLIENT}, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ClientProxy {
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {

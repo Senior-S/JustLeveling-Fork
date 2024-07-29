@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.registry;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.registry.passive.Passive;
 
 import java.util.UUID;
@@ -16,7 +17,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class RegistryAttributes {
-    private static final DeferredRegister<Attribute> REGISTER = DeferredRegister.create(ForgeRegistries.Keys.ATTRIBUTES, "justlevelingfork");
+    private static final DeferredRegister<Attribute> REGISTER = DeferredRegister.create(ForgeRegistries.Keys.ATTRIBUTES, JustLevelingFork.MOD_ID);
 
     public static final RegistryObject<Attribute> BREAK_SPEED = REGISTER.register("break_speed", () -> (new RangedAttribute("break_speed", 0.0D, 0.0D, 1024.0D)).setSyncable(true));
     public static final RegistryObject<Attribute> CRITICAL_DAMAGE = REGISTER.register("critical_damage", () -> (new RangedAttribute("critical_damage", 0.0D, 0.0D, 1024.0D)).setSyncable(true));
@@ -57,7 +58,7 @@ public class RegistryAttributes {
             AttributeModifier oldModifier = instance.getModifier(this.uuid);
             if (oldModifier != null) instance.removeModifier(oldModifier);
 
-            AttributeModifier newModifier = new AttributeModifier(this.uuid, "justlevelingfork", this.modifier, AttributeModifier.Operation.ADDITION);
+            AttributeModifier newModifier = new AttributeModifier(this.uuid, JustLevelingFork.MOD_ID, this.modifier, AttributeModifier.Operation.ADDITION);
             if (isEnabled) {
                 instance.addPermanentModifier(newModifier);
             } else {

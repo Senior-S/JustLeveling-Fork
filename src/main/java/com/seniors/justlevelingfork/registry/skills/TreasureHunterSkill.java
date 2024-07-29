@@ -20,8 +20,6 @@ public class TreasureHunterSkill {
     public static ItemStack drop() {
         int randomizer = (int) Math.floor(Math.random() * RegistrySkills.TREASURE_HUNTER.get().getValue()[0]);
         ItemStack stack = null;
-
-
         for (int i = 0; i < getItems().size(); i++) {
             List<BlockDrops> drops = getItems().get(i);
             if (randomizer == i) {

@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.client.gui;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.Tabs;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.client.screen.JustLevelingScreen;
@@ -16,7 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public class DrawTabs {
-    public static final ResourceLocation TEXTURE = new ResourceLocation("justlevelingfork", "textures/gui/container/tabs.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(JustLevelingFork.MOD_ID, "textures/gui/container/tabs.png");
     public static final Minecraft client = Minecraft.getInstance();
     public static ArrayList<Tabs> tabList = new ArrayList<>();
     public static boolean isMouseCheck = false;

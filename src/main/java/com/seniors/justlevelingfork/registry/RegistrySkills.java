@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.registry;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.Value;
 import com.seniors.justlevelingfork.client.core.ValueType;
 import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
@@ -22,9 +23,9 @@ import net.minecraftforge.registries.RegistryObject;
 
 
 public class RegistrySkills {
-    public static final ResourceKey<Registry<Skill>> SKILLS_KEY = ResourceKey.createRegistryKey(new ResourceLocation("justlevelingfork", "skills"));
-    public static final DeferredRegister<Skill> SKILLS = DeferredRegister.create(SKILLS_KEY, "justlevelingfork");
-    public static final Supplier<IForgeRegistry<Skill>> SKILLS_REGISTRY = SKILLS.makeRegistry(() -> (new RegistryBuilder()).disableSaving());
+    public static final ResourceKey<Registry<Skill>> SKILLS_KEY = ResourceKey.createRegistryKey(new ResourceLocation(JustLevelingFork.MOD_ID, "skills"));
+    public static final DeferredRegister<Skill> SKILLS = DeferredRegister.create(SKILLS_KEY, JustLevelingFork.MOD_ID);
+    public static final Supplier<IForgeRegistry<Skill>> SKILLS_REGISTRY = SKILLS.makeRegistry(() -> new RegistryBuilder<Skill>().disableSaving());
 
     public static final RegistryObject<Skill> ONE_HANDED = SKILLS.register("one_handed", () -> register("one_handed", RegistryAptitudes.STRENGTH.get(), 10, HandlerResources.ONE_HANDED_SKILL, new Value(ValueType.AMPLIFIER, HandlerConfigCommon.oneHandedAmplifier)));
 
@@ -99,7 +100,7 @@ public class RegistrySkills {
 
 
     private static Skill register(String name, Aptitude aptitude, int requiredLvl, ResourceLocation texture, Value... configValues) {
-        ResourceLocation key = new ResourceLocation("justlevelingfork", name);
+        ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, name);
         return new Skill(key, aptitude, requiredLvl, texture, configValues);
     }
 

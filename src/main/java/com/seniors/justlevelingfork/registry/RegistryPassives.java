@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.registry;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
 import com.seniors.justlevelingfork.handler.HandlerResources;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
@@ -22,9 +23,9 @@ import net.minecraftforge.registries.RegistryObject;
 
 
 public class RegistryPassives {
-    public static final ResourceKey<Registry<Passive>> PASSIVES_KEY = ResourceKey.createRegistryKey(new ResourceLocation("justlevelingfork", "passives"));
-    public static final DeferredRegister<Passive> PASSIVES = DeferredRegister.create(PASSIVES_KEY, "justlevelingfork");
-    public static final Supplier<IForgeRegistry<Passive>> PASSIVES_REGISTRY = PASSIVES.makeRegistry(() -> (new RegistryBuilder()).disableSaving());
+    public static final ResourceKey<Registry<Passive>> PASSIVES_KEY = ResourceKey.createRegistryKey(new ResourceLocation(JustLevelingFork.MOD_ID, "passives"));
+    public static final DeferredRegister<Passive> PASSIVES = DeferredRegister.create(PASSIVES_KEY, JustLevelingFork.MOD_ID);
+    public static final Supplier<IForgeRegistry<Passive>> PASSIVES_REGISTRY = PASSIVES.makeRegistry(() -> new RegistryBuilder<Passive>().disableSaving());
 
     public static final RegistryObject<Passive> ATTACK_DAMAGE = PASSIVES.register("attack_damage", () -> register("attack_damage", RegistryAptitudes.STRENGTH.get(), HandlerResources.create("textures/skill/strength/passive_attack_damage.png"), Attributes.ATTACK_DAMAGE, "96a891fe-5919-418d-8205-f50464391500", HandlerConfigCommon.attackDamageValue, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32));
 
@@ -75,7 +76,7 @@ public class RegistryPassives {
 
 
     private static Passive register(String name, Aptitude aptitude, ResourceLocation texture, Attribute attribute, String attributeUuid, Object attributeValue, int... levelsRequired) {
-        ResourceLocation key = new ResourceLocation("justlevelingfork", name);
+        ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, name);
         return new Passive(key, aptitude, texture, attribute, attributeUuid, attributeValue, levelsRequired);
     }
 

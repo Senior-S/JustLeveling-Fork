@@ -16,7 +16,8 @@
     "MixPowderSnowBlock",
     "MixShulkerBullet",
     "MixTargetFinder",
-    "MixVillager"
+    "MixVillager",
+    "MixCraftingMenu"
   ],
   "injectors": {
     "defaultRequire": 1

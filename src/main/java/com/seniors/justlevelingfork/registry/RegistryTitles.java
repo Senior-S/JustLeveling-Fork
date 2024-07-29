@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.registry;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.registry.title.Title;
 
@@ -21,9 +22,9 @@ import net.minecraftforge.registries.RegistryBuilder;
 import net.minecraftforge.registries.RegistryObject;
 
 public class RegistryTitles {
-    public static final ResourceKey<Registry<Title>> TITLES_KEY = ResourceKey.createRegistryKey(new ResourceLocation("justlevelingfork", "titles"));
-    public static final DeferredRegister<Title> TITLES = DeferredRegister.create(TITLES_KEY, "justlevelingfork");
-    public static final Supplier<IForgeRegistry<Title>> TITLES_REGISTRY = TITLES.makeRegistry(() -> (new RegistryBuilder()).disableSaving());
+    public static final ResourceKey<Registry<Title>> TITLES_KEY = ResourceKey.createRegistryKey(new ResourceLocation(JustLevelingFork.MOD_ID, "titles"));
+    public static final DeferredRegister<Title> TITLES = DeferredRegister.create(TITLES_KEY, JustLevelingFork.MOD_ID);
+    public static final Supplier<IForgeRegistry<Title>> TITLES_REGISTRY = TITLES.makeRegistry(() -> new RegistryBuilder<Title>().disableSaving());
 
     public static final RegistryObject<Title> TITLELESS = TITLES.register("titleless", () -> register("titleless", true));
     public static final RegistryObject<Title> ROCKIE = TITLES.register("rockie", () -> register("rockie", true));
@@ -72,7 +73,7 @@ public class RegistryTitles {
     }
 
     private static Title register(String name, boolean requirement) {
-        ResourceLocation key = new ResourceLocation("justlevelingfork", name);
+        ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, name);
         return new Title(key, requirement);
     }
 

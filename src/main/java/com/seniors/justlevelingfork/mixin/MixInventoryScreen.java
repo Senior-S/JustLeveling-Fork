@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.mixin;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.client.gui.DrawTabs;
 import com.seniors.justlevelingfork.network.packet.common.OpenEnderChestSP;
@@ -58,7 +59,7 @@ public abstract class MixInventoryScreen extends EffectRenderingInventoryScreen<
                 }
             }
             RenderSystem.enableBlend();
-            matrixStack.blit(new ResourceLocation("justlevelingfork", "textures/skill/ender_chest_button.png"), buttonX, buttonY, 0.0F, checkButton, 20, 18, 20, 36);
+            matrixStack.blit(new ResourceLocation(JustLevelingFork.MOD_ID, "textures/skill/ender_chest_button.png"), buttonX, buttonY, 0.0F, checkButton, 20, 18, 20, 36);
             matrixStack.pose().popPose();
         }
     }

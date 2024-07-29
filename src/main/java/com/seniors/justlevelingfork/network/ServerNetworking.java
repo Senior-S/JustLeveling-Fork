@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.network;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.network.packet.client.AptitudeOverlayCP;
 import com.seniors.justlevelingfork.network.packet.client.PlayerMessagesCP;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
@@ -22,8 +23,7 @@ public class ServerNetworking {
     public static SimpleChannel instance;
 
     public static void init() {
-        //instance = NetworkRegistry.ChannelBuilder.named(new ResourceLocation("justlevelingfork", "network")).networkProtocolVersion(() -> "1").clientAcceptedVersions("1"::equals).serverAcceptedVersions("1"::equals).simpleChannel();
-        instance = NetworkRegistry.newSimpleChannel(new ResourceLocation("justlevelingfork", "network"), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
+        instance = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(JustLevelingFork.MOD_ID, "network")).networkProtocolVersion(() -> PROTOCOL_VERSION).clientAcceptedVersions(PROTOCOL_VERSION::equals).serverAcceptedVersions(PROTOCOL_VERSION::equals).simpleChannel();
 
         instance.registerMessage(packetId++, SyncAptitudeCapabilityCP.class, SyncAptitudeCapabilityCP::toBytes, SyncAptitudeCapabilityCP::new, SyncAptitudeCapabilityCP::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         instance.registerMessage(packetId++, PlayerMessagesCP.class, PlayerMessagesCP::toBytes, PlayerMessagesCP::new, PlayerMessagesCP::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));

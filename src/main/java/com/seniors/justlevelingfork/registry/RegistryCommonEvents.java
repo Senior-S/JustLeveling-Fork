@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.registry;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.common.capability.LazyAptitudeCapability;
 import com.seniors.justlevelingfork.common.command.AptitudeLevelCommand;
@@ -15,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -58,8 +58,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = "justlevelingfork")
+@Mod.EventBusSubscriber(modid = JustLevelingFork.MOD_ID)
 public class RegistryCommonEvents {
+
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         AptitudeLevelCommand.register(event.getDispatcher());
@@ -71,8 +72,7 @@ public class RegistryCommonEvents {
         if (event.getObject() instanceof Player) {
             AptitudeCapability AptitudeCapability = new AptitudeCapability();
             LazyAptitudeCapability lazyAptitudeCapability = new LazyAptitudeCapability(AptitudeCapability);
-
-            event.addCapability(new ResourceLocation("justlevelingfork", "aptitudes"), lazyAptitudeCapability);
+            event.addCapability(new ResourceLocation(JustLevelingFork.MOD_ID, "aptitudes"), lazyAptitudeCapability);
         }
     }
 
@@ -88,7 +88,11 @@ public class RegistryCommonEvents {
             player = event.getOriginal();
             if (player instanceof ServerPlayer serverPlayerOld) {
                 serverPlayerOld.reviveCaps();
-                serverPlayerOld.getCapability(RegistryCapabilities.APTITUDE).ifPresent(oldAbilities -> serverPlayerNew.getCapability(RegistryCapabilities.APTITUDE));
+                serverPlayerOld.getCapability(RegistryCapabilities.APTITUDE).ifPresent((oldAbilities) -> {
+                    serverPlayerNew.getCapability(RegistryCapabilities.APTITUDE).ifPresent((newAbilities) -> {
+                        newAbilities.copyFrom(oldAbilities);
+                    });
+                });
                 RegistryAttributes.modifierAttributes(serverPlayerNew);
                 RegistryTitles.syncTitles(serverPlayerNew);
                 if (!serverPlayerOld.isDeadOrDying()) {
@@ -101,7 +105,6 @@ public class RegistryCommonEvents {
                 serverPlayerOld.invalidateCaps();
             }
         }
-
     }
 
     @SubscribeEvent
@@ -113,7 +116,6 @@ public class RegistryCommonEvents {
                 RegistryAttributes.modifierAttributes(serverPlayer);
                 RegistryTitles.syncTitles(serverPlayer);
             }
-
         }
     }
 
@@ -220,6 +222,7 @@ public class RegistryCommonEvents {
             RegistryAttributes.modifierAttributes(serverPlayer);
             if (serverPlayer.getHealth() > serverPlayer.getMaxHealth())
                 serverPlayer.setHealth(serverPlayer.getMaxHealth());
+
             new RegistryEffects.addEffect(serverPlayer, RegistrySkills.CAT_EYES.get().isEnabled(player), MobEffects.NIGHT_VISION).add(210);
             new RegistryEffects.addEffect(serverPlayer, RegistrySkills.DIAMOND_SKIN.get().isEnabled(player), MobEffects.DAMAGE_RESISTANCE).add(210, (int) (RegistrySkills.DIAMOND_SKIN.get().getValue()[0] - 1.0D));
         }
@@ -337,7 +340,9 @@ public class RegistryCommonEvents {
                     LivingEntity livingEntity1 = event.getEntity();
                     if (livingEntity1 instanceof ServerPlayer player) {
                         if (RegistrySkills.COUNTER_ATTACK.get().isEnabled(player)) {
-                            player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> CounterAttackSP.sendToPlayer(true, (float) (sourceDamage * RegistrySkills.COUNTER_ATTACK.get().getValue()[1] / 100.0D), player));
+                            player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {
+                                CounterAttackSP.sendToPlayer(true, (float) (sourceDamage * RegistrySkills.COUNTER_ATTACK.get().getValue()[1] / 100.0D), player);
+                            });
                         }
                     }
 
@@ -415,7 +420,7 @@ public class RegistryCommonEvents {
             if (!(event.getEntity() instanceof Player)) {
                 Entity entity1 = event.getSource().getEntity();
                 if (entity1 instanceof Player player) {
-                    (new RegistryEffects.addEffect((ServerPlayer) player, RegistrySkills.FIGHTING_SPIRIT.get().isEnabled(player), MobEffects.DAMAGE_BOOST)).add((int) (10.0D + 20.0D * RegistrySkills.FIGHTING_SPIRIT.get().getValue()[1]), (int) (RegistrySkills.FIGHTING_SPIRIT.get().getValue()[0] - 1.0D));
+                    new RegistryEffects.addEffect((ServerPlayer) player, RegistrySkills.FIGHTING_SPIRIT.get().isEnabled(player), MobEffects.DAMAGE_BOOST).add((int) (10.0D + 20.0D * RegistrySkills.FIGHTING_SPIRIT.get().getValue()[1]), (int) (RegistrySkills.FIGHTING_SPIRIT.get().getValue()[0] - 1.0D));
                 }
             }
 
