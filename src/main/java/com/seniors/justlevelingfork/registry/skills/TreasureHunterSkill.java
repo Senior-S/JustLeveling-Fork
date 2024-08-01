@@ -1,20 +1,19 @@
 package com.seniors.justlevelingfork.registry.skills;
 
-import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
-import com.seniors.justlevelingfork.registry.RegistrySkills;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import com.seniors.justlevelingfork.registry.RegistrySkills;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TreasureHunterSkill {
     public static ItemStack drop() {
@@ -38,7 +37,8 @@ public class TreasureHunterSkill {
 
     public static ArrayList<List<BlockDrops>> getItems() {
         ArrayList<List<BlockDrops>> dropList = new ArrayList<>();
-        List<? extends String> configList = HandlerConfigCommon.treasureHunterItemList.get();
+        List<? extends String> configList = HandlerCommonConfig.HANDLER.instance().treasureHunterItemList;
+
         for (String getValue : configList) {
             List<BlockDrops> getItems = new ArrayList<>();
             if (getValue.contains("List[") && getValue.charAt(getValue.length() - 1) == ']') {

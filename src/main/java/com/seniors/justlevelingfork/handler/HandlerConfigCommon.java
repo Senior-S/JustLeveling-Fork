@@ -3,10 +3,11 @@ package com.seniors.justlevelingfork.handler;
 import com.seniors.justlevelingfork.registry.skills.ConvergenceSkill;
 import com.seniors.justlevelingfork.registry.skills.TreasureHunterSkill;
 import net.minecraftforge.common.ForgeConfigSpec;
+import org.apache.http.annotation.Obsolete;
 
 import java.util.List;
 
-
+@Obsolete
 public class HandlerConfigCommon {
     public static final ForgeConfigSpec.Builder CONFIG = new ForgeConfigSpec.Builder();
 
@@ -123,6 +124,11 @@ public class HandlerConfigCommon {
     public static int defaultLimitBreakerProbability = 100;
 
     static {
+
+        CONFIG.comment("THIS CONFIGURATION ISN'T USED ANYMORE, ANY CHANGE HERE WILL HAVE NO IMPACT!");
+        CONFIG.comment("USE justleveling-fork.common.json5 FOR COMMON CONFIG");
+        CONFIG.comment("USE justleveling-fork.lockItems.json5 FOR LOCK ITEMS");
+
         CONFIG.push("general");
         aptitudeMaxLevel = CONFIG.comment("Aptitudes Max Level [default: " + defaultAptitudeMaxLevel + "]").defineInRange("aptitudeMaxLevel", defaultAptitudeMaxLevel, 2, 1000);
         aptitudeFirstCostLevel = CONFIG.comment("First aptitudes level cost: [default: " + defaultAptitudeFirstCostLevel + "]").defineInRange("aptitudeFirstCostLevel", defaultAptitudeFirstCostLevel, 1, 1000);

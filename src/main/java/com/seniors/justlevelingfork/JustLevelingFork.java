@@ -1,19 +1,12 @@
 package com.seniors.justlevelingfork;
 
-import com.seniors.justlevelingfork.handler.HandlerConfigClient;
-import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
-import com.seniors.justlevelingfork.handler.HandlerCurios;
-import com.seniors.justlevelingfork.network.ServerNetworking;
-import com.seniors.justlevelingfork.registry.RegistryAptitudes;
-import com.seniors.justlevelingfork.registry.RegistryArguments;
-import com.seniors.justlevelingfork.registry.RegistryAttributes;
-import com.seniors.justlevelingfork.registry.RegistryCommonEvents;
-import com.seniors.justlevelingfork.registry.RegistryItems;
-import com.seniors.justlevelingfork.registry.RegistryPassives;
-import com.seniors.justlevelingfork.registry.RegistrySkills;
-import com.seniors.justlevelingfork.registry.RegistrySounds;
-import com.seniors.justlevelingfork.registry.RegistryTitles;
 import com.mojang.logging.LogUtils;
+import com.seniors.justlevelingfork.config.EAptitude;
+import com.seniors.justlevelingfork.config.LockItem;
+import com.seniors.justlevelingfork.handler.*;
+import com.seniors.justlevelingfork.network.ServerNetworking;
+import com.seniors.justlevelingfork.registry.*;
+import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,7 +16,11 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(JustLevelingFork.MOD_ID)
 public class JustLevelingFork {
@@ -48,6 +45,9 @@ public class JustLevelingFork {
         RegistryAttributes.load(eventBus);
         RegistrySounds.load(eventBus);
         RegistryArguments.load(eventBus);
+
+        HandlerCommonConfig.HANDLER.load();
+        HandlerLockItemsConfig.HANDLER.load();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, HandlerConfigCommon.SPEC, "just_leveling-common.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, HandlerConfigClient.SPEC, "just_leveling-client.toml");
         MinecraftForge.EVENT_BUS.register(this);
@@ -65,5 +65,67 @@ public class JustLevelingFork {
             event.add(type, RegistryAttributes.PROJECTILE_DAMAGE.get());
             event.add(type, RegistryAttributes.BENEFICIAL_EFFECT.get());
         }
+    }
+
+    static void migrateOldConfig() {
+        List<? extends String> configList = HandlerConfigCommon.lockItemList.get();
+
+        List<LockItem> items = new ArrayList<>();
+        for (String value : configList) {
+            String[] values = value.split("#");
+            if (values.length != 2) {
+                continue;
+            }
+            LockItem lockItem = new LockItem(values[0]);
+
+            String getResource = values[0];
+            if (getResource.split(":").length != 2) {
+                continue;
+            }
+            String aptitudeValue = values[1];
+            String getAptitude = aptitudeValue.contains("<droppable>") ? aptitudeValue.split("<droppable>")[0] : aptitudeValue;
+            String[] aptitudeList = getAptitude.split(";");
+
+            List<LockItem.Aptitude> aptitudes = new ArrayList<>();
+
+            for (String getMultipleSkill : aptitudeList) {
+                if (getMultipleSkill.isEmpty()) {
+                    continue;
+                }
+
+                if (getMultipleSkill.contains("#") || getMultipleSkill.contains(",")) {
+                    continue;
+                }
+
+                String[] aptitudeValues = getMultipleSkill.split(":");
+
+                String aptitudePath = aptitudeValues[0];
+                if (aptitudePath.equals("defence")) {
+                    aptitudePath = "defense";
+                }
+                Aptitude aptitudeName = RegistryAptitudes.getAptitude(aptitudePath);
+                if (aptitudeName == null) {
+                    continue;
+                }
+
+                LockItem.Aptitude aptitude = new LockItem.Aptitude();
+                aptitude.Aptitude = EAptitude.valueOf(WordUtils.capitalizeFully(aptitudePath));
+                aptitude.Level = Integer.parseInt(aptitudeValues[1]);
+
+                aptitudes.add(aptitude);
+            }
+            if (aptitudes.isEmpty()) {
+                continue;
+            }
+
+            lockItem.Aptitudes = aptitudes;
+            items.add(lockItem);
+        }
+
+        items.forEach(HandlerLockItemsConfig.HANDLER.instance().lockItemList::add);
+
+        HandlerLockItemsConfig.HANDLER.save();
+        HandlerCommonConfig.HANDLER.instance().usingNewConfig = true;
+        HandlerCommonConfig.HANDLER.save();
     }
 }

@@ -1,16 +1,19 @@
 package com.seniors.justlevelingfork.registry;
+
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.handler.HandlerResources;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
-
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.*;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryBuilder;
+import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class RegistryAptitudes {
 
@@ -37,7 +40,7 @@ public class RegistryAptitudes {
     }
 
     public static Aptitude getAptitude(String aptitudeName) {
-        return APTITUDES_REGISTRY.get().getValues().stream().collect(Collectors.toMap(Aptitude::getName, Aptitude::get)).get(aptitudeName);
+        return APTITUDES_REGISTRY.get().getValues().stream().collect(Collectors.toMap(Aptitude::getName, Aptitude::get)).get(aptitudeName.toLowerCase());
     }
 }
 

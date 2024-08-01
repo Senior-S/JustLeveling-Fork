@@ -1,17 +1,16 @@
 package com.seniors.justlevelingfork.handler;
 
-import com.seniors.justlevelingfork.registry.skills.ConvergenceSkill;
+/*import com.seniors.justlevelingfork.registry.skills.ConvergenceSkill;
 import com.seniors.justlevelingfork.registry.skills.TreasureHunterSkill;
-
-import java.util.List;
-import java.util.Objects;
-
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.List;
+import java.util.Objects;
 
 public class HandlerClothConfig {
     public static Screen getConfigScreen(Screen parent, boolean isTransparent) {
@@ -21,7 +20,6 @@ public class HandlerClothConfig {
         ConfigCategory passives = builder.getOrCreateCategory(Component.translatable("config.cloth-config.justlevelingfork.passives"));
         ConfigCategory skills = builder.getOrCreateCategory(Component.translatable("config.cloth-config.justlevelingfork.skills"));
         ConfigEntryBuilder configEntryBuilder = builder.entryBuilder();
-
 
         Objects.requireNonNull(HandlerConfigCommon.aptitudeMaxLevel);
         general.addEntry(configEntryBuilder.startIntField(Component.translatable("config.cloth-config.justlevelingfork.aptitudeMaxLevel"), HandlerConfigCommon.aptitudeMaxLevel.get()).setDefaultValue(HandlerConfigCommon.defaultAptitudeMaxLevel).setSaveConsumer(HandlerConfigCommon.aptitudeMaxLevel::set)
@@ -273,6 +271,6 @@ public class HandlerClothConfig {
 
         return builder.setTransparentBackground(isTransparent).build();
     }
-}
+}*/
 
 

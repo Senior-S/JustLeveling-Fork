@@ -1,19 +1,18 @@
 package com.seniors.justlevelingfork.registry.aptitude;
 
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
-import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.registry.RegistryPassives;
 import com.seniors.justlevelingfork.registry.RegistrySkills;
 import com.seniors.justlevelingfork.registry.passive.Passive;
 import com.seniors.justlevelingfork.registry.skills.Skill;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Aptitude {
     public final int index;
@@ -79,7 +78,7 @@ public class Aptitude {
     public MutableComponent getRank(int aptitudeLevel) {
         MutableComponent rank = Component.translatable("aptitude.justlevelingfork.rank.0");
         for (int i = 0; i < 9; i++) {
-            if (aptitudeLevel >= (HandlerConfigCommon.aptitudeMaxLevel.get() / 8) * i) {
+            if (aptitudeLevel >= (HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel / 8) * i) {
                 rank = Component.translatable("aptitude.justlevelingfork.rank." + i);
             }
         }
@@ -87,7 +86,7 @@ public class Aptitude {
     }
 
     public ResourceLocation getLockedTexture(int fromLevel) {
-        int size = HandlerConfigCommon.aptitudeMaxLevel.get();
+        int size = HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel;
         int textureListSize = this.lockedTexture.length;
 
         int index = Math.floorDiv((fromLevel * textureListSize), size);
@@ -97,7 +96,7 @@ public class Aptitude {
     }
 
     public ResourceLocation getLockedTexture() {
-        int size = HandlerConfigCommon.aptitudeMaxLevel.get();
+        int size = HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel;
         int textureListSize = this.lockedTexture.length;
 
         int index = Math.floorDiv((getLevel() * textureListSize), size);

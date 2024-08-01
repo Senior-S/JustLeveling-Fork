@@ -1,15 +1,15 @@
 package com.seniors.justlevelingfork.common.command;
 
-import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
-import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
-import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
-import com.seniors.justlevelingfork.registry.RegistryAptitudes;
-import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
+import com.seniors.justlevelingfork.registry.RegistryAptitudes;
+import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -27,7 +27,7 @@ public class AptitudeLevelCommand {
                                 .then(Commands.literal("get")
                                         .executes(source -> getAptitude(source, EntityArgument.getPlayer(source, "player"), AptitudeArgument.getAptitude(source, "aptitude")))))
                                 .then(Commands.literal("set")
-                                        .then(Commands.argument("lvl", (ArgumentType) IntegerArgumentType.integer(1, HandlerConfigCommon.aptitudeMaxLevel.get()))
+                                        .then(Commands.argument("lvl", (ArgumentType) IntegerArgumentType.integer(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel))
                                                 .executes(source -> setAptitude(source, EntityArgument.getPlayer(source, "player"), AptitudeArgument.getAptitude(source, "aptitude"), IntegerArgumentType.getInteger(source, "lvl"))))))));
     }
 

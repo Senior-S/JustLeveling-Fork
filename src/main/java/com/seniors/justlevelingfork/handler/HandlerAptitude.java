@@ -2,6 +2,7 @@ package com.seniors.justlevelingfork.handler;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.Aptitudes;
+import com.seniors.justlevelingfork.config.LockItem;
 import com.seniors.justlevelingfork.registry.RegistryAptitudes;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 
@@ -12,81 +13,31 @@ public class HandlerAptitude {
 
     public static Map<String, List<Aptitudes>> getAptitude() {
         Map<String, List<Aptitudes>> aptitudeMap = new HashMap<>();
-        List<? extends String> configList = HandlerConfigCommon.lockItemList.get();
-        boolean logErrors = HandlerConfigCommon.logErrors.get();
-        for (String value : configList) {
-            String[] values = value.split("#");
-            if (logErrors){
-               if(values.length != 2){
-                   JustLevelingFork.getLOGGER().warn("Found line with wrong format (GENERAL), Skipping...");
-                   JustLevelingFork.getLOGGER().warn(value);
-                   continue;
-               }
-            }
+        List<LockItem> lockItemList = HandlerLockItemsConfig.HANDLER.instance().lockItemList;
 
-            List<Aptitudes> getAptitudes = new ArrayList<>();
-            String getResource = values[0];
-            if (logErrors){
-                if (getResource.split(":").length != 2){
-                    JustLevelingFork.getLOGGER().warn("Found line with wrong format (ITEM/BLOCK NAME), Skipping...");
-                    JustLevelingFork.getLOGGER().info(value);
+        for (LockItem lockItem : lockItemList){
+            List<Aptitudes> aptitudesList = new ArrayList<>();
+            for (LockItem.Aptitude aptitude : lockItem.Aptitudes){
+                if(aptitude.Aptitude == null){
+                    JustLevelingFork.getLOGGER().warn("Item {} with wrong aptitude (APTITUDE NOT FOUND), Skipping...", lockItem.Item);
                     continue;
                 }
+                Aptitude aptitudeName = RegistryAptitudes.getAptitude(aptitude.Aptitude.toString());
+                if (aptitudeName == null) {
+                    JustLevelingFork.getLOGGER().warn("Item {} with wrong aptitude (APTITUDE \"{}\" NOT FOUND), Skipping...", lockItem.Item, aptitude.Aptitude.toString());
+                    continue;
+                }
+
+                aptitudesList.add(new Aptitudes(aptitude.Aptitude.toString(), lockItem.Item, false, aptitudeName, aptitude.Level));
             }
-            String aptitude = values[1];
-            String getAptitude = aptitude.contains("<droppable>") ? aptitude.split("<droppable>")[0] : aptitude;
-            String[] aptitudeList = getAptitude.split(";");
-
-            for (String getMultipleSkill : aptitudeList) {
-                if (logErrors) {
-                    if (getMultipleSkill.isEmpty()) {
-                        JustLevelingFork.getLOGGER().warn("Found line with wrong format (EMPTY SKILL), Skipping...");
-                        JustLevelingFork.getLOGGER().info(value);
-                        continue;
-                    }
-
-                    if (getMultipleSkill.contains("#") || getMultipleSkill.contains(",")) {
-                        JustLevelingFork.getLOGGER().warn("Found line with wrong format (SKILL WRONG CHARACTERS), Skipping...");
-                        JustLevelingFork.getLOGGER().info(value);
-                        continue;
-                    }
-                }
-
-                String[] aptitudeValues = getMultipleSkill.split(":");
-
-                String aptitudePath = aptitudeValues[0];
-                if (aptitudePath.equals("defence")) {
-                    aptitudePath = "defense";
-                }
-                Aptitude aptitudeName = RegistryAptitudes.getAptitude(aptitudePath);
-                if (logErrors) {
-                    if (aptitudeName == null) {
-                        JustLevelingFork.getLOGGER().warn("Found line with wrong format (APTITUDE NOT FOUND), Skipping...");
-                        JustLevelingFork.getLOGGER().info(value);
-                        continue;
-                    }
-                }
-
-                int aptitudeLvl = tryParseInt(aptitudeValues[1], 1);
-                getAptitudes.add(new Aptitudes(value, getResource, value.contains("<droppable>"), aptitudeName, aptitudeLvl));
+            if (aptitudesList.isEmpty()){
+                JustLevelingFork.getLOGGER().warn("Item {} with no aptitudes (ITEM WITH NO APTITUDES), Skipping...", lockItem.Item);
+                continue;
             }
-            aptitudeMap.put(getResource, getAptitudes);
+            aptitudeMap.put(lockItem.Item, aptitudesList);
         }
+
         return aptitudeMap;
-    }
-
-    // Java doesn't have this by default, so I added it here.
-    // It isn't on Utils class due that class only should be loaded on client, otherwise the server crash.
-    public static int tryParseInt(String value, int defaultVal) {
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            if (HandlerConfigCommon.logErrors.get()){
-                JustLevelingFork.getLOGGER().warn("Can't parse {} to integer", value);
-            }
-
-            return defaultVal;
-        }
     }
 
     public static List<Aptitudes> getValue(String key) {

@@ -2,20 +2,13 @@ package com.seniors.justlevelingfork.common.capability;
 
 import com.seniors.justlevelingfork.client.core.Aptitudes;
 import com.seniors.justlevelingfork.handler.HandlerAptitude;
-import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.network.packet.client.AptitudeOverlayCP;
-import com.seniors.justlevelingfork.registry.RegistryAptitudes;
-import com.seniors.justlevelingfork.registry.RegistryCapabilities;
-import com.seniors.justlevelingfork.registry.RegistryPassives;
-import com.seniors.justlevelingfork.registry.RegistrySkills;
-import com.seniors.justlevelingfork.registry.RegistryTitles;
+import com.seniors.justlevelingfork.registry.*;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import com.seniors.justlevelingfork.registry.passive.Passive;
 import com.seniors.justlevelingfork.registry.skills.Skill;
 import com.seniors.justlevelingfork.registry.title.Title;
-
-import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +18,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class AptitudeCapability implements INBTSerializable<CompoundTag> {
     public Map<String, Integer> aptitudeLevel = mapAptitudes();
@@ -106,7 +104,7 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
     }
 
     public void addAptitudeLevel(Aptitude aptitude, int addLvl) {
-        this.aptitudeLevel.put(aptitude.getName(), Math.min(this.aptitudeLevel.get(aptitude.getName()) + addLvl, HandlerConfigCommon.aptitudeMaxLevel.get()));
+        this.aptitudeLevel.put(aptitude.getName(), Math.min(this.aptitudeLevel.get(aptitude.getName()) + addLvl, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel));
     }
 
     public int getPassiveLevel(Passive passive) {

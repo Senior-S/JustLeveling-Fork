@@ -1,28 +1,21 @@
 package com.seniors.justlevelingfork.client.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.seniors.justlevelingfork.client.core.SortPassives;
 import com.seniors.justlevelingfork.client.core.SortSkills;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.client.gui.DrawTabs;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.handler.HandlerConfigClient;
-import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
 import com.seniors.justlevelingfork.handler.HandlerResources;
+import com.seniors.justlevelingfork.network.packet.common.*;
 import com.seniors.justlevelingfork.registry.RegistryAptitudes;
 import com.seniors.justlevelingfork.registry.RegistryTitles;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import com.seniors.justlevelingfork.registry.passive.Passive;
 import com.seniors.justlevelingfork.registry.skills.Skill;
 import com.seniors.justlevelingfork.registry.title.Title;
-import com.mojang.blaze3d.systems.RenderSystem;
-
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.seniors.justlevelingfork.network.packet.common.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -32,8 +25,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
 import org.jetbrains.annotations.NotNull;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @OnlyIn(Dist.CLIENT)
 public class JustLevelingScreen extends Screen {
@@ -273,7 +271,7 @@ public class JustLevelingScreen extends Screen {
 
             matrixStack.blit(aptitude.getLockedTexture(), xPos + 5, yPos + 5, 0.0F, 0.0F, 16, 16, 16, 16);
             matrixStack.drawString(client.font, Component.translatable(key + ".abbreviation").withStyle(ChatFormatting.BOLD), xPos + 24, yPos + 5, (new Color(240, 240, 240)).getRGB(), false);
-            matrixStack.drawString(client.font, Component.translatable("screen.aptitude.experience", Utils.numberFormat(aptitudeLevel), HandlerConfigCommon.aptitudeMaxLevel.get()), xPos + 24, yPos + 14, (new Color(170, 170, 170)).getRGB(), false);
+            matrixStack.drawString(client.font, Component.translatable("screen.aptitude.experience", Utils.numberFormat(aptitudeLevel), HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel), xPos + 24, yPos + 14, (new Color(170, 170, 170)).getRGB(), false);
 
             if (Utils.checkMouse(xPos, yPos, mouseX, mouseY, 74, 26)) {
                 Utils.drawToolTip(matrixStack, Component.translatable(key), mouseX, mouseY);
@@ -302,7 +300,7 @@ public class JustLevelingScreen extends Screen {
         matrixStack.blit(aptitude.getLockedTexture(), x + 12, y + 9, 0.0F, 0.0F, 16, 16, 16, 16);
 
         matrixStack.drawString(client.font, Component.translatable(key).withStyle(ChatFormatting.BOLD), x + 34, y + 8, Utils.FONT_COLOR, false);
-        matrixStack.drawString(client.font, Component.translatable("screen.skill.level_and_rank", Utils.numberFormat(aptitudeLevel), HandlerConfigCommon.aptitudeMaxLevel.get(), rank), x + 34, y + 18, Utils.FONT_COLOR, false);
+        matrixStack.drawString(client.font, Component.translatable("screen.skill.level_and_rank", Utils.numberFormat(aptitudeLevel), HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel, rank), x + 34, y + 18, Utils.FONT_COLOR, false);
 
         matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], x + 16, y + 144, 30, 167, 11, 11);
         if (Utils.checkMouse(x + 16, y + 144, mouseX, mouseY, 11, 11)) {
@@ -423,12 +421,12 @@ public class JustLevelingScreen extends Screen {
             this.b = !this.b;
             this.tick = 0;
         }
-        int j = (aptitudeLevel < HandlerConfigCommon.aptitudeMaxLevel.get()) ? (this.b ? 6 : 0) : 12;
+        int j = (aptitudeLevel < HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel) ? (this.b ? 6 : 0) : 12;
 
         matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], x + 153, y + 14, 177 + j, 1, 6, 6);
         boolean canLevelUpAptitude = (client.player.isCreative() || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= client.player.totalExperience);
         if (Utils.checkMouse(x + 149, y + 10, mouseX, mouseY, 14, 14)) {
-            if (aptitudeLevel < HandlerConfigCommon.aptitudeMaxLevel.get()) {
+            if (aptitudeLevel < HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel) {
                 ChatFormatting color = canLevelUpAptitude ? ChatFormatting.GREEN : ChatFormatting.RED;
                 Utils.drawToolTip(matrixStack, Component.translatable("tooltip.aptitude.level_up", Component.literal(String.valueOf(AptitudeLevelUpSP.requiredLevels(aptitudeLevel))).withStyle(color),
                         Component.literal(String.valueOf(AptitudeLevelUpSP.requiredPoints(aptitudeLevel))).withStyle(color),

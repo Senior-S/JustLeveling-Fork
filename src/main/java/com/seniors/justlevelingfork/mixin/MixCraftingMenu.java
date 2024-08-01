@@ -1,7 +1,7 @@
 package com.seniors.justlevelingfork.mixin;
 
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
-import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -28,7 +28,7 @@ public class MixCraftingMenu {
 
                 if (!provider.canUseItem(serverPlayer, itemStack)){
                     resultContainer.setItem(0, ItemStack.EMPTY);
-                    if (HandlerConfigCommon.closeCraftingMenuOnFail.get()){
+                    if (HandlerCommonConfig.HANDLER.instance().closeCraftingMenu){
                         serverPlayer.closeContainer();
                     }
                 }

@@ -1,6 +1,6 @@
 package com.seniors.justlevelingfork.registry;
 
-import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -19,14 +19,14 @@ public class RegistryEffects {
 
         public void add(int duration) {
             if (this.toggle) {
-                MobEffectInstance instance = new MobEffectInstance(this.effect, duration, 0, false, false, HandlerConfigCommon.showPotionsHud.get());
+                MobEffectInstance instance = new MobEffectInstance(this.effect, duration, 0, false, false, HandlerCommonConfig.HANDLER.instance().showPotionsHud);
                 this.player.addEffect(instance);
             }
         }
 
         public void add(int duration, int amplifier) {
             if (this.toggle) {
-                MobEffectInstance instance = new MobEffectInstance(this.effect, duration, amplifier, false, false, HandlerConfigCommon.showPotionsHud.get());
+                MobEffectInstance instance = new MobEffectInstance(this.effect, duration, amplifier, false, false, HandlerCommonConfig.HANDLER.instance().showPotionsHud);
                 this.player.addEffect(instance);
             }
         }

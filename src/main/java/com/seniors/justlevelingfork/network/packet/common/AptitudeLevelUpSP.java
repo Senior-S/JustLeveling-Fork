@@ -1,17 +1,16 @@
 package com.seniors.justlevelingfork.network.packet.common;
 
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
-import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
 import com.seniors.justlevelingfork.registry.RegistryAptitudes;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
-
-import java.util.function.Supplier;
-
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 public class AptitudeLevelUpSP {
     private final String aptitude;
@@ -48,11 +47,11 @@ public class AptitudeLevelUpSP {
     }
 
     public static int requiredPoints(int aptitudeLevel) {
-        return getXpNeededForLevel(aptitudeLevel + HandlerConfigCommon.aptitudeFirstCostLevel.get() - 1);
+        return getXpNeededForLevel(aptitudeLevel + HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel - 1);
     }
 
     public static int requiredLevels(int aptitudeLevel) {
-        return aptitudeLevel + HandlerConfigCommon.aptitudeFirstCostLevel.get() - 1;
+        return aptitudeLevel + HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel - 1;
     }
 
     private static int getXpNeededForLevel(int level) {
