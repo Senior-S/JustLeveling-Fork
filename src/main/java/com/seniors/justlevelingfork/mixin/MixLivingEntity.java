@@ -2,10 +2,6 @@ package com.seniors.justlevelingfork.mixin;
 
 import com.seniors.justlevelingfork.registry.RegistryAttributes;
 import com.seniors.justlevelingfork.registry.RegistrySkills;
-
-import java.util.Map;
-import javax.annotation.Nullable;
-
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -15,8 +11,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.PotionItem;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent.Added;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,53 +23,83 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
+import java.util.Map;
+
 @Mixin({LivingEntity.class})
 public abstract class MixLivingEntity {
     @Shadow
     @Final
     private Map<MobEffect, MobEffectInstance> activeEffects;
     @Unique
-    private final LivingEntity this$class = (LivingEntity) (Object) this;
+    LivingEntity this$class = (LivingEntity) (Object) this;
 
     @Shadow
-    protected abstract void onEffectAdded(MobEffectInstance paramMobEffectInstance, @Nullable Entity paramEntity);
+    protected abstract void onEffectAdded(MobEffectInstance var1, @Nullable Entity var2);
 
     @Shadow
-    protected abstract void onEffectUpdated(MobEffectInstance paramMobEffectInstance, boolean paramBoolean, @Nullable Entity paramEntity);
-
-    @ModifyVariable(method = {"getDamageAfterArmorAbsorb"}, at = @At("HEAD"), argsOnly = true)
-    private float additionalEntityAttributes$reduceMagicDamage(float damage, DamageSource source) {
-        AttributeInstance magicResist = this$class.getAttribute(RegistryAttributes.MAGIC_RESIST.get());
-        if (magicResist == null) {
-            return damage;
-        }
-        if (source.isIndirect() && magicResist.getValue() > 0.0D) {
-            damage = (float) (damage - damage * magicResist.getValue());
-        }
-        return damage;
-    }
+    protected abstract void onEffectUpdated(MobEffectInstance var1, boolean var2, @Nullable Entity var3);
 
     @Shadow
-    public abstract boolean canBeAffected(MobEffectInstance paramMobEffectInstance);
+    public abstract boolean canBeAffected(MobEffectInstance var1);
 
+    /** @deprecated */
     @Shadow
     @Deprecated
     public abstract boolean canBreatheUnderwater();
 
-    @Inject(method = {"addEffect(Lnet/minecraft/world/effect/MobEffectInstance;)Z"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z", opcode = 181)}, cancellable = true)
+    @ModifyVariable(
+            method = {"getDamageAfterArmorAbsorb"},
+            at = @At("HEAD"),
+            argsOnly = true
+    )
+    private float additionalEntityAttributes$reduceMagicDamage(float damage, DamageSource source) {
+        AttributeInstance magicResist = this$class.getAttribute(RegistryAttributes.MAGIC_RESIST.get());
+        if (magicResist == null) {
+            return damage;
+        } else {
+            if (source.isIndirect() && magicResist.getValue() > 0.0D) {
+                damage = (float)((double)damage - (double)damage * magicResist.getValue());
+            }
+
+            return damage;
+        }
+    }
+
+    @Inject(
+            method = {"addEffect(Lnet/minecraft/world/effect/MobEffectInstance;)Z"},
+            at = {@At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z",
+                    opcode = 181
+            )},
+            cancellable = true
+    )
     public final void onAddEffect(MobEffectInstance effect, CallbackInfoReturnable<Boolean> info) {
-        if (this.this$class instanceof Player player) {
+        LivingEntity var4 = this.this$class;
+        if (var4 instanceof Player) {
+            Player player = (Player)var4;
             info.cancel();
-            info.setReturnValue(this$onDrinkPotion(effect, player));
+            info.setReturnValue(this.this$onDrinkPotion(effect, player));
         }
 
     }
 
-    @Inject(method = {"addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;canBeAffected(Lnet/minecraft/world/effect/MobEffectInstance;)Z", opcode = 181)}, cancellable = true)
+    @Inject(
+            method = {"addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"},
+            at = {@At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/LivingEntity;canBeAffected(Lnet/minecraft/world/effect/MobEffectInstance;)Z",
+                    opcode = 181
+            )},
+            cancellable = true
+    )
     public final void onAddEffect(MobEffectInstance effect, Entity source, CallbackInfoReturnable<Boolean> info) {
-        if (this.this$class instanceof Player player) {
+        LivingEntity var5 = this.this$class;
+        if (var5 instanceof Player) {
+            Player player = (Player)var5;
             info.cancel();
-            info.setReturnValue(this$onAddEffect(effect, player));
+            info.setReturnValue(this.this$onAddEffect(effect, player));
         }
 
     }
@@ -80,73 +107,76 @@ public abstract class MixLivingEntity {
     @Unique
     private boolean this$onAddEffect(MobEffectInstance effect, Player player) {
         int duration = effect.getDuration();
-        if (effect.getEffect().getCategory() == MobEffectCategory.HARMFUL && RegistrySkills.LION_HEART.get().isEnabled(player))
-            duration -= (int) (effect.getDuration() * RegistrySkills.LION_HEART.get().getValue()[0] / 100.0D);
-
+        if (effect.getEffect().getCategory() == MobEffectCategory.HARMFUL && RegistrySkills.LION_HEART.get().isEnabled(player)) {
+            duration -= (int)((double)effect.getDuration() * RegistrySkills.LION_HEART.get().getValue()[0] / 100.0D);
+        }
 
         MobEffectInstance newEffect = new MobEffectInstance(effect.getEffect(), duration, effect.getAmplifier());
-
-        if (!canBeAffected(effect)) {
+        if (!this.canBeAffected(effect)) {
             return false;
+        } else {
+            MobEffectInstance mobeffectinstance = this.activeEffects.get(effect.getEffect());
+            MinecraftForge.EVENT_BUS.post(new Added(this.this$class, mobeffectinstance, effect, player));
+            if (mobeffectinstance == null) {
+                this.activeEffects.put(newEffect.getEffect(), newEffect);
+                this.onEffectAdded(newEffect, player);
+                return true;
+            } else if (mobeffectinstance.update(effect)) {
+                this.onEffectUpdated(newEffect, true, player);
+                return true;
+            } else {
+                return false;
+            }
         }
-        MobEffectInstance mobeffectinstance = this.activeEffects.get(effect.getEffect());
-        MinecraftForge.EVENT_BUS.post(new MobEffectEvent.Added(this.this$class, mobeffectinstance, effect, player));
-        if (mobeffectinstance == null) {
-            this.activeEffects.put(newEffect.getEffect(), newEffect);
-            onEffectAdded(newEffect, player);
-            return true;
-        }
-        if (mobeffectinstance.update(effect)) {
-            onEffectUpdated(newEffect, true, player);
-            return true;
-        }
-        return false;
     }
-
 
     @Unique
     private boolean this$onDrinkPotion(MobEffectInstance effect, Player player) {
         int duration = effect.getDuration();
         int amplifier = effect.getAmplifier();
+        if (effect.getEffect().getCategory() == MobEffectCategory.BENEFICIAL && player.isUsingItem() && (player.getMainHandItem().getItem() instanceof PotionItem || player.getOffhandItem().getItem() instanceof PotionItem)) {
+            if (RegistrySkills.ALCHEMY_MANIPULATION.get().isEnabled(player)) {
+                amplifier += (int)RegistrySkills.ALCHEMY_MANIPULATION.get().getValue()[0];
+            }
 
-        if (effect.getEffect().getCategory() == MobEffectCategory.BENEFICIAL &&
-                player.isUsingItem() && (player.getMainHandItem().getItem() instanceof net.minecraft.world.item.PotionItem || player.getOffhandItem().getItem() instanceof net.minecraft.world.item.PotionItem)) {
-            if (RegistrySkills.ALCHEMY_MANIPULATION.get().isEnabled(player))
-                amplifier += (int) RegistrySkills.ALCHEMY_MANIPULATION.get().getValue()[0];
-            float newDuration = (int) (player.getAttributeValue(RegistryAttributes.BENEFICIAL_EFFECT.get()) * 20.0D);
-            duration = (int) (duration + newDuration);
+            float newDuration = (float)((int)(player.getAttributeValue(RegistryAttributes.BENEFICIAL_EFFECT.get()) * 20.0D));
+            duration = (int)((float)duration + newDuration);
         }
-
 
         MobEffectInstance newEffect = new MobEffectInstance(effect.getEffect(), duration, amplifier);
-        if (!canBeAffected(effect)) {
+        if (!this.canBeAffected(effect)) {
             return false;
+        } else {
+            MobEffectInstance mobeffectinstance = this.activeEffects.get(effect.getEffect());
+            MinecraftForge.EVENT_BUS.post(new Added(this.this$class, mobeffectinstance, effect, player));
+            if (mobeffectinstance == null) {
+                this.activeEffects.put(newEffect.getEffect(), newEffect);
+                this.onEffectAdded(newEffect, player);
+                return true;
+            } else if (mobeffectinstance.update(effect)) {
+                this.onEffectUpdated(newEffect, true, player);
+                return true;
+            } else {
+                return false;
+            }
         }
-        MobEffectInstance mobeffectinstance = this.activeEffects.get(effect.getEffect());
-        MinecraftForge.EVENT_BUS.post(new MobEffectEvent.Added(this.this$class, mobeffectinstance, effect, player));
-        if (mobeffectinstance == null) {
-            this.activeEffects.put(newEffect.getEffect(), newEffect);
-            onEffectAdded(newEffect, player);
-            return true;
-        }
-        if (mobeffectinstance.update(effect)) {
-            onEffectUpdated(newEffect, true, player);
-            return true;
-        }
-        return false;
     }
 
-
-    @Inject(method = {"getVisibilityPercent"}, at = {@At("TAIL")}, cancellable = true)
+    @Inject(
+            method = {"getVisibilityPercent"},
+            at = {@At("TAIL")},
+            cancellable = true
+    )
     public void getVisibilityPercent(Entity source, CallbackInfoReturnable<Double> cir) {
         double visibilityPercent = cir.getReturnValue();
-        if (this.this$class instanceof ServerPlayer player) {
+        LivingEntity var6 = this.this$class;
+        if (var6 instanceof ServerPlayer) {
+            ServerPlayer player = (ServerPlayer)var6;
             double isSneaking = player.isShiftKeyDown() ? RegistrySkills.STEALTH_MASTERY.get().getValue()[0] : RegistrySkills.STEALTH_MASTERY.get().getValue()[1];
-            if (RegistrySkills.STEALTH_MASTERY.get().isEnabled(player))
+            if (RegistrySkills.STEALTH_MASTERY.get().isEnabled(player)) {
                 cir.setReturnValue(visibilityPercent * isSneaking / 100.0D);
+            }
         }
 
     }
 }
-
-
