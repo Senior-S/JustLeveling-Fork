@@ -9,7 +9,7 @@ The idea behind this fork is fix some bugs, performance issues and allow other p
 The mod requires the next libraries:<br>
 [ClothConfig](https://www.curseforge.com/minecraft/mc-mods/cloth-config)<br>
 [Curios API](https://www.curseforge.com/minecraft/mc-mods/curios)<br>
-[YetAnotherConfigLib](https://www.curseforge.com/minecraft/mc-mods/yacl)<br>
+[YetAnotherConfigLib](https://modrinth.com/mod/yacl/version/3.4.2+1.20.1-forge) (3.4.2 VERSION ONLY! NEW VERSIONS OF THE LIB MAY CRASH YOUR GAME)<br>
 If you're using BetterCombat you require the next library:<br>
 [PlayerAnimator](https://modrinth.com/mod/playeranimator)
 

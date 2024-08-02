@@ -122,7 +122,11 @@ public class JustLevelingFork {
             items.add(lockItem);
         }
 
-        items.forEach(HandlerLockItemsConfig.HANDLER.instance().lockItemList::add);
+        items.forEach((item) -> {
+            if (HandlerLockItemsConfig.HANDLER.instance().lockItemList.stream().noneMatch((lockItem -> lockItem.Item.equalsIgnoreCase(item.Item)))){
+                HandlerLockItemsConfig.HANDLER.instance().lockItemList.add(item);
+            }
+        });
 
         HandlerLockItemsConfig.HANDLER.save();
         HandlerCommonConfig.HANDLER.instance().usingNewConfig = true;
