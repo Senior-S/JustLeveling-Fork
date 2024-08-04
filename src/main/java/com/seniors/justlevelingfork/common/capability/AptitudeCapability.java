@@ -162,6 +162,14 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
         return canUse(player, Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem())));
     }
 
+    public boolean canUseItem(Player player, ResourceLocation resourceLocation) {
+        return canUse(player, resourceLocation);
+    }
+
+    public boolean canUseTetraItem(Player player, String tetraItem){
+        return canUse(player, tetraItem);
+    }
+
     public boolean canUseBlock(Player player, Block block) {
         return canUse(player, Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block)));
     }
@@ -177,6 +185,20 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
                 if (getAptitudeLevel(aptitudes.getAptitude()) < aptitudes.getAptitudeLvl()) {
                     if (player instanceof net.minecraft.server.level.ServerPlayer)
                         AptitudeOverlayCP.send(player, resource.toString());
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean canUse(Player player, String tetraType) {
+        List<Aptitudes> aptitude = HandlerAptitude.getValue(tetraType);
+        if (aptitude != null) {
+            for (Aptitudes aptitudes : aptitude) {
+                if (getAptitudeLevel(aptitudes.getAptitude()) < aptitudes.getAptitudeLvl()) {
+                    if (player instanceof net.minecraft.server.level.ServerPlayer)
+                        AptitudeOverlayCP.send(player, tetraType);
                     return false;
                 }
             }

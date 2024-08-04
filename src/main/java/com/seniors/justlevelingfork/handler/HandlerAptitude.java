@@ -11,14 +11,40 @@ import java.util.*;
 public class HandlerAptitude {
     private static Map<String, List<com.seniors.justlevelingfork.client.core.Aptitudes>> Aptitudes;
 
+    public static void UpdateLockItems(List<LockItem> lockItems) {
+        Map<String, List<Aptitudes>> aptitudeMap = new HashMap<>();
+
+        for (LockItem lockItem : lockItems) {
+            List<Aptitudes> aptitudesList = new ArrayList<>();
+            for (LockItem.Aptitude aptitude : lockItem.Aptitudes) {
+                if (aptitude.Aptitude == null) {
+                    continue;
+                }
+                Aptitude aptitudeName = RegistryAptitudes.getAptitude(aptitude.Aptitude.toString());
+                if (aptitudeName == null) {
+                    continue;
+                }
+
+                aptitudesList.add(new Aptitudes(aptitude.Aptitude.toString(), lockItem.Item, false, aptitudeName, aptitude.Level));
+            }
+            if (aptitudesList.isEmpty()) {
+                continue;
+            }
+            aptitudeMap.put(lockItem.Item, aptitudesList);
+        }
+
+        // Replace the old aptitudes map so client lock items doesn't affect while playing on server.
+        Aptitudes = aptitudeMap;
+    }
+
     public static Map<String, List<Aptitudes>> getAptitude() {
         Map<String, List<Aptitudes>> aptitudeMap = new HashMap<>();
         List<LockItem> lockItemList = HandlerLockItemsConfig.HANDLER.instance().lockItemList;
 
-        for (LockItem lockItem : lockItemList){
+        for (LockItem lockItem : lockItemList) {
             List<Aptitudes> aptitudesList = new ArrayList<>();
-            for (LockItem.Aptitude aptitude : lockItem.Aptitudes){
-                if(aptitude.Aptitude == null){
+            for (LockItem.Aptitude aptitude : lockItem.Aptitudes) {
+                if (aptitude.Aptitude == null) {
                     JustLevelingFork.getLOGGER().warn("Item {} with wrong aptitude (APTITUDE NOT FOUND), Skipping...", lockItem.Item);
                     continue;
                 }
@@ -30,7 +56,7 @@ public class HandlerAptitude {
 
                 aptitudesList.add(new Aptitudes(aptitude.Aptitude.toString(), lockItem.Item, false, aptitudeName, aptitude.Level));
             }
-            if (aptitudesList.isEmpty()){
+            if (aptitudesList.isEmpty()) {
                 JustLevelingFork.getLOGGER().warn("Item {} with no aptitudes (ITEM WITH NO APTITUDES), Skipping...", lockItem.Item);
                 continue;
             }
@@ -41,7 +67,7 @@ public class HandlerAptitude {
     }
 
     public static List<Aptitudes> getValue(String key) {
-        if (Aptitudes == null){
+        if (Aptitudes == null) {
             Aptitudes = getAptitude(); // Cache the items with their respective aptitudes, so it doesn't try to read the items every time (:
         }
 

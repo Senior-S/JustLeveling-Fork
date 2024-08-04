@@ -1,13 +1,7 @@
 package com.seniors.justlevelingfork.network;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
-import com.seniors.justlevelingfork.network.packet.client.AptitudeOverlayCP;
-import com.seniors.justlevelingfork.network.packet.client.PlayerMessagesCP;
-import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
-import com.seniors.justlevelingfork.network.packet.client.TitleOverlayCP;
-
-import java.util.Optional;
-
+import com.seniors.justlevelingfork.network.packet.client.*;
 import com.seniors.justlevelingfork.network.packet.common.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,6 +9,8 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
+
+import java.util.Optional;
 
 
 public class ServerNetworking {
@@ -25,6 +21,7 @@ public class ServerNetworking {
     public static void init() {
         instance = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(JustLevelingFork.MOD_ID, "network")).networkProtocolVersion(() -> PROTOCOL_VERSION).clientAcceptedVersions(PROTOCOL_VERSION::equals).serverAcceptedVersions(PROTOCOL_VERSION::equals).simpleChannel();
 
+        instance.registerMessage(packetId++, ConfigSyncCP.class, ConfigSyncCP::toBytes, ConfigSyncCP::new, ConfigSyncCP::handle);
         instance.registerMessage(packetId++, SyncAptitudeCapabilityCP.class, SyncAptitudeCapabilityCP::toBytes, SyncAptitudeCapabilityCP::new, SyncAptitudeCapabilityCP::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         instance.registerMessage(packetId++, PlayerMessagesCP.class, PlayerMessagesCP::toBytes, PlayerMessagesCP::new, PlayerMessagesCP::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         instance.registerMessage(packetId++, AptitudeOverlayCP.class, AptitudeOverlayCP::toBytes, AptitudeOverlayCP::new, AptitudeOverlayCP::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));

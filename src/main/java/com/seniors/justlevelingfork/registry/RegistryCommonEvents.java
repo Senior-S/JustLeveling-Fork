@@ -5,17 +5,13 @@ import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.common.capability.LazyAptitudeCapability;
 import com.seniors.justlevelingfork.common.command.AptitudeLevelCommand;
 import com.seniors.justlevelingfork.common.command.TitleCommand;
+import com.seniors.justlevelingfork.integration.TetraIntegration;
+import com.seniors.justlevelingfork.network.packet.client.ConfigSyncCP;
 import com.seniors.justlevelingfork.network.packet.client.PlayerMessagesCP;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
 import com.seniors.justlevelingfork.network.packet.common.CounterAttackSP;
 import com.seniors.justlevelingfork.registry.skills.ConvergenceSkill;
 import com.seniors.justlevelingfork.registry.skills.TreasureHunterSkill;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -56,7 +52,11 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.*;
 
 @Mod.EventBusSubscriber(modid = JustLevelingFork.MOD_ID)
 public class RegistryCommonEvents {
@@ -113,6 +113,7 @@ public class RegistryCommonEvents {
             Entity entity = event.getEntity();
             if (entity instanceof ServerPlayer serverPlayer) {
                 SyncAptitudeCapabilityCP.send(serverPlayer);
+                ConfigSyncCP.sendToPlayer(serverPlayer);
                 RegistryAttributes.modifierAttributes(serverPlayer);
                 RegistryTitles.syncTitles(serverPlayer);
             }
@@ -122,11 +123,25 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
         Player player = event.getEntity();
+        if(player.isCreative()) return;
         ItemStack item = event.getItemStack();
         Block block = event.getLevel().getBlockState(event.getPos()).getBlock();
         AptitudeCapability provider = AptitudeCapability.get(player);
 
-        if (!player.isCreative() && (!provider.canUseItem(player, item) || !provider.canUseBlock(player, block))) {
+        ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
+        if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
+            List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
+            if (!extractedTypes.isEmpty()) {
+                for (String tetraItem : extractedTypes) {
+                    if (!provider.canUseTetraItem(player, tetraItem)) {
+                        event.setCanceled(true);
+                        return;
+                    }
+                }
+            }
+        }
+
+        if ((!provider.canUseItem(player, location) || !provider.canUseBlock(player, block))) {
             event.setCanceled(true);
         }
     }
@@ -134,11 +149,25 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
+        if(player.isCreative()) return;
         ItemStack item = event.getItemStack();
         Block block = event.getLevel().getBlockState(event.getPos()).getBlock();
         AptitudeCapability provider = AptitudeCapability.get(player);
 
-        if (!player.isCreative() && (!provider.canUseItem(player, item) || !provider.canUseBlock(player, block))) {
+        ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
+        if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
+            List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
+            if (!extractedTypes.isEmpty()) {
+                for (String tetraItem : extractedTypes) {
+                    if (!provider.canUseTetraItem(player, tetraItem)) {
+                        event.setCanceled(true);
+                        return;
+                    }
+                }
+            }
+        }
+
+        if ((!provider.canUseItem(player, location) || !provider.canUseBlock(player, block))) {
             event.setCanceled(true);
         }
     }
@@ -146,10 +175,24 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getEntity();
+        if(player.isCreative()) return;
         ItemStack item = event.getItemStack();
         AptitudeCapability provider = AptitudeCapability.get(player);
 
-        if (!player.isCreative() && !provider.canUseItem(player, item)) {
+        ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
+        if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
+            List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
+            if (!extractedTypes.isEmpty()) {
+                for (String tetraItem : extractedTypes) {
+                    if (!provider.canUseTetraItem(player, tetraItem)) {
+                        event.setCanceled(true);
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (!provider.canUseItem(player, location)) {
             event.setCanceled(true);
         }
     }
@@ -157,14 +200,26 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickEntity(PlayerInteractEvent.EntityInteract event) {
         Player player = event.getEntity();
+        if(player.isCreative()) return;
         Entity entity = event.getTarget();
         ItemStack item = event.getItemStack();
+        AptitudeCapability provider = AptitudeCapability.get(player);
 
-        if (!player.isCreative()) {
-            AptitudeCapability provider = AptitudeCapability.get(player);
-            if (!provider.canUseEntity(player, entity) || !provider.canUseItem(player, item)) {
-                event.setCanceled(true);
+        ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
+        if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
+            List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
+            if (!extractedTypes.isEmpty()) {
+                for (String tetraItem : extractedTypes) {
+                    if (!provider.canUseTetraItem(player, tetraItem)) {
+                        event.setCanceled(true);
+                        return;
+                    }
+                }
             }
+        }
+
+        if (!provider.canUseEntity(player, entity) || !provider.canUseItem(player, location)) {
+            event.setCanceled(true);
         }
     }
 
