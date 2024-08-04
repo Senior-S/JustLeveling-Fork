@@ -48,11 +48,6 @@ public class JustLevelingClient {
             MinecraftForge.EVENT_BUS.register(new RegistryClientEvents());
             MinecraftForge.EVENT_BUS.register(new OverlayAptitudeGui());
             MinecraftForge.EVENT_BUS.register(new OverlayTitleGui());
-
-            if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig) {
-                JustLevelingFork.getLOGGER().info("Configuration not migrated yet, starting migration...");
-                JustLevelingFork.migrateOldConfig();
-            }
         }
 
         @SubscribeEvent

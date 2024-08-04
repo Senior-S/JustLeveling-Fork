@@ -11,14 +11,18 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +52,14 @@ public class JustLevelingFork {
 
         HandlerCommonConfig.HANDLER.load();
         HandlerLockItemsConfig.HANDLER.load();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, HandlerConfigCommon.SPEC, "just_leveling-common.toml");
+        if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig){
+            ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, HandlerConfigCommon.SPEC, "just_leveling-common.toml");
+        } else { // To avoid issues with players changing values on the old config file, let's delete the old file.
+            File oldConfigFile = FMLPaths.CONFIGDIR.get().resolve("just_leveling-common.toml").toFile();
+            if (oldConfigFile.exists()){
+                oldConfigFile.delete();
+            }
+        }
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, HandlerConfigClient.SPEC, "just_leveling-client.toml");
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new RegistryCommonEvents());
@@ -64,6 +75,20 @@ public class JustLevelingFork {
             event.add(type, RegistryAttributes.BREAK_SPEED.get());
             event.add(type, RegistryAttributes.PROJECTILE_DAMAGE.get());
             event.add(type, RegistryAttributes.BENEFICIAL_EFFECT.get());
+        }
+    }
+
+    @SubscribeEvent
+    public void onServerStarting(final ServerStartingEvent event){ // Let's migrate the config on server start to it runs on client and server.
+        File oldConfigFile = FMLPaths.CONFIGDIR.get().resolve("just_leveling-common.toml").toFile();
+
+        if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig && oldConfigFile.exists()) {
+            JustLevelingFork.getLOGGER().info("Configuration not migrated yet, starting migration...");
+            JustLevelingFork.migrateOldConfig();
+        }
+        else if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig && !oldConfigFile.exists()){
+            HandlerCommonConfig.HANDLER.instance().usingNewConfig = true;
+            HandlerCommonConfig.HANDLER.save();
         }
     }
 
