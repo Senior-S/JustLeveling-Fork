@@ -1,9 +1,7 @@
 package com.seniors.justlevelingfork.common.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
@@ -20,15 +18,13 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class AptitudeLevelCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register((Commands.literal("aptitudes")
-                .requires(source -> source.hasPermission(2)))
-                .then(Commands.argument("player", (ArgumentType) EntityArgument.player())
-                        .then(((RequiredArgumentBuilder) Commands.argument("aptitude", AptitudeArgument.getArgument())
-                                .then(Commands.literal("get")
-                                        .executes(source -> getAptitude(source, EntityArgument.getPlayer(source, "player"), AptitudeArgument.getAptitude(source, "aptitude")))))
-                                .then(Commands.literal("set")
-                                        .then(Commands.argument("lvl", (ArgumentType) IntegerArgumentType.integer(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel))
-                                                .executes(source -> setAptitude(source, EntityArgument.getPlayer(source, "player"), AptitudeArgument.getAptitude(source, "aptitude"), IntegerArgumentType.getInteger(source, "lvl"))))))));
+        dispatcher.register((Commands.literal("aptitudes").requires((source) -> {
+            return source.hasPermission(2);
+        })).then(Commands.argument("player", EntityArgument.player()).then((Commands.argument("aptitude", AptitudeArgument.getArgument()).then(Commands.literal("get").executes((source) -> {
+            return getAptitude(source, EntityArgument.getPlayer(source, "player"), AptitudeArgument.getAptitude(source, "aptitude"));
+        }))).then(Commands.literal("set").then(Commands.argument("lvl", IntegerArgumentType.integer(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel)).executes((source) -> {
+            return setAptitude(source, EntityArgument.getPlayer(source, "player"), AptitudeArgument.getAptitude(source, "aptitude"), IntegerArgumentType.getInteger(source, "lvl"));
+        }))))));
     }
 
 

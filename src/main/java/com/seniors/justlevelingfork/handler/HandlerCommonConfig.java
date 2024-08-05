@@ -27,6 +27,11 @@ public class HandlerCommonConfig {
     @SerialEntry(comment = "DON'T CHANGE THIS, REQUIRED TO AUTOMATICALLY TRY TO PORT LOCK ITEMS FROM THE OLD CONFIG.")
     @Boolean(formatter = Boolean.Formatter.TRUE_FALSE)
     public boolean usingNewConfig = false;
+
+    @SerialEntry(comment = "Should the mod automatically check for updates on load?")
+    @Boolean(formatter = Boolean.Formatter.ON_OFF)
+    public boolean checkForUpdates = true;
+
     // General options
     @SerialEntry(comment = "Aptitudes Max Level")
     @AutoGen(category = "common", group = "general")
@@ -40,10 +45,6 @@ public class HandlerCommonConfig {
     @AutoGen(category = "common", group = "general")
     @Boolean(formatter = Boolean.Formatter.ON_OFF)
     public boolean showPotionsHud = true;
-    @SerialEntry(comment = "If true, when populating the items a extra check will be made, if a item have a incorrect format it will log the line and continue loading without crashing")
-    @AutoGen(category = "common", group = "general")
-    @Boolean(formatter = Boolean.Formatter.ON_OFF)
-    public boolean logErrors = true;
     @SerialEntry(comment = "If true, when trying to craft a non unlocked item, it will close the crafting the menu")
     @AutoGen(category = "common", group = "general")
     @Boolean(formatter = Boolean.Formatter.ON_OFF)

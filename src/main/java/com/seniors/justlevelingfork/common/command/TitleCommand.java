@@ -1,13 +1,11 @@
 package com.seniors.justlevelingfork.common.command;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.context.CommandContext;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
 import com.seniors.justlevelingfork.registry.RegistryTitles;
 import com.seniors.justlevelingfork.registry.title.Title;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,11 +17,11 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class TitleCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) ((LiteralArgumentBuilder) Commands.literal("titles")
+        dispatcher.register((Commands.literal("titles")
                 .requires(source -> source.hasPermission(2)))
-                .then(Commands.argument("player", (ArgumentType) EntityArgument.player())
+                .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("title", TitleArgument.getArgument())
-                                .then(((LiteralArgumentBuilder) Commands.literal("set")
+                                .then((Commands.literal("set")
                                         .then(Commands.literal("true")
                                                 .executes(source -> setTitle(source, EntityArgument.getPlayer(source, "player"), TitleArgument.getTitle(source, "title"), true))))
                                         .then(Commands.literal("false")

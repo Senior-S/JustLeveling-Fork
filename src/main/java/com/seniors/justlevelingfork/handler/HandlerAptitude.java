@@ -66,6 +66,11 @@ public class HandlerAptitude {
         return aptitudeMap;
     }
 
+    public static void ForceRefresh(){
+        HandlerLockItemsConfig.HANDLER.load();
+        Aptitudes = getAptitude();
+    }
+
     public static List<Aptitudes> getValue(String key) {
         if (Aptitudes == null) {
             Aptitudes = getAptitude(); // Cache the items with their respective aptitudes, so it doesn't try to read the items every time (:

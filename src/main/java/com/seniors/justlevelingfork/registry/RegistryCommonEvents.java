@@ -4,8 +4,11 @@ import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.common.capability.LazyAptitudeCapability;
 import com.seniors.justlevelingfork.common.command.AptitudeLevelCommand;
+import com.seniors.justlevelingfork.common.command.AptitudesReloadCommand;
 import com.seniors.justlevelingfork.common.command.TitleCommand;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.integration.TetraIntegration;
+import com.seniors.justlevelingfork.network.packet.client.CommonConfigSyncCP;
 import com.seniors.justlevelingfork.network.packet.client.ConfigSyncCP;
 import com.seniors.justlevelingfork.network.packet.client.PlayerMessagesCP;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
@@ -13,6 +16,7 @@ import com.seniors.justlevelingfork.network.packet.common.CounterAttackSP;
 import com.seniors.justlevelingfork.registry.skills.ConvergenceSkill;
 import com.seniors.justlevelingfork.registry.skills.TreasureHunterSkill;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
@@ -65,6 +69,7 @@ public class RegistryCommonEvents {
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         AptitudeLevelCommand.register(event.getDispatcher());
         TitleCommand.register(event.getDispatcher());
+        AptitudesReloadCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
@@ -114,8 +119,19 @@ public class RegistryCommonEvents {
             if (entity instanceof ServerPlayer serverPlayer) {
                 SyncAptitudeCapabilityCP.send(serverPlayer);
                 ConfigSyncCP.sendToPlayer(serverPlayer);
+                CommonConfigSyncCP.sendToPlayer(serverPlayer);
                 RegistryAttributes.modifierAttributes(serverPlayer);
                 RegistryTitles.syncTitles(serverPlayer);
+
+                // If there's any update notify OP players about this.
+                if (HandlerCommonConfig.HANDLER.instance().checkForUpdates
+                        && JustLevelingFork.UpdatesAvailable.left) {
+                    if (serverPlayer.hasPermissions(2)) {
+                        Component component = Component.literal(String.format("[JustLevelingFork] Version %s is available, it's recommended to update!", JustLevelingFork.UpdatesAvailable.right));
+                        serverPlayer.sendSystemMessage(component);
+                    }
+                }
+
             }
         }
     }
@@ -123,7 +139,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
         Player player = event.getEntity();
-        if(player.isCreative()) return;
+        if (player.isCreative()) return;
         ItemStack item = event.getItemStack();
         Block block = event.getLevel().getBlockState(event.getPos()).getBlock();
         AptitudeCapability provider = AptitudeCapability.get(player);
@@ -149,7 +165,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
-        if(player.isCreative()) return;
+        if (player.isCreative()) return;
         ItemStack item = event.getItemStack();
         Block block = event.getLevel().getBlockState(event.getPos()).getBlock();
         AptitudeCapability provider = AptitudeCapability.get(player);
@@ -175,7 +191,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getEntity();
-        if(player.isCreative()) return;
+        if (player.isCreative()) return;
         ItemStack item = event.getItemStack();
         AptitudeCapability provider = AptitudeCapability.get(player);
 
@@ -200,7 +216,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickEntity(PlayerInteractEvent.EntityInteract event) {
         Player player = event.getEntity();
-        if(player.isCreative()) return;
+        if (player.isCreative()) return;
         Entity entity = event.getTarget();
         ItemStack item = event.getItemStack();
         AptitudeCapability provider = AptitudeCapability.get(player);

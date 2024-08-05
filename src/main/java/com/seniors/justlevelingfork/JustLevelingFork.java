@@ -14,17 +14,29 @@ import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Mod(JustLevelingFork.MOD_ID)
 public class JustLevelingFork {
@@ -32,11 +44,11 @@ public class JustLevelingFork {
     public static final String MOD_NAME = "just_leveling_fork";
 
     private static final Logger LOGGER = LogUtils.getLogger();
-
     public static Logger getLOGGER() {
         return LOGGER;
     }
 
+    public static MutablePair<Boolean, String> UpdatesAvailable = new MutablePair<>(false, "");;
     public JustLevelingFork() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::attributeSetup);
@@ -66,6 +78,44 @@ public class JustLevelingFork {
         if (HandlerCurios.isModLoaded())
             MinecraftForge.EVENT_BUS.register(new HandlerCurios());
         ServerNetworking.init();
+
+        // Check for new updates
+        if(HandlerCommonConfig.HANDLER.instance().checkForUpdates){
+            try {
+                String version = getLatestVersion();
+
+                Optional<IModInfo> optionalModInfo = ModList.get().getMods().stream().filter(c -> Objects.equals(c.getModId(), this.MOD_ID)).findFirst();
+
+                // Is this somehow isn't present then some really strange shit happen
+                if(optionalModInfo.isPresent()) {
+                    ModInfo modInfo = (ModInfo)optionalModInfo.get();
+                    if (!Objects.equals(modInfo.getVersion().toString(), version)){
+                        UpdatesAvailable.left = true;
+                        UpdatesAvailable.right = version;
+                        LOGGER.info(">> NEW VERSION AVAILABLE: {}", version);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+
+    }
+
+    @NotNull
+    private static String getLatestVersion() throws IOException {
+        URL u = new URL("https://raw.githubusercontent.com/Senior-S/JustLeveling-Fork/master/VERSION");
+        URLConnection conn = u.openConnection();
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(
+                        conn.getInputStream()));
+        StringBuilder buffer = new StringBuilder();
+        String inputLine;
+        while ((inputLine = in.readLine()) != null)
+            buffer.append(inputLine);
+        in.close();
+        return buffer.toString();
     }
 
     private void attributeSetup(EntityAttributeModificationEvent event) {
