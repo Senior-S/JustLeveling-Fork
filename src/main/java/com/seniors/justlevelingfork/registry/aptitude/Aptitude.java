@@ -92,6 +92,12 @@ public class Aptitude {
         int index = Math.floorDiv((fromLevel * textureListSize), size);
         index = index == textureListSize ? index - 1 : index;
 
+        // If you upgrade a skill to max level and then change the aptitudeMaxLevel option to a lower one
+        // This will throw an ArrayIndexOutOfBoundsException.
+        if (index >= 4) {
+            index = 3;
+        }
+
         return this.lockedTexture[index];
     }
 
@@ -101,6 +107,12 @@ public class Aptitude {
 
         int index = Math.floorDiv((getLevel() * textureListSize), size);
         index = index == textureListSize ? index - 1 : index;
+
+        // If you upgrade a skill to max level and then change the aptitudeMaxLevel option to a lower one
+        // This will throw an ArrayIndexOutOfBoundsException.
+        if (index >= 4) {
+            index = 3;
+        }
 
         return this.lockedTexture[index];
     }

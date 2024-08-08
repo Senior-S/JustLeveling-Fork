@@ -4,6 +4,8 @@ import com.mojang.logging.LogUtils;
 import com.seniors.justlevelingfork.config.EAptitude;
 import com.seniors.justlevelingfork.config.LockItem;
 import com.seniors.justlevelingfork.handler.*;
+import com.seniors.justlevelingfork.integration.IronsSpellsbooksIntegration;
+import com.seniors.justlevelingfork.integration.TacZIntegration;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import com.seniors.justlevelingfork.registry.*;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
@@ -11,9 +13,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -44,11 +44,13 @@ public class JustLevelingFork {
     public static final String MOD_NAME = "just_leveling_fork";
 
     private static final Logger LOGGER = LogUtils.getLogger();
+
     public static Logger getLOGGER() {
         return LOGGER;
     }
 
-    public static MutablePair<Boolean, String> UpdatesAvailable = new MutablePair<>(false, "");;
+    public static MutablePair<Boolean, String> UpdatesAvailable = new MutablePair<>(false, "");
+
     public JustLevelingFork() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::attributeSetup);
@@ -64,32 +66,35 @@ public class JustLevelingFork {
 
         HandlerCommonConfig.HANDLER.load();
         HandlerLockItemsConfig.HANDLER.load();
-        if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig){
+        if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig) {
             ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, HandlerConfigCommon.SPEC, "just_leveling-common.toml");
         } else { // To avoid issues with players changing values on the old config file, let's delete the old file.
             File oldConfigFile = FMLPaths.CONFIGDIR.get().resolve("just_leveling-common.toml").toFile();
-            if (oldConfigFile.exists()){
+            if (oldConfigFile.exists()) {
                 oldConfigFile.delete();
             }
         }
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, HandlerConfigClient.SPEC, "just_leveling-client.toml");
-        MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new RegistryCommonEvents());
         if (HandlerCurios.isModLoaded())
             MinecraftForge.EVENT_BUS.register(new HandlerCurios());
+        if (TacZIntegration.isModLoaded())
+            MinecraftForge.EVENT_BUS.register(new TacZIntegration());
+        if (IronsSpellsbooksIntegration.isModLoaded())
+            MinecraftForge.EVENT_BUS.register(new IronsSpellsbooksIntegration());
         ServerNetworking.init();
 
         // Check for new updates
-        if(HandlerCommonConfig.HANDLER.instance().checkForUpdates){
+        if (HandlerCommonConfig.HANDLER.instance().checkForUpdates) {
             try {
                 String version = getLatestVersion();
 
                 Optional<IModInfo> optionalModInfo = ModList.get().getMods().stream().filter(c -> Objects.equals(c.getModId(), this.MOD_ID)).findFirst();
 
                 // Is this somehow isn't present then some really strange shit happen
-                if(optionalModInfo.isPresent()) {
-                    ModInfo modInfo = (ModInfo)optionalModInfo.get();
-                    if (!Objects.equals(modInfo.getVersion().toString(), version)){
+                if (optionalModInfo.isPresent()) {
+                    ModInfo modInfo = (ModInfo) optionalModInfo.get();
+                    if (!Objects.equals(modInfo.getVersion().toString(), version)) {
                         UpdatesAvailable.left = true;
                         UpdatesAvailable.right = version;
                         LOGGER.info(">> NEW VERSION AVAILABLE: {}", version);
@@ -98,9 +103,7 @@ public class JustLevelingFork {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
         }
-
     }
 
     @NotNull
@@ -128,21 +131,7 @@ public class JustLevelingFork {
         }
     }
 
-    @SubscribeEvent
-    public void onServerStarting(final ServerStartingEvent event){ // Let's migrate the config on server start to it runs on client and server.
-        File oldConfigFile = FMLPaths.CONFIGDIR.get().resolve("just_leveling-common.toml").toFile();
-
-        if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig && oldConfigFile.exists()) {
-            JustLevelingFork.getLOGGER().info("Configuration not migrated yet, starting migration...");
-            JustLevelingFork.migrateOldConfig();
-        }
-        else if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig && !oldConfigFile.exists()){
-            HandlerCommonConfig.HANDLER.instance().usingNewConfig = true;
-            HandlerCommonConfig.HANDLER.save();
-        }
-    }
-
-    static void migrateOldConfig() {
+    public static void migrateOldConfig() {
         List<? extends String> configList = HandlerConfigCommon.lockItemList.get();
 
         List<LockItem> items = new ArrayList<>();
@@ -198,7 +187,7 @@ public class JustLevelingFork {
         }
 
         items.forEach((item) -> {
-            if (HandlerLockItemsConfig.HANDLER.instance().lockItemList.stream().noneMatch((lockItem -> lockItem.Item.equalsIgnoreCase(item.Item)))){
+            if (HandlerLockItemsConfig.HANDLER.instance().lockItemList.stream().noneMatch((lockItem -> lockItem.Item.equalsIgnoreCase(item.Item)))) {
                 HandlerLockItemsConfig.HANDLER.instance().lockItemList.add(item);
             }
         });

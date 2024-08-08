@@ -1,6 +1,7 @@
 package com.seniors.justlevelingfork.common.capability;
 
 import com.seniors.justlevelingfork.client.core.Aptitudes;
+import com.seniors.justlevelingfork.client.gui.OverlayAptitudeGui;
 import com.seniors.justlevelingfork.handler.HandlerAptitude;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.network.packet.client.AptitudeOverlayCP;
@@ -143,21 +144,6 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
         this.playerTitle = title.getName();
     }
 
-    public boolean isDroppable(Player player, ItemStack item) {
-        String itemName = ForgeRegistries.ITEMS.getKey(item.getItem()).toString();
-        List<Aptitudes> list = HandlerAptitude.getValue(itemName);
-        if (list != null) {
-            for (Aptitudes aptitude : list) {
-                if (getAptitudeLevel(aptitude.getAptitude()) < aptitude.getAptitudeLvl() && aptitude.isDroppable()) {
-                    if (player instanceof net.minecraft.server.level.ServerPlayer)
-                        AptitudeOverlayCP.send(player, aptitude.getResource());
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public boolean canUseItem(Player player, ItemStack item) {
         return canUse(player, Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem())));
     }
@@ -166,8 +152,13 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
         return canUse(player, resourceLocation);
     }
 
-    public boolean canUseTetraItem(Player player, String tetraItem){
-        return canUse(player, tetraItem);
+    // Required for locking PointBlank
+    public boolean canUseItemClient(ItemStack item) {
+        return canUseClient(Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem())));
+    }
+
+    public boolean canUseSpecificID(Player player, String specificID){
+        return canUse(player, specificID);
     }
 
     public boolean canUseBlock(Player player, Block block) {
@@ -192,13 +183,27 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
         return true;
     }
 
-    private boolean canUse(Player player, String tetraType) {
-        List<Aptitudes> aptitude = HandlerAptitude.getValue(tetraType);
+    // Required for locking PointBlank
+    private boolean canUseClient(ResourceLocation resource) {
+        List<Aptitudes> aptitude = HandlerAptitude.getValue(resource.toString());
+        if (aptitude != null) {
+            for (Aptitudes aptitudes : aptitude) {
+                if (getAptitudeLevel(aptitudes.getAptitude()) < aptitudes.getAptitudeLvl()) {
+                    OverlayAptitudeGui.showWarning(resource.toString());
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean canUse(Player player, String restrictionID) {
+        List<Aptitudes> aptitude = HandlerAptitude.getValue(restrictionID);
         if (aptitude != null) {
             for (Aptitudes aptitudes : aptitude) {
                 if (getAptitudeLevel(aptitudes.getAptitude()) < aptitudes.getAptitudeLvl()) {
                     if (player instanceof net.minecraft.server.level.ServerPlayer)
-                        AptitudeOverlayCP.send(player, tetraType);
+                        AptitudeOverlayCP.send(player, restrictionID);
                     return false;
                 }
             }

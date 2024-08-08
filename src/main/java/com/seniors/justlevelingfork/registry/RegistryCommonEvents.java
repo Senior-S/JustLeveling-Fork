@@ -52,18 +52,33 @@ import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.io.File;
 import java.util.*;
 
 @Mod.EventBusSubscriber(modid = JustLevelingFork.MOD_ID)
 public class RegistryCommonEvents {
+
+    @SubscribeEvent
+    public void onServerStarting(final ServerStartingEvent event) { // Let's migrate the config on server start to it runs on client and server.
+        File oldConfigFile = FMLPaths.CONFIGDIR.get().resolve("just_leveling-common.toml").toFile();
+        if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig && oldConfigFile.exists()) {
+            JustLevelingFork.getLOGGER().info("Configuration not migrated yet, starting migration...");
+            JustLevelingFork.migrateOldConfig();
+        } else if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig && !oldConfigFile.exists()) {
+            HandlerCommonConfig.HANDLER.instance().usingNewConfig = true;
+            HandlerCommonConfig.HANDLER.save();
+        }
+    }
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
@@ -149,7 +164,7 @@ public class RegistryCommonEvents {
             List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
             if (!extractedTypes.isEmpty()) {
                 for (String tetraItem : extractedTypes) {
-                    if (!provider.canUseTetraItem(player, tetraItem)) {
+                    if (!provider.canUseSpecificID(player, tetraItem)) {
                         event.setCanceled(true);
                         return;
                     }
@@ -175,7 +190,7 @@ public class RegistryCommonEvents {
             List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
             if (!extractedTypes.isEmpty()) {
                 for (String tetraItem : extractedTypes) {
-                    if (!provider.canUseTetraItem(player, tetraItem)) {
+                    if (!provider.canUseSpecificID(player, tetraItem)) {
                         event.setCanceled(true);
                         return;
                     }
@@ -200,7 +215,7 @@ public class RegistryCommonEvents {
             List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
             if (!extractedTypes.isEmpty()) {
                 for (String tetraItem : extractedTypes) {
-                    if (!provider.canUseTetraItem(player, tetraItem)) {
+                    if (!provider.canUseSpecificID(player, tetraItem)) {
                         event.setCanceled(true);
                         return;
                     }
@@ -226,7 +241,7 @@ public class RegistryCommonEvents {
             List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
             if (!extractedTypes.isEmpty()) {
                 for (String tetraItem : extractedTypes) {
-                    if (!provider.canUseTetraItem(player, tetraItem)) {
+                    if (!provider.canUseSpecificID(player, tetraItem)) {
                         event.setCanceled(true);
                         return;
                     }
@@ -260,21 +275,22 @@ public class RegistryCommonEvents {
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
         if (!player.isCreative()) {
-            player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {
-                AptitudeCapability provider = AptitudeCapability.get(player);
+            if (HandlerCommonConfig.HANDLER.instance().dropLockedItems) {
+                player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {
+                    AptitudeCapability provider = AptitudeCapability.get(player);
 
-                ItemStack hand = player.getMainHandItem();
-
-                ItemStack offHand = player.getOffhandItem();
-                if (provider.isDroppable(player, hand)) {
-                    player.drop(hand.copy(), false);
-                    hand.setCount(0);
-                }
-                if (provider.isDroppable(player, offHand)) {
-                    player.drop(offHand.copy(), false);
-                    offHand.setCount(0);
-                }
-            });
+                    ItemStack hand = player.getMainHandItem();
+                    ItemStack offHand = player.getOffhandItem();
+                    if (!provider.canUseItem(player, hand)) {
+                        player.drop(hand.copy(), false);
+                        hand.setCount(0);
+                    }
+                    if (!provider.canUseItem(player, offHand)) {
+                        player.drop(offHand.copy(), false);
+                        offHand.setCount(0);
+                    }
+                });
+            }
         }
         if (player instanceof ServerPlayer serverPlayer) {
             serverPlayer.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {

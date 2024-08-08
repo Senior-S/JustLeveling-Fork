@@ -50,6 +50,21 @@ public class HandlerCommonConfig {
     @Boolean(formatter = Boolean.Formatter.ON_OFF)
     public boolean closeCraftingMenu = true;
 
+    @SerialEntry(comment = "If true, locked items will be automatically dropped from player hands")
+    @AutoGen(category = "common", group = "general")
+    @Boolean(formatter = Boolean.Formatter.ON_OFF)
+    public boolean dropLockedItems = false;
+
+    @SerialEntry(comment = "TAC:Zero have a special id system, so if you wanna get the id to restrict you need to enable this and shoot.")
+    @AutoGen(category = "common", group = "general")
+    @Boolean(formatter = Boolean.Formatter.ON_OFF)
+    public boolean logTaczGunNames = false;
+
+    @SerialEntry(comment = "If Iron's Spells 'n Spellbooks is present, it will log the spells id's on cast required to restrict them.")
+    @AutoGen(category = "common", group = "general")
+    @Boolean(formatter = Boolean.Formatter.ON_OFF)
+    public boolean logSpellIds = false;
+
     // Passive options
     @SerialEntry(comment = "Attack Damage passive value at max level")
     @AutoGen(category = "common", group = "passives")

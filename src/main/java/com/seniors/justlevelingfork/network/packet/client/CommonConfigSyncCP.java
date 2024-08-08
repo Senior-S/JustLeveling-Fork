@@ -19,6 +19,7 @@ public class CommonConfigSyncCP {
     private final int aptitudeMaxLevel;
     private final int aptitudeFirstCostLevel;
     private final boolean closeCraftingMenu;
+    private final boolean dropLockedItems;
 
     // Passive
     private final float attackDamageValue;
@@ -73,6 +74,7 @@ public class CommonConfigSyncCP {
         aptitudeMaxLevel = HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel;
         aptitudeFirstCostLevel = HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel;
         closeCraftingMenu = HandlerCommonConfig.HANDLER.instance().closeCraftingMenu;
+        dropLockedItems = HandlerCommonConfig.HANDLER.instance().dropLockedItems;
         attackDamageValue = HandlerCommonConfig.HANDLER.instance().attackDamageValue;
         attackKnockbackValue = HandlerCommonConfig.HANDLER.instance().attackKnockbackValue;
         maxHealthValue = HandlerCommonConfig.HANDLER.instance().maxHealthValue;
@@ -125,6 +127,7 @@ public class CommonConfigSyncCP {
         aptitudeMaxLevel = buffer.readInt();
         aptitudeFirstCostLevel = buffer.readInt();
         closeCraftingMenu = buffer.readBoolean();
+        dropLockedItems = buffer.readBoolean();
         attackDamageValue = buffer.readFloat();
         attackKnockbackValue = buffer.readFloat();
         maxHealthValue = buffer.readFloat();
@@ -201,6 +204,7 @@ public class CommonConfigSyncCP {
         buffer.writeInt(this.aptitudeMaxLevel);
         buffer.writeInt(this.aptitudeFirstCostLevel);
         buffer.writeBoolean(this.closeCraftingMenu);
+        buffer.writeBoolean(this.dropLockedItems);
         buffer.writeFloat(this.attackDamageValue);
         buffer.writeFloat(this.attackKnockbackValue);
         buffer.writeFloat(this.maxHealthValue);
@@ -276,6 +280,7 @@ public class CommonConfigSyncCP {
                 HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel = this.aptitudeMaxLevel;
                 HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel = this.aptitudeFirstCostLevel;
                 HandlerCommonConfig.HANDLER.instance().closeCraftingMenu = this.closeCraftingMenu;
+                HandlerCommonConfig.HANDLER.instance().dropLockedItems = this.dropLockedItems;
                 HandlerCommonConfig.HANDLER.instance().attackDamageValue = this.attackDamageValue;
                 HandlerCommonConfig.HANDLER.instance().attackKnockbackValue = this.attackKnockbackValue;
                 HandlerCommonConfig.HANDLER.instance().maxHealthValue = this.maxHealthValue;

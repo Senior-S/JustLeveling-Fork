@@ -5,6 +5,7 @@ import com.seniors.justlevelingfork.client.gui.OverlayAptitudeGui;
 import com.seniors.justlevelingfork.client.gui.OverlayTitleGui;
 import com.seniors.justlevelingfork.client.screen.JustLevelingScreen;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import com.seniors.justlevelingfork.integration.CrayfishGunModIntegration;
 import com.seniors.justlevelingfork.registry.RegistryClientEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -48,6 +49,8 @@ public class JustLevelingClient {
             MinecraftForge.EVENT_BUS.register(new RegistryClientEvents());
             MinecraftForge.EVENT_BUS.register(new OverlayAptitudeGui());
             MinecraftForge.EVENT_BUS.register(new OverlayTitleGui());
+            if (CrayfishGunModIntegration.isModLoaded())
+                MinecraftForge.EVENT_BUS.register(new CrayfishGunModIntegration());
         }
 
         @SubscribeEvent

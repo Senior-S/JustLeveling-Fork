@@ -134,7 +134,6 @@ public class JustLevelingScreen extends Screen {
             lockTitles.add(titles);
         }
 
-
         unlockTitles.sort(new SortTitleByName());
         lockTitles.sort(new SortTitleByName());
         List<Title> sorted = new ArrayList<>();
@@ -151,20 +150,22 @@ public class JustLevelingScreen extends Screen {
 
         int maxSize = 9;
         int size = Math.min(searchTitleList.size(), maxSize);
-        if (this.scrollDropDown > searchTitleList.size() - maxSize)
-            this.scrollDropDown = searchTitleList.size() - maxSize;
+        if (this.scrollDropDown > (searchTitleList.size() - maxSize))
+            this.scrollDropDown = (searchTitleList.size() - maxSize);
         if (this.scrollDropDown < 0) this.scrollDropDown = 0;
 
         matrixStack.pose().pushPose();
-        for (int i = this.scrollDropDown; i < this.scrollDropDown + size; i++) {
-            Title title = searchTitleList.get(i);
-            boolean checkTitle = (title == RegistryTitles.getTitle(AptitudeCapability.get().getPlayerTitle()));
-            int color = title.getRequirement() ? (checkTitle ? Color.GREEN.getRGB() : Color.WHITE.getRGB()) : Color.DARK_GRAY.getRGB();
-            matrixStack.drawString(client.font, Component.translatable(title.getKey()), x + 10, y + 34 + 12 * (i - this.scrollDropDown), color, false);
 
-            if (Utils.checkMouse(x + 8, y + 33 + 12 * (i - this.scrollDropDown), mouseX, mouseY, 142, 10) && !this.scrollingDropDown) {
+        int scrollX;
+        int scrollY;
+        for(scrollX = this.scrollDropDown; scrollX < this.scrollDropDown + size; ++scrollX) {
+            Title title = (Title)searchTitleList.get(scrollX);
+            boolean checkTitle = title == RegistryTitles.getTitle(AptitudeCapability.get().getPlayerTitle());
+            scrollY = title.getRequirement() ? (checkTitle ? Color.GREEN.getRGB() : Color.WHITE.getRGB()) : Color.DARK_GRAY.getRGB();
+            matrixStack.drawString(client.font, Component.translatable(title.getKey()), x + 10, y + 34 + 12 * (scrollX - this.scrollDropDown), scrollY, false);
+            if (Utils.checkMouse(x + 8, y + 33 + 12 * (scrollX - this.scrollDropDown), mouseX, mouseY, 142, 10) && !this.scrollingDropDown) {
                 RenderSystem.enableBlend();
-                matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], x + 8, y + 33 + 12 * (i - this.scrollDropDown), 0, 166, 142, 10);
+                matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], x + 8, y + 33 + 12 * (scrollX - this.scrollDropDown), 0, 166, 142, 10);
                 Utils.drawToolTipList(matrixStack, title.tooltip(), mouseX, mouseY);
                 this.isMouseCheck = true;
                 if (this.checkMouse) {
@@ -172,6 +173,7 @@ public class JustLevelingScreen extends Screen {
                         SetPlayerTitleSP.send(title);
                         Utils.playSound();
                     }
+
                     this.checkMouse = false;
                 }
             }
@@ -185,28 +187,28 @@ public class JustLevelingScreen extends Screen {
                 this.checkMouse = false;
             }
         }
+
         if (this.scrollingDropDown) {
             this.scrollYOff = mouseY - 8;
             this.scrollYOff = Mth.clamp(this.scrollYOff, y + 33, y + 33 + 106 - 15);
-            this.scrollDropDown = Math.round((searchTitleList.size() - maxSize) / 91.0F * (this.scrollYOff - y + 33));
+            this.scrollDropDown = Math.round((float)(searchTitleList.size() - maxSize) / 91.0F * (float)(this.scrollYOff - (y + 33)));
         }
 
-        int scrollX = x + 156;
-        double scrollYF = (91.0F / (searchTitleList.size() - maxSize) * this.scrollDropDown);
-        int scrollY = (int) ((y + 33) + scrollYF);
+        scrollX = x + 156;
+        double scrollYF = (91.0F / (float)(searchTitleList.size() - maxSize) * (float)this.scrollDropDown);
+        scrollY = (int)((double)(y + 33) + scrollYF);
         matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], scrollX, scrollY, 176, 0, 12, 15);
-
         matrixStack.blit(HandlerResources.SKILL_PAGE[1], x + 16, y + 144, 30, 167, 11, 11);
         if (Utils.checkMouse(x + 16, y + 144, mouseX, mouseY, 11, 11) && !this.scrollingDropDown) {
             matrixStack.blit(HandlerResources.SKILL_PAGE[1], x + 16, y + 144, 30, 179, 11, 11);
-            List<Component> tooltipList = new ArrayList<>();
+            List<Component> tooltipList = new ArrayList();
             tooltipList.add(Component.translatable("tooltip.sort.button.mod_names").withStyle(ChatFormatting.DARK_AQUA));
-            tooltipList.add(Component.translatable("tooltip.sort.button.true").withStyle(HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
-            tooltipList.add(Component.translatable("tooltip.sort.button.false").withStyle(!HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
+            tooltipList.add(Component.translatable("tooltip.sort.button.true").withStyle((Boolean)HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
+            tooltipList.add(Component.translatable("tooltip.sort.button.false").withStyle(!(Boolean)HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
             Utils.drawToolTipList(matrixStack, tooltipList, mouseX, mouseY);
             this.isMouseCheck = true;
             if (this.checkMouse) {
-                HandlerConfigClient.showTitleModName.set(!HandlerConfigClient.showTitleModName.get());
+                HandlerConfigClient.showTitleModName.set(!(Boolean)HandlerConfigClient.showTitleModName.get());
                 Utils.playSound();
                 this.checkMouse = false;
             }
@@ -214,7 +216,6 @@ public class JustLevelingScreen extends Screen {
 
         int backIconX = x + 141;
         int backIconY = y + 144;
-
         matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], backIconX, backIconY, 204, 0, 18, 10);
         if (Utils.checkMouse(backIconX, backIconY, mouseX, mouseY, 18, 10) && !this.scrollingDropDown) {
             matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], backIconX, backIconY, 222, 0, 18, 10);
@@ -227,6 +228,7 @@ public class JustLevelingScreen extends Screen {
                 this.checkMouse = false;
             }
         }
+
         matrixStack.pose().popPose();
     }
 

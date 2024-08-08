@@ -15,12 +15,18 @@
  "yacl3.config.justlevelingfork:config.showPotionsHud": "Show potions hud",
  "yacl3.config.justlevelingfork:config.logErrors": "Log errors",
  "yacl3.config.justlevelingfork:config.closeCraftingMenu": "Close crafting menu",
+ "yacl3.config.justlevelingfork:config.dropLockedItems": "Drop locked items",
+ "yacl3.config.justlevelingfork:config.logTaczGunNames": "Log TAC:Zero gun names",
+ "yacl3.config.justlevelingfork:config.logSpellIds": "Log Spell ids",
 
  "yacl3.config.justlevelingfork:config.aptitudeMaxLevel.desc": "Aptitudes max level",
  "yacl3.config.justlevelingfork:config.aptitudeFirstCostLevel.desc": "First aptitudes level cost",
  "yacl3.config.justlevelingfork:config.showPotionsHud.desc": "Show potions overlay over skills",
  "yacl3.config.justlevelingfork:config.logErrors.desc": "If true, when populating the items a extra check will be made, if a item have a incorrect format it will log the line and continue loading without crashing",
  "yacl3.config.justlevelingfork:config.closeCraftingMenu.desc": "If true, when trying to craft a non unlocked item, it will close the crafting the menu",
+ "yacl3.config.justlevelingfork:config.dropLockedItems.desc": "If true, locked items will be automatically dropped from player hands",
+ "yacl3.config.justlevelingfork:config.logTaczGunNames.desc": "TAC:Zero have a special id system, so if you wanna get the id to restrict you need to enable this and shoot.",
+ "yacl3.config.justlevelingfork:config.logSpellIds.desc": "Iron's Spell 'n Spellbooks have a unique spell id for each spell, so if you wanna get the id to restrict you need to enable this and cast the spell.",
 
  "yacl3.config.justlevelingfork:config.attackDamageValue" : "Attack Damage Value",
  "yacl3.config.justlevelingfork:config.attackKnockbackValue" : "Attack Knockback Value",
@@ -248,7 +254,7 @@
  "skill.justlevelingfork.limit_breaker.description" : "You have a %s chance to deals %s when you attack a entity.",
 
  "title.justlevelingfork.titleless" : "Titleless",
- "title.justlevelingfork.rockie" : "Rockie",
+ "title.justlevelingfork.rockie" : "Rookie",
  "title.justlevelingfork.fighter" : "Fighter",
  "title.justlevelingfork.fighter_great" : "Great Fighter",
  "title.justlevelingfork.warrior" : "Warrior",

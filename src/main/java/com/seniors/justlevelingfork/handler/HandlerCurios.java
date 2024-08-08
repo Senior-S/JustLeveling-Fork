@@ -23,18 +23,15 @@ public class HandlerCurios {
                 ItemStack item2 = event.getFrom();
 
                 AptitudeCapability aptitudeCapability = AptitudeCapability.get(player);
-                if (aptitudeCapability.isDroppable(player, item1)) {
+                if (!aptitudeCapability.canUseItem(player, item1)) {
                     player.drop(item1.copy(), false);
                     item1.setCount(0);
                 }
-                if (aptitudeCapability.isDroppable(player, item2)) {
+                if (!aptitudeCapability.canUseItem(player, item2)) {
                     player.drop(item2.copy(), false);
                     item2.setCount(0);
                 }
             }
         }
-
     }
 }
-
-

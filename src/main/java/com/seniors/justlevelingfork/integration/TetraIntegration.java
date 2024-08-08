@@ -15,21 +15,6 @@ public class TetraIntegration {
     private static final String _prefix = "tetra*tier*";
     public static final List<String> TetraItems = List.of("tetra:modular_double", "tetra:modular_sword");
 
-    public static void Testing(ItemStack item) {
-        if (item.getItem() instanceof se.mickelus.tetra.items.modular.ItemModularHandheld modularHandheld) {
-            Set<ToolAction> toolActions = modularHandheld.getToolActions(item);
-
-            JustLevelingFork.getLOGGER().info(">> toolActions count: {}", toolActions.size());
-
-            toolActions.forEach(c -> {
-                int i = modularHandheld.getHarvestTier(item, c);
-                Tier tier = se.mickelus.tetra.util.TierHelper.getTier(i);
-
-                JustLevelingFork.getLOGGER().info(">> name: {} --- tierLevel: {} --- tier: {}", c.name(), i, tier.toString());
-            });
-        }
-    }
-
     /**
      * Get a list of formatted modules.
      *
