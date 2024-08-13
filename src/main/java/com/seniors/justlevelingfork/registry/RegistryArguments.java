@@ -19,7 +19,6 @@ public class RegistryArguments {
 
     public static final RegistryObject<SingletonArgumentInfo<TitleArgument>> TITLE_ARGUMENT = REGISTER.register("title", () -> ArgumentTypeInfos.registerByClass(TitleArgument.class, SingletonArgumentInfo.contextFree(TitleArgument::getArgument)));
 
-
     public static void load(IEventBus eventBus) {
         REGISTER.register(eventBus);
     }

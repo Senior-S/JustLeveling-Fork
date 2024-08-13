@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * Client packet to update static config options that needs to match server.
+ * Must only be sent on player join.
+ */
 public class CommonConfigSyncCP {
     private final int aptitudeMaxLevel;
     private final int aptitudeFirstCostLevel;

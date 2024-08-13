@@ -2,7 +2,7 @@ package com.seniors.justlevelingfork.handler;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.Aptitudes;
-import com.seniors.justlevelingfork.config.LockItem;
+import com.seniors.justlevelingfork.config.models.LockItem;
 import com.seniors.justlevelingfork.registry.RegistryAptitudes;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 

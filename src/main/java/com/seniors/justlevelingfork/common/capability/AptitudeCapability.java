@@ -104,6 +104,10 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
         this.aptitudeLevel.put(aptitude.getName(), lvl);
     }
 
+    public int getGlobalLevel(){
+        return this.aptitudeLevel.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
     public void addAptitudeLevel(Aptitude aptitude, int addLvl) {
         this.aptitudeLevel.put(aptitude.getName(), Math.min(this.aptitudeLevel.get(aptitude.getName()) + addLvl, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel));
     }

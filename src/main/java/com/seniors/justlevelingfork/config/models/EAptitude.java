@@ -1,4 +1,5 @@
-package com.seniors.justlevelingfork.config;
+package com.seniors.justlevelingfork.config.models;
+
 
 public enum EAptitude {
     Strength,

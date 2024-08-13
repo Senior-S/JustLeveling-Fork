@@ -18,6 +18,7 @@
  "yacl3.config.justlevelingfork:config.dropLockedItems": "Drop locked items",
  "yacl3.config.justlevelingfork:config.logTaczGunNames": "Log TAC:Zero gun names",
  "yacl3.config.justlevelingfork:config.logSpellIds": "Log Spell ids",
+ "yacl3.config.justlevelingfork:config.playersMaxGlobalLevel": "Players max global level",
 
  "yacl3.config.justlevelingfork:config.aptitudeMaxLevel.desc": "Aptitudes max level",
  "yacl3.config.justlevelingfork:config.aptitudeFirstCostLevel.desc": "First aptitudes level cost",
@@ -27,6 +28,7 @@
  "yacl3.config.justlevelingfork:config.dropLockedItems.desc": "If true, locked items will be automatically dropped from player hands",
  "yacl3.config.justlevelingfork:config.logTaczGunNames.desc": "TAC:Zero have a special id system, so if you wanna get the id to restrict you need to enable this and shoot.",
  "yacl3.config.justlevelingfork:config.logSpellIds.desc": "Iron's Spell 'n Spellbooks have a unique spell id for each spell, so if you wanna get the id to restrict you need to enable this and cast the spell.",
+ "yacl3.config.justlevelingfork:config.playersMaxGlobalLevel.desc": "Global max level, the global level is calculated summing all aptitudes level, so if this is set to 32 players will be able to only maximize 1 skill.",
 
  "yacl3.config.justlevelingfork:config.attackDamageValue" : "Attack Damage Value",
  "yacl3.config.justlevelingfork:config.attackKnockbackValue" : "Attack Knockback Value",
@@ -97,6 +99,7 @@
  "commands.message.title.unset" : "The player %s now no longer has the Title %s",
 
  "overlay.title.you_gain_a_title" : "You gain the Title:",
+ "overlay.title.format" : "<%s>",
  "overlay.aptitude.message" : "You can't use this item yet! You need:",
  "overlay.skill.justlevelingfork.lucky_drop" : "§a[Lucky Drop] §ryou gained x%s drop",
  "overlay.skill.justlevelingfork.critical_roll_1" : "§c[Critical Roll Dice] §ryou gained a 1",
@@ -139,6 +142,7 @@
 
  "tooltip.aptitude.level_up" : "Spent %s levels (%s xp) to level up %s.",
  "tooltip.aptitude.max_level" : "You achieve the max %s level.",
+ "tooltip.aptitude.global_max_level": "Global max aptitude level of %s reached.",
 
  "tooltip.passive.title" : "Passive - ",
  "tooltip.skill.title" : "Skill - ",
@@ -254,7 +258,7 @@
  "skill.justlevelingfork.limit_breaker.description" : "You have a %s chance to deals %s when you attack a entity.",
 
  "title.justlevelingfork.titleless" : "Titleless",
- "title.justlevelingfork.rockie" : "Rookie",
+ "title.justlevelingfork.rookie" : "Rookie",
  "title.justlevelingfork.fighter" : "Fighter",
  "title.justlevelingfork.fighter_great" : "Great Fighter",
  "title.justlevelingfork.warrior" : "Warrior",
@@ -297,7 +301,7 @@
 
  "title.justlevelingfork.requirement_description" : "Requirement: ",
  "title.justlevelingfork.titleless.description" : "Nothing, titleless will not show a Title to others.",
- "title.justlevelingfork.rockie.description" : "Join the World.",
+ "title.justlevelingfork.rookie.description" : "Join the World.",
  "title.justlevelingfork.fighter.description" : "Level up Strength to 16.",
  "title.justlevelingfork.fighter_great.description" : "Level up Strength to 32.",
  "title.justlevelingfork.warrior.description" : "Level up Constitution to 16.",

@@ -426,9 +426,17 @@ public class JustLevelingScreen extends Screen {
         int j = (aptitudeLevel < HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel) ? (this.b ? 6 : 0) : 12;
 
         matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], x + 153, y + 14, 177 + j, 1, 6, 6);
-        boolean canLevelUpAptitude = (client.player.isCreative() || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= client.player.totalExperience);
+        boolean canLevelUpAptitude = (client.player.isCreative()
+                || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= client.player.totalExperience);
         if (Utils.checkMouse(x + 149, y + 10, mouseX, mouseY, 14, 14)) {
-            if (aptitudeLevel < HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel) {
+            if(AptitudeCapability.get(client.player).getGlobalLevel() >= HandlerCommonConfig.HANDLER.instance().playersMaxGlobalLevel){
+                Utils.drawToolTip(matrixStack,
+                        Component.translatable("tooltip.aptitude.global_max_level", HandlerCommonConfig.HANDLER.instance().playersMaxGlobalLevel)
+                                .withStyle(ChatFormatting.RED),
+                        mouseX,
+                        mouseY);
+            }
+            else if (aptitudeLevel < HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel) {
                 ChatFormatting color = canLevelUpAptitude ? ChatFormatting.GREEN : ChatFormatting.RED;
                 Utils.drawToolTip(matrixStack, Component.translatable("tooltip.aptitude.level_up", Component.literal(String.valueOf(AptitudeLevelUpSP.requiredLevels(aptitudeLevel))).withStyle(color),
                         Component.literal(String.valueOf(AptitudeLevelUpSP.requiredPoints(aptitudeLevel))).withStyle(color),

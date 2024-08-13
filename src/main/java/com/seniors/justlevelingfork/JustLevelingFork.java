@@ -1,9 +1,13 @@
 package com.seniors.justlevelingfork;
 
 import com.mojang.logging.LogUtils;
-import com.seniors.justlevelingfork.config.EAptitude;
-import com.seniors.justlevelingfork.config.LockItem;
-import com.seniors.justlevelingfork.handler.*;
+import com.seniors.justlevelingfork.config.Configuration;
+import com.seniors.justlevelingfork.config.models.EAptitude;
+import com.seniors.justlevelingfork.config.models.LockItem;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
+import com.seniors.justlevelingfork.handler.HandlerCurios;
+import com.seniors.justlevelingfork.handler.HandlerLockItemsConfig;
 import com.seniors.justlevelingfork.integration.IronsSpellsbooksIntegration;
 import com.seniors.justlevelingfork.integration.TacZIntegration;
 import com.seniors.justlevelingfork.network.ServerNetworking;
@@ -15,11 +19,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.commons.lang3.text.WordUtils;
@@ -28,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -55,26 +55,17 @@ public class JustLevelingFork {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::attributeSetup);
 
+        Configuration.Init();
+
         RegistryItems.load(eventBus);
         RegistryAptitudes.load(eventBus);
         RegistryPassives.load(eventBus);
         RegistrySkills.load(eventBus);
-        RegistryTitles.load(eventBus);
         RegistryAttributes.load(eventBus);
         RegistrySounds.load(eventBus);
         RegistryArguments.load(eventBus);
+        RegistryTitles.load(eventBus);
 
-        HandlerCommonConfig.HANDLER.load();
-        HandlerLockItemsConfig.HANDLER.load();
-        if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig) {
-            ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, HandlerConfigCommon.SPEC, "just_leveling-common.toml");
-        } else { // To avoid issues with players changing values on the old config file, let's delete the old file.
-            File oldConfigFile = FMLPaths.CONFIGDIR.get().resolve("just_leveling-common.toml").toFile();
-            if (oldConfigFile.exists()) {
-                oldConfigFile.delete();
-            }
-        }
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, HandlerConfigClient.SPEC, "just_leveling-client.toml");
         MinecraftForge.EVENT_BUS.register(new RegistryCommonEvents());
         if (HandlerCurios.isModLoaded())
             MinecraftForge.EVENT_BUS.register(new HandlerCurios());

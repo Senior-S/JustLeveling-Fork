@@ -92,6 +92,10 @@ public class Aptitude {
         int index = Math.floorDiv((fromLevel * textureListSize), size);
         index = index == textureListSize ? index - 1 : index;
 
+        if (getLevel() > size){
+            AptitudeCapability.get().setAptitudeLevel(this, size);
+        }
+
         // If you upgrade a skill to max level and then change the aptitudeMaxLevel option to a lower one
         // This will throw an ArrayIndexOutOfBoundsException.
         if (index >= 4) {
@@ -104,6 +108,10 @@ public class Aptitude {
     public ResourceLocation getLockedTexture() {
         int size = HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel;
         int textureListSize = this.lockedTexture.length;
+
+        if (getLevel() > size){
+            AptitudeCapability.get().setAptitudeLevel(this, size);
+        }
 
         int index = Math.floorDiv((getLevel() * textureListSize), size);
         index = index == textureListSize ? index - 1 : index;

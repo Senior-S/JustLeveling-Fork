@@ -1,10 +1,10 @@
 package com.seniors.justlevelingfork.network.packet.client;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
-import com.seniors.justlevelingfork.config.models.LockItem;
-import com.seniors.justlevelingfork.handler.HandlerAptitude;
-import com.seniors.justlevelingfork.handler.HandlerLockItemsConfig;
+import com.seniors.justlevelingfork.config.models.TitleModel;
+import com.seniors.justlevelingfork.handler.HandlerTitlesConfig;
 import com.seniors.justlevelingfork.network.ServerNetworking;
+import com.seniors.justlevelingfork.registry.RegistryTitles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
@@ -17,18 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-/**
- * Client packet to notify client of locked items of the serer.
- * Must only be sent on player join.
- */
-public class ConfigSyncCP {
+public class TitlesSyncCP {
     private final byte[] stringListBytes;
 
-    public ConfigSyncCP(byte[] array) {
+    public TitlesSyncCP(byte[] array) {
         stringListBytes = array;
     }
 
-    public ConfigSyncCP(FriendlyByteBuf buffer) {
+    public TitlesSyncCP(FriendlyByteBuf buffer) {
         int readableBytes = buffer.readableBytes();
         stringListBytes = new byte[readableBytes];
         buffer.readBytes(stringListBytes);
@@ -44,17 +40,22 @@ public class ConfigSyncCP {
         context.enqueueWork(() -> {
             LocalPlayer localPlayer = (Minecraft.getInstance()).player;
             if(localPlayer != null){
-                List<String> lockItemsStrings = new ArrayList<>();
+                List<String> titlesStringList = new ArrayList<>();
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(stringListBytes);
                 try (ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
-                    lockItemsStrings = (List<String>) objectInputStream.readObject();
+                    titlesStringList = (List<String>) objectInputStream.readObject();
                 } catch (IOException | ClassNotFoundException e) {
                     JustLevelingFork.getLOGGER().error(">> Error writing config to the client. Exception: {}", e.getMessage());
                 }
-                List<LockItem> lockItemList = new ArrayList<>();
-                lockItemsStrings.forEach(c -> lockItemList.add(LockItem.getLockItemFromString(c, new LockItem())));
+                List<TitleModel> titleModelList = new ArrayList<>();
+                titlesStringList.forEach(c -> {
+                    TitleModel titleModel = new TitleModel(c);
+                    titleModelList.add(titleModel);
+                    titleModel.Registry(RegistryTitles.TITLES);
+                });
 
-                HandlerAptitude.UpdateLockItems(lockItemList);
+                HandlerTitlesConfig.HANDLER.instance().titleList = titleModelList;
+                HandlerTitlesConfig.HANDLER.save();
             }
         });
         context.setPacketHandled(true);
@@ -63,15 +64,15 @@ public class ConfigSyncCP {
     public static void sendToPlayer(Player player) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         List<String> stringList = new ArrayList<>();
-        for (LockItem lockItem : HandlerLockItemsConfig.HANDLER.instance().lockItemList) {
-            stringList.add(lockItem.toString());
+        for (TitleModel titleModel : HandlerTitlesConfig.HANDLER.instance().titleList) {
+            stringList.add(titleModel.toString());
         }
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
             objectOutputStream.writeObject(stringList);
         } catch (IOException e) {
-            JustLevelingFork.getLOGGER().error(">> Error sending configuration to the client. Exception: {}", e.getMessage());
+            JustLevelingFork.getLOGGER().error(">> Error sending titles to the client. Exception: {}", e.getMessage());
         }
 
-        ServerNetworking.sendToPlayer(new ConfigSyncCP(byteArrayOutputStream.toByteArray()), (ServerPlayer) player);
+        ServerNetworking.sendToPlayer(new TitlesSyncCP(byteArrayOutputStream.toByteArray()), (ServerPlayer) player);
     }
 }

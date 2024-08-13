@@ -2,6 +2,7 @@ package com.seniors.justlevelingfork.handler;
 
 import com.google.gson.GsonBuilder;
 import com.seniors.justlevelingfork.JustLevelingFork;
+import com.seniors.justlevelingfork.config.Configuration;
 import com.seniors.justlevelingfork.config.StringListGroup;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
@@ -9,7 +10,6 @@ import dev.isxander.yacl3.config.v2.api.autogen.Boolean;
 import dev.isxander.yacl3.config.v2.api.autogen.*;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,7 @@ public class HandlerCommonConfig {
     public static ConfigClassHandler<HandlerCommonConfig> HANDLER = ConfigClassHandler.createBuilder(HandlerCommonConfig.class)
             .id(new ResourceLocation(JustLevelingFork.MOD_ID, "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
-                    .setPath(FMLPaths.CONFIGDIR.get().resolve("justleveling-fork.common.json5"))
+                    .setPath(Configuration.getAbsoluteDirectory().resolve("justleveling-fork.common.json5"))
                     .appendGsonBuilder(GsonBuilder::setPrettyPrinting)
                     .setJson5(true)
                     .build())
@@ -37,6 +37,12 @@ public class HandlerCommonConfig {
     @AutoGen(category = "common", group = "general")
     @IntField(min = 2, max = 1000)
     public int aptitudeMaxLevel = 32;
+
+    @SerialEntry(comment = "Global max level, the global level is calculated summing all aptitudes level, so if this is set to 32 players will be able to only maximize 1 skill.")
+    @AutoGen(category = "common", group = "general")
+    @IntField(min = 32, max = 99999)
+    public int playersMaxGlobalLevel = 256;
+
     @SerialEntry(comment = "First aptitudes level cost")
     @AutoGen(category = "common", group = "general")
     @IntField(min = 1, max = 1000)
@@ -71,80 +77,128 @@ public class HandlerCommonConfig {
     @FloatField(min = 0.0f, max = 10000.0f)
     public float attackDamageValue = 1.5f;
 
+    @SerialEntry(comment = "Attack damage passive levels. Don't modify the length of the array!")
+    public int[] attackPassiveLevels = new int[]{5, 8, 11, 14, 17, 20, 23, 26, 29, 32};
+
     @SerialEntry(comment = "Attack Knockback passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float attackKnockbackValue = 0.4f;
+
+    @SerialEntry(comment = "Attack knockback passive levels. Don't modify the length of the array!")
+    public int[] attackKnockbackPassiveLevels = new int[]{8, 14, 20, 26, 32};
 
     @SerialEntry(comment = "Max Health passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float maxHealthValue = 20.0f;
 
+    @SerialEntry(comment = "Max health passive levels. Don't modify the length of the array!")
+    public int[] maxHealthPassiveLevels = new int[]{5, 8, 11, 14, 17, 20, 23, 26, 29, 32};
+
     @SerialEntry(comment = "Knockback Resistance passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float knockbackResistanceValue = 0.5f;
+
+    @SerialEntry(comment = "Knockback resistance passive levels. Don't modify the length of the array!")
+    public int[] knockbackResistancePassiveLevels = new int[]{8, 14, 20, 26, 32};
 
     @SerialEntry(comment = "Movement Speed passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float movementSpeedValue = 0.05f;
 
+    @SerialEntry(comment = "Movement speed passive levels. Don't modify the length of the array!")
+    public int[] movementSpeedPassiveLevels = new int[]{8, 14, 20, 26, 32};
+
     @SerialEntry(comment = "Projectile Damage passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float projectileDamageValue = 5.0f;
+
+    @SerialEntry(comment = "Projectile damage passive levels. Don't modify the length of the array!")
+    public int[] projectileDamagePassiveLevels = new int[]{8, 14, 20, 26, 32};
 
     @SerialEntry(comment = "Armor passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float armorValue = 4.0f;
 
+    @SerialEntry(comment = "Armor passive levels. Don't modify the length of the array!")
+    public int[] armorPassiveLevels = new int[]{8, 14, 20, 26, 32};
+
     @SerialEntry(comment = "Armor Toughness passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float armorToughnessValue = 1.0f;
+
+    @SerialEntry(comment = "Armor toughness passive levels. Don't modify the length of the array!")
+    public int[] armorToughnessPassiveLevels = new int[]{8, 14, 20, 26, 32};
 
     @SerialEntry(comment = "Attack Speed passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float attackSpeedValue = 0.4f;
 
+    @SerialEntry(comment = "Attack speed passive levels. Don't modify the length of the array!")
+    public int[] attackSpeedPassiveLevels = new int[]{8, 14, 20, 26, 32};
+
     @SerialEntry(comment = "Entity Reach passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float entityReachValue = 1.0f;
+
+    @SerialEntry(comment = "Entity reach passive levels. Don't modify the length of the array!")
+    public int[] entityReachPassiveLevels = new int[]{8, 14, 20, 26, 32};
 
     @SerialEntry(comment = "Block Reach passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float blockReachValue = 1.5f;
 
+    @SerialEntry(comment = "Block reach passive levels. Don't modify the length of the array!")
+    public int[] blockReachPassiveLevels = new int[]{8, 14, 20, 26, 32};
+
     @SerialEntry(comment = "Break Speed passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float breakSpeedValue = 0.5f;
+
+    @SerialEntry(comment = "Break speed passive levels. Don't modify the length of the array!")
+    public int[] breakSpeedPassiveLevels = new int[]{8, 14, 20, 26, 3};
 
     @SerialEntry(comment = "Beneficial Effect passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float beneficialEffectValue = 60.0f;
 
+    @SerialEntry(comment = "Beneficial effect passive levels. Don't modify the length of the array!")
+    public int[] beneficialEffectPassiveLevels = new int[]{5, 8, 11, 14, 17, 20, 23, 26, 29, 32};
+
     @SerialEntry(comment = "Magic Resist passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float magicResistValue = 0.5f;
+
+    @SerialEntry(comment = "Magic resistance passive levels. Don't modify the length of the array!")
+    public int[] magicResistPassiveLevels = new int[]{8, 14, 20, 26, 32};
 
     @SerialEntry(comment = "Critical Damage passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float criticalDamageValue = 0.25f;
 
+    @SerialEntry(comment = "Critical damage passive levels. Don't modify the length of the array!")
+    public int[] criticalDamagePassiveLevels = new int[]{5, 8, 11, 14, 17, 20, 23, 26, 29, 32};
+
     @SerialEntry(comment = "Luck passive value at max level")
     @AutoGen(category = "common", group = "passives")
     @FloatField(min = 0.0f, max = 10000.0f)
     public float luckValue = 2.0f;
+
+    @SerialEntry(comment = "Luck passive levels. Don't modify the length of the array!")
+    public int[] luckPassiveLevels = new int[]{5, 8, 11, 14, 17, 20, 23, 26, 29, 32};
 
 
     // Skills options

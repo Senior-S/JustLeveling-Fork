@@ -1,4 +1,4 @@
-package com.seniors.justlevelingfork.config;
+package com.seniors.justlevelingfork.config.models;
 
 import java.util.ArrayList;
 import java.util.List;

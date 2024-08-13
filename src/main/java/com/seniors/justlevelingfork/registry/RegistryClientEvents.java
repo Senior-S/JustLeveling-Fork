@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
+/**
+ * Registry CLIENT events into the forge mod bus.
+ */
 public class RegistryClientEvents {
     @SubscribeEvent
     public void onTooltipDisplay(ItemTooltipEvent event) {

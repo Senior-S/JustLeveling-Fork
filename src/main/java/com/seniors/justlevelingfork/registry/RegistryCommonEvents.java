@@ -8,10 +8,7 @@ import com.seniors.justlevelingfork.common.command.AptitudesReloadCommand;
 import com.seniors.justlevelingfork.common.command.TitleCommand;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.integration.TetraIntegration;
-import com.seniors.justlevelingfork.network.packet.client.CommonConfigSyncCP;
-import com.seniors.justlevelingfork.network.packet.client.ConfigSyncCP;
-import com.seniors.justlevelingfork.network.packet.client.PlayerMessagesCP;
-import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
+import com.seniors.justlevelingfork.network.packet.client.*;
 import com.seniors.justlevelingfork.network.packet.common.CounterAttackSP;
 import com.seniors.justlevelingfork.registry.skills.ConvergenceSkill;
 import com.seniors.justlevelingfork.registry.skills.TreasureHunterSkill;
@@ -65,8 +62,25 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.io.File;
 import java.util.*;
 
+/**
+ * Registry COMMON events into the forge mod bus.
+ */
 @Mod.EventBusSubscriber(modid = JustLevelingFork.MOD_ID)
 public class RegistryCommonEvents {
+
+    @SubscribeEvent
+    public void onPlayerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event) {
+        Player player = event.getEntity();
+        JustLevelingFork.getLOGGER().info("Player logged in");
+        if (!player.level().isClientSide()) {
+            if (player instanceof ServerPlayer serverPlayer) {
+                ConfigSyncCP.sendToPlayer(serverPlayer);
+                //TitlesSyncCP.sendToPlayer(serverPlayer);
+                CommonConfigSyncCP.sendToPlayer(serverPlayer);
+                DynamicConfigSyncCP.sendToPlayer(serverPlayer);
+            }
+        }
+    }
 
     @SubscribeEvent
     public void onServerStarting(final ServerStartingEvent event) { // Let's migrate the config on server start to it runs on client and server.
@@ -133,8 +147,6 @@ public class RegistryCommonEvents {
             Entity entity = event.getEntity();
             if (entity instanceof ServerPlayer serverPlayer) {
                 SyncAptitudeCapabilityCP.send(serverPlayer);
-                ConfigSyncCP.sendToPlayer(serverPlayer);
-                CommonConfigSyncCP.sendToPlayer(serverPlayer);
                 RegistryAttributes.modifierAttributes(serverPlayer);
                 RegistryTitles.syncTitles(serverPlayer);
 
@@ -146,7 +158,6 @@ public class RegistryCommonEvents {
                         serverPlayer.sendSystemMessage(component);
                     }
                 }
-
             }
         }
     }
@@ -268,7 +279,6 @@ public class RegistryCommonEvents {
                 }
             }
         }
-
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

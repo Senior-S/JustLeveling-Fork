@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.fml.ModList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,6 +32,12 @@ public abstract class MixTargetFinder {
             attackRange = apply$AttackRangeModifiers(player, attackRange);
         }
         attackRange += Objects.requireNonNull(Objects.requireNonNull(player.getAttribute(ForgeMod.ENTITY_REACH.get())).getModifier(UUID.fromString("96a891fe-5919-418d-8205-f50464391509"))).getAmount();
+
+        // Quality equipment directly changes the register function through reflection.
+        // So I need to "replicate" what the reflection does here.
+        if(ModList.get().isLoaded("quality_equipment")){
+            attackRange += 3.0D;
+        }
 
         boolean isSpinAttack = (attack.angle() > 180.0D);
         Vec3 size = WeaponHitBoxes.createHitbox(attack.hitbox(), attackRange, isSpinAttack);

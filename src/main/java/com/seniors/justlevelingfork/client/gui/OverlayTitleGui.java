@@ -4,9 +4,6 @@ import com.seniors.justlevelingfork.client.core.TitleQueue;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.registry.RegistryCapabilities;
 import com.seniors.justlevelingfork.registry.title.Title;
-
-import java.awt.Color;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,6 +15,8 @@ import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.awt.*;
 
 @OnlyIn(Dist.CLIENT)
 public class OverlayTitleGui {
@@ -52,7 +51,7 @@ public class OverlayTitleGui {
                 matrixStack.pose().scale(scale1, scale1, 1.0F);
                 int xOff1 = (int) (this.client.getWindow().getGuiScaledWidth() / scale1 / 2.0F);
                 int yOff1 = (int) (this.client.getWindow().getGuiScaledHeight() / scale1 / 4.0F);
-                Utils.drawCenterWithShadow(matrixStack, Component.empty().append(Component.literal("<")).append(Component.translatable(getTitle.getKey()).withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.BOLD)).append(Component.literal(">")), xOff1, yOff1, Color.WHITE.getRGB());
+                Utils.drawCenterWithShadow(matrixStack, Component.translatable("overlay.title.format", Component.translatable(getTitle.getKey()).withStyle(ChatFormatting.BOLD)), xOff1, yOff1, Color.WHITE.getRGB());
                 matrixStack.pose().popPose();
                 if (showTicks == 0) {
                     list.dequeue();
