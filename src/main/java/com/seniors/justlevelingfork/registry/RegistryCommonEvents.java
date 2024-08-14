@@ -75,7 +75,6 @@ public class RegistryCommonEvents {
         if (!player.level().isClientSide()) {
             if (player instanceof ServerPlayer serverPlayer) {
                 ConfigSyncCP.sendToPlayer(serverPlayer);
-                //TitlesSyncCP.sendToPlayer(serverPlayer);
                 CommonConfigSyncCP.sendToPlayer(serverPlayer);
                 DynamicConfigSyncCP.sendToPlayer(serverPlayer);
             }
