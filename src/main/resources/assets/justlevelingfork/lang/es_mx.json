@@ -87,7 +87,7 @@
  "tooltip.skill.previous" : "Anterior",
  "tooltip.skill.next" : "Siguiente",
  "tooltip.aptitude.item_requirement" : "Requisitos:",
- "tooltip.aptitude.item_requirements" : " - %s %s",
+ "tooltip.aptitude.item_requirements" : " - %s§3: %s",
  "tooltip.title.back" : "Volver",
 
  "aptitude.justlevelingfork.strength" : "Fuerza",

@@ -20,10 +20,9 @@ public class AptitudesReloadCommand {
     private static int execute(CommandContext<CommandSourceStack> command){
         HandlerAptitude.ForceRefresh();
 
-        if(command.getSource().getEntity() instanceof Player player){
+        if(command.getSource().getEntity() instanceof Player player) {
             player.sendSystemMessage(Component.literal("Forcing refresh of aptitudes..."));
         }
-
 
         return Command.SINGLE_SUCCESS;
     }

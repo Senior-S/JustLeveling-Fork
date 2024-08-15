@@ -67,7 +67,7 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
         Map<String, Boolean> map = new HashMap<>();
         List<Title> titleList = RegistryTitles.TITLES_REGISTRY.get().getValues().stream().toList();
         for (Title title : titleList) {
-            map.put(title.getName(), title.requirement);
+            map.put(title.getName(), title.Requirement);
         }
         return map;
     }

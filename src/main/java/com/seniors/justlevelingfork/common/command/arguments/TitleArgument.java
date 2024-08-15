@@ -1,6 +1,6 @@
-package com.seniors.justlevelingfork.common.command;
+package com.seniors.justlevelingfork.common.command.arguments;
 
-import com.seniors.justlevelingfork.registry.RegistryAptitudes;
+import com.seniors.justlevelingfork.registry.RegistryTitles;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -18,20 +18,20 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-public class AptitudeArgument implements ArgumentType<ResourceLocation> {
+public class TitleArgument implements ArgumentType<ResourceLocation> {
     public static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
 
     static {
-        ERROR_UNKNOWN_APTITUDE = new DynamicCommandExceptionType(object -> Component.translatable("commands.argument.aptitude.not_found", object));
+        ERROR_UNKNOWN_TITLE = new DynamicCommandExceptionType(object -> Component.translatable("commands.argument.title.not_found", object));
     }
 
-    public static final DynamicCommandExceptionType ERROR_UNKNOWN_APTITUDE;
+    public static final DynamicCommandExceptionType ERROR_UNKNOWN_TITLE;
 
-    public static AptitudeArgument getArgument() {
-        return new AptitudeArgument();
+    public static TitleArgument getArgument() {
+        return new TitleArgument();
     }
 
-    public static ResourceLocation getAptitude(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+    public static ResourceLocation getTitle(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
         return getResource(context.getArgument(name, ResourceLocation.class));
     }
 
@@ -42,17 +42,16 @@ public class AptitudeArgument implements ArgumentType<ResourceLocation> {
 
 
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        RegistryAptitudes.APTITUDES_REGISTRY.get().getValues().forEach(conduit -> builder.suggest(Objects.requireNonNull(RegistryAptitudes.APTITUDES_REGISTRY.get().getKey(conduit)).toString()));
+        RegistryTitles.TITLES_REGISTRY.get().getValues().forEach(conduit -> builder.suggest(Objects.requireNonNull((RegistryTitles.TITLES_REGISTRY.get()).getKey(conduit)).toString()));
         return builder.buildFuture();
     }
 
     public static ResourceLocation getResource(ResourceLocation registryName) throws CommandSyntaxException {
-        if (RegistryAptitudes.APTITUDES_REGISTRY.get().containsKey(registryName)) {
+        if (RegistryTitles.TITLES_REGISTRY.get().containsKey(registryName)) {
             return registryName;
         }
-        throw ERROR_UNKNOWN_APTITUDE.create(registryName);
+        throw ERROR_UNKNOWN_TITLE.create(registryName);
     }
-
 
     public Collection<String> getExamples() {
         return EXAMPLES;

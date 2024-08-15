@@ -123,15 +123,17 @@ public class JustLevelingScreen extends Screen {
         this.searchTitle.setVisible(true);
         this.searchTitle.render(matrixStack, mouseX, mouseY, delta);
 
-        List<Title> titleList = new ArrayList<>(RegistryTitles.TITLES_REGISTRY.get().getValues().stream().toList());
+
+        List<Title> titleList = RegistryTitles.TITLES_REGISTRY.get().getValues().stream().toList();
         List<Title> unlockTitles = new ArrayList<>();
         List<Title> lockTitles = new ArrayList<>();
-        for (Title titles : titleList) {
-            if (titles.getRequirement()) {
-                unlockTitles.add(titles);
+        for (Title title : titleList) {
+            if (title.getRequirement()) {
+                unlockTitles.add(title);
                 continue;
             }
-            lockTitles.add(titles);
+            if (!title.HideRequirements)
+                lockTitles.add(title);
         }
 
         unlockTitles.sort(new SortTitleByName());
@@ -158,8 +160,8 @@ public class JustLevelingScreen extends Screen {
 
         int scrollX;
         int scrollY;
-        for(scrollX = this.scrollDropDown; scrollX < this.scrollDropDown + size; ++scrollX) {
-            Title title = (Title)searchTitleList.get(scrollX);
+        for (scrollX = this.scrollDropDown; scrollX < this.scrollDropDown + size; ++scrollX) {
+            Title title = (Title) searchTitleList.get(scrollX);
             boolean checkTitle = title == RegistryTitles.getTitle(AptitudeCapability.get().getPlayerTitle());
             scrollY = title.getRequirement() ? (checkTitle ? Color.GREEN.getRGB() : Color.WHITE.getRGB()) : Color.DARK_GRAY.getRGB();
             matrixStack.drawString(client.font, Component.translatable(title.getKey()), x + 10, y + 34 + 12 * (scrollX - this.scrollDropDown), scrollY, false);
@@ -191,24 +193,24 @@ public class JustLevelingScreen extends Screen {
         if (this.scrollingDropDown) {
             this.scrollYOff = mouseY - 8;
             this.scrollYOff = Mth.clamp(this.scrollYOff, y + 33, y + 33 + 106 - 15);
-            this.scrollDropDown = Math.round((float)(searchTitleList.size() - maxSize) / 91.0F * (float)(this.scrollYOff - (y + 33)));
+            this.scrollDropDown = Math.round((float) (searchTitleList.size() - maxSize) / 91.0F * (float) (this.scrollYOff - (y + 33)));
         }
 
         scrollX = x + 156;
-        double scrollYF = (91.0F / (float)(searchTitleList.size() - maxSize) * (float)this.scrollDropDown);
-        scrollY = (int)((double)(y + 33) + scrollYF);
+        double scrollYF = (91.0F / (float) (searchTitleList.size() - maxSize) * (float) this.scrollDropDown);
+        scrollY = (int) ((double) (y + 33) + scrollYF);
         matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], scrollX, scrollY, 176, 0, 12, 15);
         matrixStack.blit(HandlerResources.SKILL_PAGE[1], x + 16, y + 144, 30, 167, 11, 11);
         if (Utils.checkMouse(x + 16, y + 144, mouseX, mouseY, 11, 11) && !this.scrollingDropDown) {
             matrixStack.blit(HandlerResources.SKILL_PAGE[1], x + 16, y + 144, 30, 179, 11, 11);
             List<Component> tooltipList = new ArrayList();
             tooltipList.add(Component.translatable("tooltip.sort.button.mod_names").withStyle(ChatFormatting.DARK_AQUA));
-            tooltipList.add(Component.translatable("tooltip.sort.button.true").withStyle((Boolean)HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
-            tooltipList.add(Component.translatable("tooltip.sort.button.false").withStyle(!(Boolean)HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
+            tooltipList.add(Component.translatable("tooltip.sort.button.true").withStyle((Boolean) HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
+            tooltipList.add(Component.translatable("tooltip.sort.button.false").withStyle(!(Boolean) HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
             Utils.drawToolTipList(matrixStack, tooltipList, mouseX, mouseY);
             this.isMouseCheck = true;
             if (this.checkMouse) {
-                HandlerConfigClient.showTitleModName.set(!(Boolean)HandlerConfigClient.showTitleModName.get());
+                HandlerConfigClient.showTitleModName.set(!(Boolean) HandlerConfigClient.showTitleModName.get());
                 Utils.playSound();
                 this.checkMouse = false;
             }
@@ -426,17 +428,17 @@ public class JustLevelingScreen extends Screen {
         int j = (aptitudeLevel < HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel) ? (this.b ? 6 : 0) : 12;
 
         matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], x + 153, y + 14, 177 + j, 1, 6, 6);
+
         boolean canLevelUpAptitude = (client.player.isCreative()
                 || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= client.player.totalExperience);
         if (Utils.checkMouse(x + 149, y + 10, mouseX, mouseY, 14, 14)) {
-            if(AptitudeCapability.get(client.player).getGlobalLevel() >= HandlerCommonConfig.HANDLER.instance().playersMaxGlobalLevel){
+            if (AptitudeCapability.get(client.player).getGlobalLevel() >= HandlerCommonConfig.HANDLER.instance().playersMaxGlobalLevel) {
                 Utils.drawToolTip(matrixStack,
                         Component.translatable("tooltip.aptitude.global_max_level", HandlerCommonConfig.HANDLER.instance().playersMaxGlobalLevel)
                                 .withStyle(ChatFormatting.RED),
                         mouseX,
                         mouseY);
-            }
-            else if (aptitudeLevel < HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel) {
+            } else if (aptitudeLevel < HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel) {
                 ChatFormatting color = canLevelUpAptitude ? ChatFormatting.GREEN : ChatFormatting.RED;
                 Utils.drawToolTip(matrixStack, Component.translatable("tooltip.aptitude.level_up", Component.literal(String.valueOf(AptitudeLevelUpSP.requiredLevels(aptitudeLevel))).withStyle(color),
                         Component.literal(String.valueOf(AptitudeLevelUpSP.requiredPoints(aptitudeLevel))).withStyle(color),
@@ -519,6 +521,7 @@ public class JustLevelingScreen extends Screen {
 
     public void createList(List<Object> list, AptitudeCapability capability, GuiGraphics matrixStack, int x, int y, int mouseX, int mouseY) {
         for (int i = 0; i < list.size(); i++) {
+
             int xTexture = x - 10 + 88 + 26 * i - 13 * (list.size() - 1);
             int yTexture = y - 10 + 90 + 13;
 

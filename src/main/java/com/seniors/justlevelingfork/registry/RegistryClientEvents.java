@@ -50,7 +50,7 @@ public class RegistryClientEvents {
                             Aptitude aptitude = aptitudes.getAptitude();
                             if (aptitude != null) {
                                 ChatFormatting colour = (AptitudeCapability.get().getAptitudeLevel(aptitude) >= aptitudes.getAptitudeLvl()) ? ChatFormatting.GREEN : ChatFormatting.RED;
-                                tooltips.add(Component.translatable("tooltip.aptitude.item_requirements", Component.translatable(aptitude.getKey()).append(":").withStyle(ChatFormatting.DARK_AQUA), Component.literal(String.valueOf(aptitudes.getAptitudeLvl())).withStyle(colour)).withStyle(ChatFormatting.GRAY));
+                                tooltips.add(Component.translatable("tooltip.aptitude.item_requirements", Component.translatable(aptitude.getKey()).withStyle(ChatFormatting.DARK_AQUA), Component.literal(String.valueOf(aptitudes.getAptitudeLvl())).withStyle(colour)).withStyle(ChatFormatting.GRAY));
                             }
                         }
                     }
@@ -65,7 +65,7 @@ public class RegistryClientEvents {
                     Aptitude aptitude = aptitudes.getAptitude();
                     if (aptitude != null) {
                         ChatFormatting colour = (AptitudeCapability.get().getAptitudeLevel(aptitude) >= aptitudes.getAptitudeLvl()) ? ChatFormatting.GREEN : ChatFormatting.RED;
-                        tooltips.add(Component.translatable("tooltip.aptitude.item_requirements", Component.translatable(aptitude.getKey()).append(":").withStyle(ChatFormatting.DARK_AQUA), Component.literal(String.valueOf(aptitudes.getAptitudeLvl())).withStyle(colour)).withStyle(ChatFormatting.GRAY));
+                        tooltips.add(Component.translatable("tooltip.aptitude.item_requirements", Component.translatable(aptitude.getKey()).withStyle(ChatFormatting.DARK_AQUA), Component.literal(String.valueOf(aptitudes.getAptitudeLvl())).withStyle(colour)).withStyle(ChatFormatting.GRAY));
                     }
                 }
             }

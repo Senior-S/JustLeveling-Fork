@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  * Must only be sent on player join.
  */
 public class CommonConfigSyncCP {
-    private final int aptitudeMaxLevel;
+
     private final int aptitudeFirstCostLevel;
     private final boolean closeCraftingMenu;
     private final boolean dropLockedItems;
@@ -75,7 +75,6 @@ public class CommonConfigSyncCP {
     private final int limitBreakerProbability;
 
     public CommonConfigSyncCP() {
-        aptitudeMaxLevel = HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel;
         aptitudeFirstCostLevel = HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel;
         closeCraftingMenu = HandlerCommonConfig.HANDLER.instance().closeCraftingMenu;
         dropLockedItems = HandlerCommonConfig.HANDLER.instance().dropLockedItems;
@@ -128,7 +127,6 @@ public class CommonConfigSyncCP {
 
     @SuppressWarnings("unchecked")
     public CommonConfigSyncCP(FriendlyByteBuf buffer) {
-        aptitudeMaxLevel = buffer.readInt();
         aptitudeFirstCostLevel = buffer.readInt();
         closeCraftingMenu = buffer.readBoolean();
         dropLockedItems = buffer.readBoolean();
@@ -205,7 +203,6 @@ public class CommonConfigSyncCP {
     }
 
     public void toBytes(FriendlyByteBuf buffer) {
-        buffer.writeInt(this.aptitudeMaxLevel);
         buffer.writeInt(this.aptitudeFirstCostLevel);
         buffer.writeBoolean(this.closeCraftingMenu);
         buffer.writeBoolean(this.dropLockedItems);
@@ -281,7 +278,6 @@ public class CommonConfigSyncCP {
         context.enqueueWork(() -> {
             LocalPlayer localPlayer = (Minecraft.getInstance()).player;
             if(localPlayer != null){
-                HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel = this.aptitudeMaxLevel;
                 HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel = this.aptitudeFirstCostLevel;
                 HandlerCommonConfig.HANDLER.instance().closeCraftingMenu = this.closeCraftingMenu;
                 HandlerCommonConfig.HANDLER.instance().dropLockedItems = this.dropLockedItems;

@@ -109,7 +109,7 @@
  "tooltip.skill.previous" : "Previous",
  "tooltip.skill.next" : "Next",
  "tooltip.aptitude.item_requirement" : "Requirements:",
- "tooltip.aptitude.item_requirements" : " - %s %s",
+ "tooltip.aptitude.item_requirements" : " - %s§3: %s",
  "tooltip.title.back" : "Back",
 
  "aptitude.justlevelingfork.strength" : "Strength",
@@ -305,7 +305,7 @@
  "title.justlevelingfork.fighter.description" : "Level up Strength to 16.",
  "title.justlevelingfork.fighter_great.description" : "Level up Strength to 32.",
  "title.justlevelingfork.warrior.description" : "Level up Constitution to 16.",
- "title.justlevelingfork.warrior_great.description" : "Level up Constitution to 16.",
+ "title.justlevelingfork.warrior_great.description" : "Level up Constitution to 32.",
  "title.justlevelingfork.ranger.description" : "Level up Dexterity to 16.",
  "title.justlevelingfork.ranger_great.description" : "Level up Dexterity to 32.",
  "title.justlevelingfork.tank.description" : "Level up Defense to 16.",

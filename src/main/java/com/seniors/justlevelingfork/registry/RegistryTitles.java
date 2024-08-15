@@ -37,7 +37,7 @@ public class RegistryTitles {
 
     private static Title register(String name, boolean requirement) {
         ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, name);
-        return new Title(key, requirement);
+        return new Title(key, requirement, true);
     }
 
     public static Title getTitle(String titleName) {

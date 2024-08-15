@@ -45,6 +45,10 @@ public class ServerNetworking {
     public static void sendToPlayer(Object message, ServerPlayer serverPlayer) {
         instance.send(PacketDistributor.PLAYER.with(() -> serverPlayer), message);
     }
+
+    public static void sendToAllClients(Object message) {
+        instance.send(PacketDistributor.ALL.noArg(), message);
+    }
 }
 
 

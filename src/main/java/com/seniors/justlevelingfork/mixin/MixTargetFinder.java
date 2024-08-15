@@ -25,7 +25,11 @@ import java.util.UUID;
 public abstract class MixTargetFinder {
     @Inject(method = {"findAttackTargetResult"}, at = {@At("HEAD")}, cancellable = true, remap = false)
     private static void findAttackTargetResult(Player player, Entity cursorTarget, WeaponAttributes.Attack attack, double attackRange, CallbackInfoReturnable<TargetFinder.TargetResult> info) {
+        if(player == null || cursorTarget == null){
+            return;
+        }
         info.cancel();
+
         Vec3 origin = TargetFinder.getInitialTracingPoint(player);
         List<Entity> entities = TargetFinder.getInitialTargets(player, cursorTarget, attackRange);
         if (!AttackRangeExtensions.sources().isEmpty()) {

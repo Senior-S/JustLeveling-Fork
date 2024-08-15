@@ -31,7 +31,7 @@ public class HandlerTitlesConfig {
             new TitleModel("warrior_great", List.of("aptitude/Constitution/greater_or_equal/32"), false),
             new TitleModel("ranger", List.of("aptitude/Dexterity/greater_or_equal/16"), false),
             new TitleModel("ranger_great", List.of("aptitude/Dexterity/greater_or_equal/32"), false),
-            new TitleModel("tank", List.of("aptitude/Strength/greater_or_equal/16"), false),
+            new TitleModel("tank", List.of("aptitude/Defense/greater_or_equal/16"), false),
             new TitleModel("tank_great", List.of("aptitude/Defense/greater_or_equal/32"), false),
             new TitleModel("alchemist", List.of("aptitude/Intelligence/greater_or_equal/16"), false),
             new TitleModel("alchemist_great", List.of("aptitude/Intelligence/greater_or_equal/32"), false),
@@ -61,7 +61,7 @@ public class HandlerTitlesConfig {
             new TitleModel("rider_horse", List.of("stat/horse_one_cm/greater_or_equal/1000000"), false),
             new TitleModel("rider_pig", List.of("stat/pig_one_cm/greater_or_equal/1000000"), false),
             new TitleModel("rider_strider", List.of("stat/strider_one_cm/greater_or_equal/1000000"), false),
-            new TitleModel("traveler_nether", List.of("special/dimension/equals/minecraft:the_nether"), false),
-            new TitleModel("traveler_end", List.of("special/dimension/equals/minecraft:the_end"), false)
+            new TitleModel("traveler_nether", List.of("special/dimension/equals/minecraft:the_nether"), false, true),
+            new TitleModel("traveler_end", List.of("special/dimension/equals/minecraft:the_end"), false, true)
     );
 }

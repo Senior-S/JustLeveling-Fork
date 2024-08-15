@@ -1,8 +1,8 @@
 package com.seniors.justlevelingfork.registry;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
-import com.seniors.justlevelingfork.common.command.AptitudeArgument;
-import com.seniors.justlevelingfork.common.command.TitleArgument;
+import com.seniors.justlevelingfork.common.command.arguments.AptitudeArgument;
+import com.seniors.justlevelingfork.common.command.arguments.TitleArgument;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;

@@ -8,13 +8,6 @@ import com.seniors.justlevelingfork.handler.HandlerConfigClient;
 import com.seniors.justlevelingfork.handler.HandlerResources;
 import com.seniors.justlevelingfork.registry.RegistryCapabilities;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -22,6 +15,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Skill {
     public final ResourceLocation key;
@@ -124,7 +123,13 @@ public class Skill {
                     .append(getMutableDescription(getDescription()).withStyle(ChatFormatting.GRAY)));
             list.add(Component.empty());
             list.add(Component.translatable("tooltip.skill.description.level_requirement").withStyle(ChatFormatting.DARK_PURPLE));
-            list.add(Component.literal(" ").append(Component.translatable("tooltip.skill.description.available", Component.literal(String.valueOf(getLvl())).withStyle(ChatFormatting.GREEN))).withStyle(ChatFormatting.DARK_AQUA));
+            if (this.requiredLevel > 0){
+                list.add(Component.literal(" ").append(Component.translatable("tooltip.skill.description.available", Component.literal(String.valueOf(getLvl())).withStyle(ChatFormatting.GREEN))).withStyle(ChatFormatting.DARK_AQUA));
+            }
+            else{
+                list.add(Component.translatable("tooltip.skill.description.off").withStyle(ChatFormatting.RED));
+            }
+
         } else {
             list.add(Component.translatable("tooltip.general.description.more_information").withStyle(ChatFormatting.YELLOW));
         }
@@ -135,23 +140,23 @@ public class Skill {
     }
 
     public boolean canSkill() {
-        return AptitudeCapability.get().getToggleSkill(this);
+        return requiredLevel > 0 && AptitudeCapability.get().getToggleSkill(this);
     }
 
     public boolean canSkill(Player player) {
-        return AptitudeCapability.get(player).getToggleSkill(this);
+        return requiredLevel > 0 && AptitudeCapability.get(player).getToggleSkill(this);
     }
 
     public boolean getToggle() {
-        return (AptitudeCapability.get().getAptitudeLevel(this.aptitude) >= this.requiredLevel);
+        return this.requiredLevel > 0 && AptitudeCapability.get().getAptitudeLevel(this.aptitude) >= this.requiredLevel;
     }
 
     public boolean getToggle(Player player) {
-        return (AptitudeCapability.get(player).getAptitudeLevel(this.aptitude) >= this.requiredLevel);
+        return this.requiredLevel > 0 && AptitudeCapability.get(player).getAptitudeLevel(this.aptitude) >= this.requiredLevel;
     }
 
     public boolean isEnabled() {
-        return (AptitudeCapability.get().getAptitudeLevel(this.aptitude) >= this.requiredLevel && AptitudeCapability.get().getToggleSkill(this));
+        return (this.requiredLevel > 0 && AptitudeCapability.get().getAptitudeLevel(this.aptitude) >= this.requiredLevel && AptitudeCapability.get().getToggleSkill(this));
     }
 
     public boolean isEnabled(Player player) {
@@ -159,9 +164,8 @@ public class Skill {
         if (player != null &&
                 !player.isDeadOrDying()) {
             player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> b.set(
-                    (AptitudeCapability.get(player).getAptitudeLevel(this.aptitude) >= this.requiredLevel && AptitudeCapability.get(player).getToggleSkill(this))));
+                    this.requiredLevel > 0 && (AptitudeCapability.get(player).getAptitudeLevel(this.aptitude) >= this.requiredLevel && AptitudeCapability.get(player).getToggleSkill(this))));
         }
-
 
         return b.get();
     }

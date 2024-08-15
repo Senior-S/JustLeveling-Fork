@@ -5,23 +5,24 @@ import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerConfigClient;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
 import com.seniors.justlevelingfork.network.packet.client.TitleOverlayCP;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Title {
     private final ResourceLocation key;
-    public final boolean requirement;
+    public final boolean Requirement;
+    public final boolean HideRequirements;
 
-    public Title(ResourceLocation key, boolean requirement) {
+    public Title(ResourceLocation key, boolean requirement, boolean hideRequirements) {
         this.key = key;
-        this.requirement = requirement;
+        this.Requirement = requirement;
+        this.HideRequirements = hideRequirements;
     }
 
     public Title get() {

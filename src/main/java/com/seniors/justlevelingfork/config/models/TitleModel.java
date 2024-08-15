@@ -12,7 +12,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +21,8 @@ public class TitleModel {
     public List<String> Conditions = new ArrayList<>();
 
     public boolean Default;
+
+    public Boolean HideRequirements = false;
 
     private transient Title _title;
 
@@ -33,19 +34,21 @@ public class TitleModel {
         TitleId = "rookie";
         Conditions = new ArrayList<>();
         Default = true;
+        HideRequirements = false;
     }
 
     public TitleModel(String titleID, List<String> conditions, boolean isDefault) {
         TitleId = titleID;
         Conditions = conditions;
         Default = isDefault;
+        HideRequirements = false;
     }
 
-    public TitleModel(String formattedModel){
-        String[] split = formattedModel.split(":");
-        TitleId = split[0];
-        Conditions = Arrays.stream(split[1].split("=")).toList();
-        Default = Boolean.parseBoolean(split[2]);
+    public TitleModel(String titleID, List<String> conditions, boolean isDefault, boolean hideRequirements) {
+        TitleId = titleID;
+        Conditions = conditions;
+        Default = isDefault;
+        HideRequirements = hideRequirements;
     }
 
     @Override
@@ -143,7 +146,7 @@ public class TitleModel {
 
     private Title register(String name, boolean requirement) {
         ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, name);
-        return new Title(key, requirement);
+        return new Title(key, requirement, this.HideRequirements);
     }
 
     private String CapitalizeString(String str) {

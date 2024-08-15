@@ -3,9 +3,7 @@ package com.seniors.justlevelingfork.registry;
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.common.capability.LazyAptitudeCapability;
-import com.seniors.justlevelingfork.common.command.AptitudeLevelCommand;
-import com.seniors.justlevelingfork.common.command.AptitudesReloadCommand;
-import com.seniors.justlevelingfork.common.command.TitleCommand;
+import com.seniors.justlevelingfork.common.command.*;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.integration.TetraIntegration;
 import com.seniors.justlevelingfork.network.packet.client.*;
@@ -98,6 +96,9 @@ public class RegistryCommonEvents {
         AptitudeLevelCommand.register(event.getDispatcher());
         TitleCommand.register(event.getDispatcher());
         AptitudesReloadCommand.register(event.getDispatcher());
+        RegisterItem.register(event.getDispatcher());
+        GlobalLimitCommand.register(event.getDispatcher());
+        UpdateAptitudeLevelCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
