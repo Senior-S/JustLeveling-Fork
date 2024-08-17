@@ -141,12 +141,17 @@ repositories {
         name 'Xander Maven'
         url 'https://maven.isxander.dev/releases'
     }
-    // Tetra, PointBlank, Tac:Zero & MrCrayfish's Gun Mod
+    // Tetra, PointBlank, Tac:Zero, MrCrayfish's Gun Mod & ScorchedGuns 2
     maven {
         url "https://cursemaven.com"
         content {
             includeGroup "curse.maven"
         }
+    }
+
+    // L2 Tabs
+    flatDir{
+        dirs 'libs'
     }
 }
 
@@ -164,6 +169,10 @@ dependencies {
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.0")) {
         jarJar.ranged(it, "[0.4.0,)")
     }
+
+    // L2
+    compileOnly fg.deobf("dev.xkmc.l2library:l2library:2.4.28")
+    compileOnly fg.deobf("dev.xkmc.l2tabs:l2tabs:0.3.1")
 
     // ClothConfig implementation (Required by BetterCombat)
     implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:11.1.118")
@@ -183,21 +192,24 @@ dependencies {
     implementation fg.deobf("dev.isxander:yet-another-config-lib:3.4.2+1.20.1-forge")
     compileOnly(fg.deobf("dev.isxander:yet-another-config-lib:3.4.2+1.20.1-forge"))
 
-    // Tetra implementation
+    // Tetra compatibility
     compileOnly fg.deobf("curse.maven:tetra-289712:${tetra_version}")
     compileOnly fg.deobf("curse.maven:tetra-351914:${mutil_version}")
 
-    // PointBlank implementation
+    // PointBlank compatibility
     compileOnly fg.deobf("curse.maven:vics-point-blank-961053:5541544")
 
-    // Timeless and classics: zero implementation
+    // Timeless and classics: zero compatibility
     compileOnly fg.deobf("curse.maven:timeless-and-classics-zero-1028108:5529117")
 
-    // MrCrayfish's Gun Mod implementation
+    // MrCrayfish's Gun Mod compatibility
     compileOnly fg.deobf("curse.maven:mrcrayfishs-gun-mod-unofficial-945471:5212457")
     runtimeOnly fg.deobf("curse.maven:framework-549225:5388226")
 
-    // Iron's Spells 'n Spellbooks implementation
+    // Scorched Guns 2 compatibility
+    compileOnly fg.deobf("curse.maven:scorched-guns-802940:5630448")
+
+    // Iron's Spells 'n Spellbooks compatibility
     compileOnly fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5539243")
     runtimeOnly fg.deobf("curse.maven:caelus-308989:5281700")
 

@@ -1,5 +1,7 @@
 package com.seniors.justlevelingfork.config.models;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,12 +66,8 @@ public class LockItem {
         public int Level;
 
         public Aptitude(String aptitudeName, int level) {
-            Aptitude = EAptitude.valueOf(CapitalizeString(aptitudeName));
+            Aptitude = EAptitude.valueOf(StringUtils.capitalize(aptitudeName));
             Level = level;
-        }
-
-        private String CapitalizeString(String str) {
-            return str.substring(0, 1).toUpperCase() + str.substring(1);
         }
 
         public Aptitude() {

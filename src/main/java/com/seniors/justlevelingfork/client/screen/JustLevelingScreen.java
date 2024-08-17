@@ -430,7 +430,8 @@ public class JustLevelingScreen extends Screen {
         matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], x + 153, y + 14, 177 + j, 1, 6, 6);
 
         boolean canLevelUpAptitude = (client.player.isCreative()
-                || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= client.player.totalExperience);
+                || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= client.player.totalExperience
+                || AptitudeLevelUpSP.requiredLevels(aptitudeLevel) <= client.player.experienceLevel);
         if (Utils.checkMouse(x + 149, y + 10, mouseX, mouseY, 14, 14)) {
             if (AptitudeCapability.get(client.player).getGlobalLevel() >= HandlerCommonConfig.HANDLER.instance().playersMaxGlobalLevel) {
                 Utils.drawToolTip(matrixStack,

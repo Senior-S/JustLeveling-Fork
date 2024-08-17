@@ -3,12 +3,16 @@ package com.seniors.justlevelingfork;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.seniors.justlevelingfork.client.gui.OverlayAptitudeGui;
 import com.seniors.justlevelingfork.client.gui.OverlayTitleGui;
+import com.seniors.justlevelingfork.client.gui.TabJustLeveling;
 import com.seniors.justlevelingfork.client.screen.JustLevelingScreen;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
-import com.seniors.justlevelingfork.integration.CrayfishGunModIntegration;
+import com.seniors.justlevelingfork.integration.L2TabsIntegration;
 import com.seniors.justlevelingfork.registry.RegistryClientEvents;
+import com.seniors.justlevelingfork.registry.RegistryItems;
+import dev.xkmc.l2tabs.tabs.core.TabRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.InputEvent;
@@ -49,8 +53,12 @@ public class JustLevelingClient {
             MinecraftForge.EVENT_BUS.register(new RegistryClientEvents());
             MinecraftForge.EVENT_BUS.register(new OverlayAptitudeGui());
             MinecraftForge.EVENT_BUS.register(new OverlayTitleGui());
-            if (CrayfishGunModIntegration.isModLoaded())
-                MinecraftForge.EVENT_BUS.register(new CrayfishGunModIntegration());
+
+            if (L2TabsIntegration.isModLoaded()) {
+                event.enqueueWork(() -> {
+                    TabRegistry.registerTab(3500, TabJustLeveling::new, RegistryItems.LEVELING_BOOK, Component.literal("Aptitudes"));
+                });
+            }
         }
 
         @SubscribeEvent

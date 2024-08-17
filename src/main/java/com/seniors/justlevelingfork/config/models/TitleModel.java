@@ -10,6 +10,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +75,7 @@ public class TitleModel {
             int value = 0;
 
             try {
-                conditionType = EConditionType.valueOf(CapitalizeString(split[0]));
+                conditionType = EConditionType.valueOf(StringUtils.capitalize(split[0]));
                 comparator = EComparator.valueOf(split[2].toUpperCase());
                 if (conditionType != EConditionType.Special) {
                     value = Integer.parseInt(split[3]);
@@ -90,7 +91,7 @@ public class TitleModel {
             switch (conditionType) {
                 case Aptitude:
                     try {
-                        EAptitude aptitude = EAptitude.valueOf(CapitalizeString(split[1]));
+                        EAptitude aptitude = EAptitude.valueOf(StringUtils.capitalize(split[1]));
                         int aptitudeLevel = AptitudeCapability.get(serverPlayer).getAptitudeLevel(RegistryAptitudes.getAptitude(aptitude.toString()));
 
                         if (Compare(aptitudeLevel, value, comparator)) {
@@ -147,10 +148,6 @@ public class TitleModel {
     private Title register(String name, boolean requirement) {
         ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, name);
         return new Title(key, requirement, this.HideRequirements);
-    }
-
-    private String CapitalizeString(String str) {
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
     private boolean Compare(int a, int b, EComparator comparator) {

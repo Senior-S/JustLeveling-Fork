@@ -33,9 +33,9 @@ public class RegisterItem {
     }
 
     private static int execute(CommandContext<CommandSourceStack> command) throws CommandSyntaxException {
-        if(command.getSource().getEntity() instanceof Player player) {
+        if (command.getSource().getEntity() instanceof Player player) {
             ItemStack stack = player.getMainHandItem();
-            if (stack == ItemStack.EMPTY || stack.isEmpty()){
+            if (stack == ItemStack.EMPTY || stack.isEmpty()) {
                 player.sendSystemMessage(Component.literal("No item detected in main hand!"));
                 return Command.SINGLE_SUCCESS;
             }
@@ -44,9 +44,12 @@ public class RegisterItem {
             Integer level = command.getArgument("level", Integer.class);
 
             Optional<LockItem> optionalLockItem = HandlerLockItemsConfig.HANDLER.instance().lockItemList.stream().filter(c -> c.Item.equalsIgnoreCase(location.toString())).findFirst();
-            if(optionalLockItem.isPresent()){
+            if (optionalLockItem.isPresent()) {
                 LockItem lockItem = optionalLockItem.get();
                 int index = HandlerLockItemsConfig.HANDLER.instance().lockItemList.indexOf(lockItem);
+
+                lockItem.Aptitudes.stream().filter(c -> c.Aptitude.toString().equalsIgnoreCase(aptitudeName)).findFirst().ifPresent(value -> lockItem.Aptitudes.remove(value));
+
                 lockItem.Aptitudes.add(new LockItem.Aptitude(aptitudeName, level));
 
                 HandlerLockItemsConfig.HANDLER.instance().lockItemList.set(index, lockItem);

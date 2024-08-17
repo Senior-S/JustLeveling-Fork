@@ -8,7 +8,9 @@ import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
 import com.seniors.justlevelingfork.handler.HandlerCurios;
 import com.seniors.justlevelingfork.handler.HandlerLockItemsConfig;
+import com.seniors.justlevelingfork.integration.CrayfishGunModIntegration;
 import com.seniors.justlevelingfork.integration.IronsSpellsbooksIntegration;
+import com.seniors.justlevelingfork.integration.ScorchedGuns2Integration;
 import com.seniors.justlevelingfork.integration.TacZIntegration;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import com.seniors.justlevelingfork.registry.*;
@@ -23,7 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -71,8 +73,13 @@ public class JustLevelingFork {
             MinecraftForge.EVENT_BUS.register(new HandlerCurios());
         if (TacZIntegration.isModLoaded())
             MinecraftForge.EVENT_BUS.register(new TacZIntegration());
+        if (CrayfishGunModIntegration.isModLoaded())
+            MinecraftForge.EVENT_BUS.register(new CrayfishGunModIntegration());
+        if (ScorchedGuns2Integration.isModLoaded())
+            MinecraftForge.EVENT_BUS.register(new ScorchedGuns2Integration());
         if (IronsSpellsbooksIntegration.isModLoaded())
             MinecraftForge.EVENT_BUS.register(new IronsSpellsbooksIntegration());
+
         ServerNetworking.init();
 
         // Check for new updates
@@ -80,7 +87,7 @@ public class JustLevelingFork {
             try {
                 String version = getLatestVersion();
 
-                Optional<IModInfo> optionalModInfo = ModList.get().getMods().stream().filter(c -> Objects.equals(c.getModId(), this.MOD_ID)).findFirst();
+                Optional<IModInfo> optionalModInfo = ModList.get().getMods().stream().filter(c -> Objects.equals(c.getModId(), MOD_ID)).findFirst();
 
                 // Is this somehow isn't present then some really strange shit happen
                 if (optionalModInfo.isPresent()) {
@@ -91,8 +98,8 @@ public class JustLevelingFork {
                         LOGGER.info(">> NEW VERSION AVAILABLE: {}", version);
                     }
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                LOGGER.warn(">> Error checking for updates!");
             }
         }
     }
@@ -164,7 +171,7 @@ public class JustLevelingFork {
                 }
 
                 LockItem.Aptitude aptitude = new LockItem.Aptitude();
-                aptitude.Aptitude = EAptitude.valueOf(WordUtils.capitalizeFully(aptitudePath));
+                aptitude.Aptitude = EAptitude.valueOf(StringUtils.capitalize(aptitudePath));
                 aptitude.Level = Integer.parseInt(aptitudeValues[1]);
 
                 aptitudes.add(aptitude);

@@ -1,11 +1,12 @@
 package com.seniors.justlevelingfork.mixin;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.client.gui.DrawTabs;
+import com.seniors.justlevelingfork.integration.L2TabsIntegration;
 import com.seniors.justlevelingfork.network.packet.common.OpenEnderChestSP;
 import com.seniors.justlevelingfork.registry.RegistrySkills;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -39,6 +40,10 @@ public abstract class MixInventoryScreen extends EffectRenderingInventoryScreen<
 
     @Inject(method = {"renderBg"}, at = {@At("TAIL")})
     private void render(GuiGraphics matrixStack, float delta, int mouseX, int mouseY, CallbackInfo info) {
+        if(L2TabsIntegration.isModLoaded()){
+            return;
+        }
+
         DrawTabs.render(matrixStack, mouseX, mouseY, 176, 166, getRecipeBookComponent().isVisible() ? 77 : 0);
 
         if (RegistrySkills.WORMHOLE_STORAGE.get().isEnabled()) {
@@ -66,10 +71,12 @@ public abstract class MixInventoryScreen extends EffectRenderingInventoryScreen<
 
     @Inject(method = {"mouseClicked"}, at = {@At("HEAD")})
     private void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> info) {
+        if(L2TabsIntegration.isModLoaded()){
+            return;
+        }
         if (button == 0 && this.this$isMouseCheck) this.this$checkMouse = true;
         DrawTabs.mouseClicked(button);
     }
-
 
     public void onClose() {
         this.this$checkMouse = false;
@@ -77,5 +84,3 @@ public abstract class MixInventoryScreen extends EffectRenderingInventoryScreen<
         super.onClose();
     }
 }
-
-
