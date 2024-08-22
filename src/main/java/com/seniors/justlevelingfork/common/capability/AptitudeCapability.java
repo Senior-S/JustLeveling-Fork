@@ -18,8 +18,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,8 +90,14 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
         this.counterAttackTimer = timer;
     }
 
+    @Nullable
     public static AptitudeCapability get(Player player) {
-        return player.getCapability(RegistryCapabilities.APTITUDE).orElseThrow(() -> new IllegalArgumentException("Player " + player.getName() + " does not have Capabilities!"));
+        LazyOptional<AptitudeCapability> capability = player.getCapability(RegistryCapabilities.APTITUDE);
+        if(capability.isPresent() && capability.resolve().isPresent()){
+            return capability.resolve().get();
+        }
+
+        return null;
     }
 
     public static AptitudeCapability get() {

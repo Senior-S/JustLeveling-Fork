@@ -21,7 +21,7 @@ import java.util.Objects;
 
 
 /**
- * Registry CLIENT events into the forge mod bus.
+ * registry CLIENT events into the forge mod bus.
  */
 public class RegistryClientEvents {
     @SubscribeEvent

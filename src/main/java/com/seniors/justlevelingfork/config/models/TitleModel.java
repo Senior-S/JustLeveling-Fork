@@ -1,16 +1,13 @@
 package com.seniors.justlevelingfork.config.models;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
-import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
-import com.seniors.justlevelingfork.registry.RegistryAptitudes;
+import com.seniors.justlevelingfork.config.conditions.ConditionImpl;
+import com.seniors.justlevelingfork.handler.HandlerConditions;
 import com.seniors.justlevelingfork.registry.title.Title;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,77 +67,31 @@ public class TitleModel {
                 JustLevelingFork.getLOGGER().error(">> Error! Title {} have a wrong formatted condition. (General)", TitleId);
                 continue;
             }
-            EConditionType conditionType;
             EComparator comparator;
-            int value = 0;
 
             try {
-                conditionType = EConditionType.valueOf(StringUtils.capitalize(split[0]));
                 comparator = EComparator.valueOf(split[2].toUpperCase());
-                if (conditionType != EConditionType.Special) {
-                    value = Integer.parseInt(split[3]);
-                }
-            } catch (NumberFormatException e) {
-                JustLevelingFork.getLOGGER().error(">> Error! Title {} have a wrong formatted condition. (Value)", TitleId);
-                continue;
             } catch (IllegalArgumentException e) {
+                JustLevelingFork.getLOGGER().error(">> Error! Title {} have a wrong formatted condition. (Comparator)", TitleId);
+                continue;
+            }
+
+            Optional<ConditionImpl<?>> conditionImpl = HandlerConditions.getConditionByName(split[0]);
+            if(conditionImpl.isEmpty()){
                 JustLevelingFork.getLOGGER().error(">> Error! Title {} have a wrong formatted condition. (Condition type or Comparator)", TitleId);
                 continue;
             }
 
-            switch (conditionType) {
-                case Aptitude:
-                    try {
-                        EAptitude aptitude = EAptitude.valueOf(StringUtils.capitalize(split[1]));
-                        int aptitudeLevel = AptitudeCapability.get(serverPlayer).getAptitudeLevel(RegistryAptitudes.getAptitude(aptitude.toString()));
-
-                        if (Compare(aptitudeLevel, value, comparator)) {
-                            passedConditions++;
-                        }
-                    } catch (IllegalArgumentException e) {
-                        JustLevelingFork.getLOGGER().error(">> Error! Title {} have a wrong formatted condition. (Aptitude Name)", TitleId);
-                    }
-                    break;
-                case Stat:
-                    var optionalStat = Optional.ofNullable(ResourceLocation.tryParse(split[1].toLowerCase())).flatMap(Stats.CUSTOM.getRegistry()::getOptional).map(Stats.CUSTOM::get);
-                    if (optionalStat.isEmpty()) {
-                        JustLevelingFork.getLOGGER().error(">> Error! Title {} have a wrong formatted condition. (Stat name)", TitleId);
-                        break;
-                    }
-
-                    int statValue = serverPlayer.getStats().getValue(Stats.CUSTOM, optionalStat.get().getValue());
-
-                    if (Compare(statValue, value, comparator)) {
-                        passedConditions++;
-                    }
-                    break;
-                case EntityKilled:
-                    var entityType = EntityType.byString(split[1].toLowerCase());
-                    if (entityType.isEmpty()) {
-                        JustLevelingFork.getLOGGER().error(">> Error! Title {} have a wrong formatted condition. (Entity name)", TitleId);
-                        break;
-                    }
-
-                    int entityKilledValue = serverPlayer.getStats().getValue(Stats.ENTITY_KILLED.get(entityType.get()));
-
-                    if (Compare(entityKilledValue, value, comparator)) {
-                        passedConditions++;
-                    }
-                    break;
-                case Special:
-                    String dimension = split[3];
-
-                    if(serverPlayer.level().dimension().location().toString().equalsIgnoreCase(dimension)){
-                        passedConditions++;
-                    }
-                    break;
+            conditionImpl.get().ProcessVariable(split[1], serverPlayer);
+            if(conditionImpl.get().MeetCondition(split[3], comparator)){
+                passedConditions++;
             }
         }
 
         return passedConditions == Conditions.size();
     }
 
-    public RegistryObject<Title> Registry(DeferredRegister<Title> TITLES) {
+    public RegistryObject<Title> registry(DeferredRegister<Title> TITLES) {
         _title = register(TitleId, Default);
         return TITLES.register(TitleId, () -> _title);
     }

@@ -42,10 +42,7 @@ import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.CriticalHitEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -61,7 +58,7 @@ import java.io.File;
 import java.util.*;
 
 /**
- * Registry COMMON events into the forge mod bus.
+ * registry COMMON events into the forge mod bus.
  */
 @Mod.EventBusSubscriber(modid = JustLevelingFork.MOD_ID)
 public class RegistryCommonEvents {
@@ -271,6 +268,9 @@ public class RegistryCommonEvents {
         if (livingEntity instanceof Player player) {
             if (!player.isCreative() && event.getSlot().getType() == EquipmentSlot.Type.ARMOR) {
                 AptitudeCapability provider = AptitudeCapability.get(player);
+                // Check added due some mods make changes to the equipment before the player fully connects
+                // So if the player haven't fully connect to the server yet, it won't be able to find its capabilities.
+                if(provider == null) return;
                 ItemStack item = event.getTo();
 
                 if (!provider.canUseItem(player, item)) {

@@ -3,6 +3,7 @@ package com.seniors.justlevelingfork.registry;
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.config.models.TitleModel;
+import com.seniors.justlevelingfork.handler.HandlerConditions;
 import com.seniors.justlevelingfork.handler.HandlerTitlesConfig;
 import com.seniors.justlevelingfork.registry.title.Title;
 import net.minecraft.core.Registry;
@@ -29,10 +30,13 @@ public class RegistryTitles {
 
     public static void load(IEventBus eventBus) {
         HandlerTitlesConfig.HANDLER.instance().titleList.forEach(title -> {
-            title.Registry(TITLES);
+            title.registry(TITLES);
         });
 
         TITLES.register(eventBus);
+
+        // Title conditions
+        HandlerConditions.registerDefaults();
     }
 
     private static Title register(String name, boolean requirement) {
