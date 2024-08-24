@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.seniors.justlevelingfork.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "refmap": "justlevelingfork.refmap.json",
+  "client": [
+    "MixForgeGui",
+    "MixInventoryScreen",
+    "MixPlayerRenderer"
+  ],
+  "mixins": [
+    "MixLivingEntity",
+    "MixPlayer",
+    "MixPowderSnowBlock",
+    "MixShulkerBullet",
+    "MixTargetFinder",
+    "MixVillager"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

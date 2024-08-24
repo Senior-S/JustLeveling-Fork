@@ -1,0 +1,14 @@
+{
+  "mortal_strike" : {
+    "subtitle": "screen.skill.mortal_strike",
+    "sounds": [
+      "justlevelingfork:mortal_strike"
+    ]
+  },
+  "gain_title" : {
+    "subtitle": "screen.title.sound_effect",
+    "sounds": [
+      "justlevelingfork:gain_title"
+    ]
+  }
+}
