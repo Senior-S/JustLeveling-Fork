@@ -159,6 +159,9 @@ public class Skill extends ForgeRegistryEntry<Skill> {
     }
 
     public boolean isEnabled() {
+        if(AptitudeCapability.get() == null){
+            return false;
+        }
         return (this.requiredLevel > 0 && AptitudeCapability.get().getAptitudeLevel(this.aptitude) >= this.requiredLevel && AptitudeCapability.get().getToggleSkill(this));
     }
 

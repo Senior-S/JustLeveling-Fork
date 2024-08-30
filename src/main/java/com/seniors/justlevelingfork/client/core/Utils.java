@@ -89,12 +89,14 @@ public class Utils {
 
     public static void drawToolTip(Screen screen, PoseStack matrixStack, Component tooltip, int mouseX, int mouseY) {
         matrixStack.pushPose();
-        screen.renderTooltip(matrixStack, tooltip,mouseX, mouseY);
+        screen.renderTooltip(matrixStack, tooltip, mouseX, mouseY);
         matrixStack.popPose();
     }
 
     public static void drawToolTipList(Screen screen, PoseStack matrixStack, List<Component> tooltip, int mouseX, int mouseY) {
+        matrixStack.pushPose();
         screen.renderTooltip(matrixStack, tooltip, Optional.empty(), mouseX, mouseY);
+        matrixStack.popPose();
     }
 
     public static boolean checkMouse(int x, int y, int mouseX, int mouseY, int width, int height) {

@@ -52,7 +52,7 @@ public class ConfigClassHandler<T> {
         load();
     }
 
-    public void save(){
+    public void save() {
         try {
             JsonGenerator generator = _factory.createGenerator(_filePath, JsonEncoding.UTF8);
             _objectMapper.writerWithDefaultPrettyPrinter().writeValue(generator, _instance);
@@ -64,6 +64,7 @@ public class ConfigClassHandler<T> {
     public void load(){
         if(!_filePath.exists()){
             save();
+            return;
         }
         try {
             JsonParser parser = _factory.createParser(_filePath);

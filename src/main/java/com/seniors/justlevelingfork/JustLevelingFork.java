@@ -18,25 +18,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
-import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(JustLevelingFork.MOD_ID)
@@ -58,12 +47,12 @@ public class JustLevelingFork {
         Configuration.Init();
 
         RegistryItems.load(eventBus);
-        RegistryAttributes.load(eventBus);
         RegistryAptitudes.load(eventBus);
         RegistryPassives.load(eventBus);
         RegistrySkills.load(eventBus);
-        RegistryTitles.load(eventBus);
+        RegistryAttributes.load(eventBus);
         RegistrySounds.load(eventBus);
+        RegistryTitles.load(eventBus);
 
         MinecraftForge.EVENT_BUS.register(new RegistryCommonEvents());
         if (HandlerCurios.isModLoaded())
@@ -75,8 +64,8 @@ public class JustLevelingFork {
 
         ServerNetworking.init();
 
-        // Check for new updates
-        if (HandlerCommonConfig.HANDLER.instance().checkForUpdates) {
+        // Won't be used for now
+        /*if (HandlerCommonConfig.HANDLER.instance().checkForUpdates) {
             try {
                 String version = getLatestVersion();
 
@@ -94,10 +83,10 @@ public class JustLevelingFork {
             } catch (Exception e) {
                 LOGGER.warn(">> Error checking for updates!");
             }
-        }
+        }*/
     }
 
-    @NotNull
+    /*@NotNull
     private static String getLatestVersion() throws IOException {
         URL u = new URL("https://raw.githubusercontent.com/Senior-S/JustLeveling-Fork/master/VERSION");
         URLConnection conn = u.openConnection();
@@ -110,7 +99,7 @@ public class JustLevelingFork {
             buffer.append(inputLine);
         in.close();
         return buffer.toString();
-    }
+    }*/
 
     private void attributeSetup(EntityAttributeModificationEvent event) {
         for (EntityType<? extends LivingEntity> type : event.getTypes()) {

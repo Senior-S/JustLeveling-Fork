@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.registry.title;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerConfigClient;
@@ -17,6 +18,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreType
 public class Title extends ForgeRegistryEntry<Title> {
     private final ResourceLocation key;
     public final boolean Requirement;

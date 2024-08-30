@@ -95,7 +95,7 @@ public class JustLevelingScreen extends Screen {
         renderBackground(matrixStack);
         assert client.player != null;
         int progress = (int) (client.player.experienceProgress * 151.0F);
-        matrixStack.pushPose();
+        //matrixStack.pushPose();
         if (this.selectedPage == 0) {
             RenderSystem.enableBlend();
             RenderSystem.setShaderTexture(0, HandlerResources.SKILL_PAGE[0]);
@@ -131,7 +131,7 @@ public class JustLevelingScreen extends Screen {
             this.drawTitles(matrixStack, x, y, mouseX, mouseY, delta);
         }
 
-        matrixStack.popPose();
+        //matrixStack.popPose();
     }
 
     public void drawTitles(PoseStack matrixStack, int x, int y, int mouseX, int mouseY, float delta) {
@@ -139,7 +139,6 @@ public class JustLevelingScreen extends Screen {
 
         this.searchTitle.setVisible(true);
         this.searchTitle.render(matrixStack, mouseX, mouseY, delta);
-
 
         List<Title> titleList = RegistryTitles.TITLES_REGISTRY.get().getValues().stream().toList();
         List<Title> unlockTitles = new ArrayList<>();
@@ -223,7 +222,7 @@ public class JustLevelingScreen extends Screen {
         if (Utils.checkMouse(x + 16, y + 144, mouseX, mouseY, 11, 11) && !this.scrollingDropDown) {
             RenderSystem.setShaderTexture(0, HandlerResources.SKILL_PAGE[1]);
             this.blit(matrixStack, x + 16, y + 144, 30, 179, 11, 11);
-            List<Component> tooltipList = new ArrayList();
+            List<Component> tooltipList = new ArrayList<>();
             tooltipList.add(new TranslatableComponent("tooltip.sort.button.mod_names").withStyle(ChatFormatting.DARK_AQUA));
             tooltipList.add(new TranslatableComponent("tooltip.sort.button.true").withStyle((Boolean) HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
             tooltipList.add(new TranslatableComponent("tooltip.sort.button.false").withStyle(!(Boolean) HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
@@ -244,7 +243,6 @@ public class JustLevelingScreen extends Screen {
         if (Utils.checkMouse(backIconX, backIconY, mouseX, mouseY, 18, 10) && !this.scrollingDropDown) {
             RenderSystem.setShaderTexture(0, HandlerResources.SKILL_PAGE[this.selectedPage]);
             this.blit(matrixStack, backIconX, backIconY, 222, 0, 18, 10);
-            assert client.screen != null;
             Utils.drawToolTip(this, matrixStack, new TranslatableComponent("tooltip.title.back"), mouseX, mouseY);
             this.isMouseCheck = true;
             if (this.checkMouse) {
@@ -336,7 +334,7 @@ public class JustLevelingScreen extends Screen {
         String rank = aptitude.getRank(aptitudeLevel).getString();
 
         RenderSystem.setShaderTexture(0, aptitude.getLockedTexture());
-        blit(matrixStack, x + 12, y + 9, 0.0F, 0.0F, 16, 16, 16, 16);
+        this.blit(matrixStack, x + 12, y + 9, 0.0F, 0.0F, 16, 16, 16, 16);
 
         client.font.draw(matrixStack, new TranslatableComponent(key).withStyle(ChatFormatting.BOLD), x + 34, y + 8, Utils.FONT_COLOR);
         client.font.draw(matrixStack, new TranslatableComponent("screen.skill.level_and_rank", Utils.numberFormat(aptitudeLevel), HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel, rank), x + 34, y + 18, Utils.FONT_COLOR);
@@ -577,9 +575,9 @@ public class JustLevelingScreen extends Screen {
             if (object instanceof Passive passive) {
                 int isMax = (passive.getLevel() == passive.getMaxLevel()) ? 24 : 0;
                 RenderSystem.setShaderTexture(0, passive.getTexture());
-                blit(matrixStack, xTexture, yTexture, 0.0F, 0.0F, 20, 20, 20, 20);
+                this.blit(matrixStack, xTexture, yTexture, 0.0F, 0.0F, 20, 20, 20, 20);
                 RenderSystem.setShaderTexture(0, HandlerResources.SKILL_ICONS);
-                blit(matrixStack, xIcon, yIcon, 0.0F, isMax, 24, 24, 72, 72);
+                this.blit(matrixStack, xIcon, yIcon, 0.0F, isMax, 24, 24, 72, 72);
                 int centerTextureX = xIcon + 9 - client.font.width(String.valueOf(passive.getLevel())) / 2;
 
                 int iconAdd = (passive.getLevel() < passive.getMaxLevel() && AptitudeCapability.get().getAptitudeLevel(passive.aptitude) >= passive.getNextLevelUp()) ? 10 : 0;
@@ -608,15 +606,15 @@ public class JustLevelingScreen extends Screen {
                         }
                     }
 
-                    matrixStack.pushPose();
+                    //matrixStack.pushPose();
                     Utils.drawToolTipList(this, matrixStack, passive.tooltip(), mouseX, mouseY);
                     RenderSystem.enableBlend();
                     RenderSystem.setShaderTexture(0, HandlerResources.SKILL_ICONS);
-                    blit(matrixStack, xIcon, yIcon, 0.0F, 48.0F, 24, 24, 72, 72);
+                    this.blit(matrixStack, xIcon, yIcon, 0.0F, 48.0F, 24, 24, 72, 72);
                     RenderSystem.setShaderTexture(0, HandlerResources.SKILL_PAGE[this.selectedPage]);
-                    blit(matrixStack, xIcon + 2, yIcon + 2, 1, 167 + iconLess, 9, 9);
-                    blit(matrixStack, xIcon + 13, yIcon + 2, 11, 167 + iconAdd, 9, 9);
-                    matrixStack.popPose();
+                    this.blit(matrixStack, xIcon + 2, yIcon + 2, 1, 167 + iconLess, 9, 9);
+                    this.blit(matrixStack, xIcon + 13, yIcon + 2, 11, 167 + iconAdd, 9, 9);
+                    //matrixStack.popPose();
                 }
 
                 RenderSystem.setShaderTexture(0, HandlerResources.SKILL_PAGE[this.selectedPage]);
@@ -632,14 +630,14 @@ public class JustLevelingScreen extends Screen {
                 int isToggle = 0;
                 if (skill.canSkill()) isToggle = 24;
                 RenderSystem.setShaderTexture(0, skill.getTexture());
-                blit(matrixStack, xTexture, yTexture, 0.0F, 0.0F, 20, 20, 20, 20);
+                this.blit(matrixStack, xTexture, yTexture, 0.0F, 0.0F, 20, 20, 20, 20);
                 RenderSystem.setShaderTexture(0, HandlerResources.SKILL_ICONS);
-                blit(matrixStack, xIcon, yIcon, 24.0F, isToggle, 24, 24, 72, 72);
+                this.blit(matrixStack, xIcon, yIcon, 24.0F, isToggle, 24, 24, 72, 72);
                 if (!skill.getToggle()) {
                     matrixStack.pushPose();
                     RenderSystem.enableBlend();
                     RenderSystem.setShaderTexture(0, HandlerResources.SKILL_ICONS);
-                    blit(matrixStack, xIcon, yIcon, 24.0F, 48.0F, 24, 24, 72, 72);
+                    this.blit(matrixStack, xIcon, yIcon, 24.0F, 48.0F, 24, 24, 72, 72);
                     matrixStack.popPose();
                 }
                 if (Utils.checkMouse(xIcon, yIcon, mouseX, mouseY, 24, 24)) {

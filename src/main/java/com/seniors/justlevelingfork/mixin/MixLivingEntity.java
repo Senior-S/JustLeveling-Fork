@@ -36,13 +36,13 @@ public abstract class MixLivingEntity {
     LivingEntity this$class = (LivingEntity) (Object) this;
 
     @Shadow
-    protected abstract void onEffectAdded(MobEffectInstance var1, @Nullable Entity var2);
+    protected abstract void onEffectAdded(MobEffectInstance pInstance, @Nullable Entity pEntity);
 
     @Shadow
-    protected abstract void onEffectUpdated(MobEffectInstance var1, boolean var2, @Nullable Entity var3);
+    protected abstract void onEffectUpdated(MobEffectInstance pEffectInstance, boolean pForced, @Nullable Entity pEntity);
 
     @Shadow
-    public abstract boolean canBeAffected(MobEffectInstance var1);
+    public abstract boolean canBeAffected(MobEffectInstance pEffectInstance);
 
     /** @deprecated */
     @Shadow

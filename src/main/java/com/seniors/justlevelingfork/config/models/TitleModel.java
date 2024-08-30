@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.config.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.seniors.justlevelingfork.JustLevelingFork;
@@ -29,6 +30,7 @@ public class TitleModel {
 
     public Boolean HideRequirements = false;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private transient Title _title;
 
     public Title getTitle() {

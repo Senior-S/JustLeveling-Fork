@@ -10,12 +10,14 @@
     "MixPlayerRenderer"
   ],
   "mixins": [
+    "MixItemStack",
     "MixLivingEntity",
     "MixPlayer",
     "MixPowderSnowBlock",
     "MixShulkerBullet",
     "MixTargetFinder",
-    "MixVillager"
+    "MixVillager",
+    "MixCraftingMenu"
   ],
   "injectors": {
     "defaultRequire": 1
