@@ -149,6 +149,22 @@ repositories {
         }
     }
 
+    // KubeJS
+    maven {
+        // Shedaniel's maven (Architectury API)
+        url = "https://maven.architectury.dev"
+        content {
+            includeGroup "dev.architectury"
+        }
+    }
+    maven {
+        // saps.dev Maven (KubeJS and Rhino)
+        url = "https://maven.saps.dev/minecraft"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
+
     // L2 Tabs
     flatDir{
         dirs 'libs'
@@ -156,15 +172,16 @@ repositories {
 }
 
 dependencies {
-    // Specify the version of Minecraft to use.
-    // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
-    // The "userdev" classifier will be requested and setup by ForgeGradle.
-    // If the group id is "net.minecraft" and the artifact id is one of ["client", "server", "joined"],
-    // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    // KubeJS
+    implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
+    implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
+    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
+
+    // Mixin Extras
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.0"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.0")) {
         jarJar.ranged(it, "[0.4.0,)")
@@ -213,6 +230,7 @@ dependencies {
     compileOnly fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5539243")
     runtimeOnly fg.deobf("curse.maven:caelus-308989:5281700")
 
+    // Gecko Lib compatibility
     runtimeOnly fg.deobf("curse.maven:geckolib-388172:5460309")
 }
 

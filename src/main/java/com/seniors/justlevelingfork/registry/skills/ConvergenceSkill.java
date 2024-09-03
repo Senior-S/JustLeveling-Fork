@@ -1,6 +1,6 @@
 package com.seniors.justlevelingfork.registry.skills;
 
-import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import com.seniors.justlevelingfork.handler.HandlerConvergenceItemsConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +28,7 @@ public class ConvergenceSkill {
 
     public static ArrayList<ItemDrops> getItems() {
         ArrayList<ItemDrops> dropList = new ArrayList<>();
-        List<? extends String> configList = HandlerCommonConfig.HANDLER.instance().convergenceItemList;
+        List<? extends String> configList = HandlerConvergenceItemsConfig.HANDLER.instance().convergenceItemList;
 
         for (String getValue : configList) {
             String getCraftingItem = getValue.split("#")[0];

@@ -43,7 +43,6 @@ public abstract class MixPlayerRenderer extends LivingEntityRenderer<AbstractCli
     private void draw$Text(Component component, int y, Entity entity, PoseStack matrices, MultiBufferSource buffer, int light) {
         boolean flag = !entity.isDiscrete();
         float f = entity.getNameTagOffsetY();
-        int i = "deadmau5".equals(component.getString()) ? (-10 - y) : -y;
         matrices.pushPose();
         matrices.translate(0.0F, f, 0.0F);
         matrices.mulPose(this.entityRenderDispatcher.cameraOrientation());
@@ -53,9 +52,9 @@ public abstract class MixPlayerRenderer extends LivingEntityRenderer<AbstractCli
         int j = (int) (f1 * 255.0F) << 24;
         Font font = getFont();
         float f2 = ((float) -font.width(component) / 2);
-        font.drawInBatch(component, f2, i, 553648127, false, matrix4f, buffer, flag ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, j, light);
+        font.drawInBatch(component, f2, -y, 553648127, false, matrix4f, buffer, flag ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, j, light);
         if (flag) {
-            font.drawInBatch(component, f2, i, -1, false, matrix4f, buffer, Font.DisplayMode.NORMAL, 0, light);
+            font.drawInBatch(component, f2, -y, -1, false, matrix4f, buffer, Font.DisplayMode.NORMAL, 0, light);
         }
         matrices.popPose();
     }

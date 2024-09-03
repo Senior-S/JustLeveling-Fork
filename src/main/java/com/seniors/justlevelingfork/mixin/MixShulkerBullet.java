@@ -33,7 +33,7 @@ public abstract class MixShulkerBullet {
             this.this$class.doEnchantDamageEffects(livingentity, entity);
             if (entity instanceof LivingEntity livingentity1) {
                 if (livingentity1 instanceof Player player) {
-                    if (!RegistrySkills.TURTLE_SHIELD.get().isEnabled(player)) {
+                    if (RegistrySkills.TURTLE_SHIELD == null || !RegistrySkills.TURTLE_SHIELD.get().isEnabled(player)) {
                         player.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 200), MoreObjects.firstNonNull(entity1, this.this$class));
                     }
                 } else {

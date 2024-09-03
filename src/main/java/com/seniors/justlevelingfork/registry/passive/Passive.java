@@ -1,16 +1,12 @@
 package com.seniors.justlevelingfork.registry.passive;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerConfigClient;
 import com.seniors.justlevelingfork.handler.HandlerResources;
+import com.seniors.justlevelingfork.registry.RegistryAptitudes;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -18,6 +14,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class Passive {
     public final ResourceLocation key;
@@ -36,6 +37,17 @@ public class Passive {
         this.attributeUuid = attributeUuid;
         this.attributeValue = attributeValue;
         this.levelsRequired = levelsRequired;
+    }
+
+    // KubeJS support
+    public static Passive add(String passiveName, String aptitudeName, String texture, Attribute attribute, String attributeUUID, Object attributeValue, int... levelsRequired){
+        Aptitude aptitude = RegistryAptitudes.getAptitude(aptitudeName);
+        if (aptitude == null){
+            throw new IllegalArgumentException("Aptitude name doesn't exist: " + aptitudeName);
+        }
+
+        ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, passiveName);
+        return new Passive(key, aptitude, HandlerResources.create(texture), attribute, attributeUUID, attributeValue, levelsRequired);
     }
 
     public Passive get() {

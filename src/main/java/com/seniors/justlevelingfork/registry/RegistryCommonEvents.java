@@ -42,7 +42,10 @@ import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.*;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.CriticalHitEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -62,11 +65,9 @@ import java.util.*;
  */
 @Mod.EventBusSubscriber(modid = JustLevelingFork.MOD_ID)
 public class RegistryCommonEvents {
-
     @SubscribeEvent
     public void onPlayerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
-        JustLevelingFork.getLOGGER().info("Player logged in");
         if (!player.level().isClientSide()) {
             if (player instanceof ServerPlayer serverPlayer) {
                 ConfigSyncCP.sendToPlayer(serverPlayer);
@@ -308,20 +309,24 @@ public class RegistryCommonEvents {
 
                 if (provider.getCounterAttack()) {
                     provider.setCounterAttackTimer(provider.getCounterAttackTimer() + 1);
-                    if (provider.getCounterAttackTimer() >= RegistrySkills.COUNTER_ATTACK.get().getValue()[0] * 40.0D) {
+                    if (RegistrySkills.COUNTER_ATTACK != null && provider.getCounterAttackTimer() >= RegistrySkills.COUNTER_ATTACK.get().getValue()[0] * 40.0D) {
                         CounterAttackSP.send(false, 0.0F);
                     }
                 }
             });
-            new RegistryAttributes.registerAttribute(serverPlayer, Attributes.ATTACK_DAMAGE, (float) RegistrySkills.ONE_HANDED.get().getValue()[0], UUID.fromString("55550aa2-eff2-4a81-b92b-a1cb95f15555")).amplifyAttribute((serverPlayer.getOffhandItem().getCount() == 0 && RegistrySkills.ONE_HANDED.get().isEnabled(serverPlayer)));
-            new RegistryAttributes.registerAttribute(serverPlayer, Attributes.ARMOR, (float) RegistrySkills.DIAMOND_SKIN.get().getValue()[1], UUID.fromString("55550aa2-eff2-4a81-b92b-a1cb95f15556")).amplifyAttribute((serverPlayer.isShiftKeyDown() && RegistrySkills.DIAMOND_SKIN.get().isEnabled(serverPlayer)));
+            if (RegistrySkills.ONE_HANDED != null){
+                new RegistryAttributes.registerAttribute(serverPlayer, Attributes.ATTACK_DAMAGE, (float) RegistrySkills.ONE_HANDED.get().getValue()[0], UUID.fromString("55550aa2-eff2-4a81-b92b-a1cb95f15555")).amplifyAttribute((serverPlayer.getOffhandItem().getCount() == 0 && RegistrySkills.ONE_HANDED.get().isEnabled(serverPlayer)));
+            }
+            if  (RegistrySkills.DIAMOND_SKIN != null){
+                new RegistryAttributes.registerAttribute(serverPlayer, Attributes.ARMOR, (float) RegistrySkills.DIAMOND_SKIN.get().getValue()[1], UUID.fromString("55550aa2-eff2-4a81-b92b-a1cb95f15556")).amplifyAttribute((serverPlayer.isShiftKeyDown() && RegistrySkills.DIAMOND_SKIN.get().isEnabled(serverPlayer)));
+            }
 
             RegistryAttributes.modifierAttributes(serverPlayer);
             if (serverPlayer.getHealth() > serverPlayer.getMaxHealth())
                 serverPlayer.setHealth(serverPlayer.getMaxHealth());
 
-            new RegistryEffects.addEffect(serverPlayer, RegistrySkills.CAT_EYES.get().isEnabled(player), MobEffects.NIGHT_VISION).add(210);
-            new RegistryEffects.addEffect(serverPlayer, RegistrySkills.DIAMOND_SKIN.get().isEnabled(player), MobEffects.DAMAGE_RESISTANCE).add(210, (int) (RegistrySkills.DIAMOND_SKIN.get().getValue()[0] - 1.0D));
+            new RegistryEffects.addEffect(serverPlayer, RegistrySkills.CAT_EYES != null && RegistrySkills.CAT_EYES.get().isEnabled(player), MobEffects.NIGHT_VISION).add(210);
+            new RegistryEffects.addEffect(serverPlayer, RegistrySkills.DIAMOND_SKIN != null && RegistrySkills.DIAMOND_SKIN.get().isEnabled(player), MobEffects.DAMAGE_RESISTANCE).add(210, (int) (RegistrySkills.DIAMOND_SKIN.get().getValue()[0] - 1.0D));
         }
 
     }
@@ -346,23 +351,36 @@ public class RegistryCommonEvents {
                 AptitudeCapability provider = AptitudeCapability.get(player);
                 ItemStack item = player.getMainHandItem();
 
-                if (!provider.canUseItem(player, item)) {
+                ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
+                if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
+                    List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
+                    if (!extractedTypes.isEmpty()) {
+                        for (String tetraItem : extractedTypes) {
+                            if (!provider.canUseSpecificID(player, tetraItem)) {
+                                event.setCanceled(true);
+                            }
+                        }
+                    }
+                }
+                else if (!provider.canUseItem(player, item)) {
                     event.setCanceled(true);
                 }
             }
 
-            int random = (int) Math.floor(Math.random() * RegistrySkills.LIMIT_BREAKER.get().getValue()[0]);
+            if (RegistrySkills.LIMIT_BREAKER != null){
+                int random = (int) Math.floor(Math.random() * RegistrySkills.LIMIT_BREAKER.get().getValue()[0]);
 
-            if (RegistrySkills.LIMIT_BREAKER.get().isEnabled(player)) {
-                Level level = event.getEntity().level();
-                if (level instanceof ServerLevel serverLevel) {
-                    if (random == 1) {
-                        target.hurt(target.damageSources().playerAttack(player), (float) RegistrySkills.LIMIT_BREAKER.get().getValue()[1]);
-                        serverLevel.playSound(null, player, RegistrySounds.LIMIT_BREAKER.get(), SoundSource.PLAYERS, 0.5F, 1.0F);
+                if (RegistrySkills.LIMIT_BREAKER.get().isEnabled(player)) {
+                    Level level = event.getEntity().level();
+                    if (level instanceof ServerLevel serverLevel) {
+                        if (random == 1) {
+                            target.hurt(target.damageSources().playerAttack(player), (float) RegistrySkills.LIMIT_BREAKER.get().getValue()[1]);
+                            serverLevel.playSound(null, player, RegistrySounds.LIMIT_BREAKER.get(), SoundSource.PLAYERS, 0.5F, 1.0F);
+                        }
                     }
                 }
-
             }
+
             player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(capability -> {
                 AptitudeCapability aptitudeCapability = AptitudeCapability.get(player);
                 if (aptitudeCapability.getCounterAttack()) {
@@ -378,7 +396,7 @@ public class RegistryCommonEvents {
         float modifier = event.getOriginalSpeed() * (1.0F + (float) player.getAttributeValue(RegistryAttributes.BREAK_SPEED.get()));
         if (player.getMainHandItem().is(itemHolder -> itemHolder.get() instanceof net.minecraft.world.item.PickaxeItem)) {
             if (event.getState().is(RegistryTags.Blocks.OBSIDIAN)) {
-                if (RegistrySkills.OBSIDIAN_SMASHER.get().isEnabled(player)) {
+                if (RegistrySkills.OBSIDIAN_SMASHER != null && RegistrySkills.OBSIDIAN_SMASHER.get().isEnabled(player)) {
                     event.setNewSpeed((float) (event.getOriginalSpeed() * RegistrySkills.OBSIDIAN_SMASHER.get().getValue()[0]) + modifier);
                 } else {
                     event.setNewSpeed(event.getOriginalSpeed());
@@ -401,7 +419,7 @@ public class RegistryCommonEvents {
             float attribute = (float) event.getEntity().getAttributeValue(RegistryAttributes.CRITICAL_DAMAGE.get());
             event.setDamageModifier(damage + attribute);
 
-            if (RegistrySkills.BERSERKER.get().isEnabled(player) && player.getHealth() <= player.getMaxHealth() * (float) (RegistrySkills.BERSERKER.get().getValue()[0] / 100.0D)) {
+            if (RegistrySkills.BERSERKER != null & RegistrySkills.BERSERKER.get().isEnabled(player) && player.getHealth() <= player.getMaxHealth() * (float) (RegistrySkills.BERSERKER.get().getValue()[0] / 100.0D)) {
                 float newDamage = event.getDamageModifier();
                 if (player.onGround() || player.isInWater()) {
                     event.setResult(Event.Result.ALLOW);
@@ -410,7 +428,7 @@ public class RegistryCommonEvents {
             }
 
             if (player instanceof ServerPlayer serverPlayer) {
-                if (RegistrySkills.CRITICAL_ROLL.get().isEnabled(serverPlayer) && (event.isVanillaCritical() || (RegistrySkills.BERSERKER.get().isEnabled(player) && player.getHealth() <= player.getMaxHealth() * (float) (RegistrySkills.BERSERKER.get().getValue()[0] / 100.0D)))) {
+                if (RegistrySkills.CRITICAL_ROLL != null && RegistrySkills.CRITICAL_ROLL.get().isEnabled(serverPlayer) && (event.isVanillaCritical() || (RegistrySkills.BERSERKER != null && RegistrySkills.BERSERKER.get().isEnabled(player) && player.getHealth() <= player.getMaxHealth() * (float) (RegistrySkills.BERSERKER.get().getValue()[0] / 100.0D)))) {
                     float newDamage = event.getDamageModifier();
                     int dice = (int) Math.floor(Math.random() * 7.0D);
                     if (dice == 1) {
@@ -436,7 +454,27 @@ public class RegistryCommonEvents {
                     float sourceDamage = (float) livingEntity.getAttributeValue(Attributes.ATTACK_DAMAGE);
                     LivingEntity livingEntity1 = event.getEntity();
                     if (livingEntity1 instanceof ServerPlayer player) {
-                        if (RegistrySkills.COUNTER_ATTACK.get().isEnabled(player)) {
+                        if (!player.isCreative()) {
+                            AptitudeCapability provider = AptitudeCapability.get(player);
+                            ItemStack item = player.getMainHandItem();
+
+                            ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
+                            if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
+                                List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
+                                if (!extractedTypes.isEmpty()) {
+                                    for (String tetraItem : extractedTypes) {
+                                        if (!provider.canUseSpecificID(player, tetraItem)) {
+                                            event.setCanceled(true);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (!provider.canUseItem(player, item)) {
+                                event.setCanceled(true);
+                            }
+                        }
+
+                        if (!event.isCanceled() && RegistrySkills.COUNTER_ATTACK != null && RegistrySkills.COUNTER_ATTACK.get().isEnabled(player)) {
                             player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {
                                 CounterAttackSP.sendToPlayer(true, (float) (sourceDamage * RegistrySkills.COUNTER_ATTACK.get().getValue()[1] / 100.0D), player);
                             });
@@ -457,14 +495,14 @@ public class RegistryCommonEvents {
                 double baseDamage = arrow.getBaseDamage();
                 double arrowDamage = baseDamage + player.getAttributeValue(RegistryAttributes.PROJECTILE_DAMAGE.get()) / 5.0D;
                 arrow.setBaseDamage(arrowDamage);
-                if (RegistrySkills.STEALTH_MASTERY.get().isEnabled(player) && player.isShiftKeyDown())
+                if (RegistrySkills.STEALTH_MASTERY != null && RegistrySkills.STEALTH_MASTERY.get().isEnabled(player) && player.isShiftKeyDown())
                     arrow.setBaseDamage(arrowDamage + baseDamage * (RegistrySkills.STEALTH_MASTERY.get().getValue()[2] - 1.0D));
             }
 
             entity = event.getProjectile().getOwner();
             if (entity instanceof ServerPlayer serverPlayer) {
                 if (event.getRayTraceResult().getType() == HitResult.Type.ENTITY)
-                    (new RegistryEffects.addEffect(serverPlayer, RegistrySkills.QUICK_REPOSITION.get().isEnabled(serverPlayer), MobEffects.MOVEMENT_SPEED)).add((int) (10.0D + 20.0D * RegistrySkills.QUICK_REPOSITION.get().getValue()[1]), (int) (RegistrySkills.QUICK_REPOSITION.get().getValue()[0] - 1.0D));
+                    (new RegistryEffects.addEffect(serverPlayer, (RegistrySkills.QUICK_REPOSITION != null && RegistrySkills.QUICK_REPOSITION.get().isEnabled(serverPlayer)), MobEffects.MOVEMENT_SPEED)).add((int) (10.0D + 20.0D * RegistrySkills.QUICK_REPOSITION.get().getValue()[1]), (int) (RegistrySkills.QUICK_REPOSITION.get().getValue()[0] - 1.0D));
             }
         }
 
@@ -475,7 +513,7 @@ public class RegistryCommonEvents {
         if (event.getEntity() != null) {
             Entity entity = event.getEntity();
             if (entity instanceof Player player) {
-                if (RegistrySkills.SAFE_PORT.get().isEnabled(player)) event.setAttackDamage(0.0F);
+                if (RegistrySkills.SAFE_PORT != null && RegistrySkills.SAFE_PORT.get().isEnabled(player)) event.setAttackDamage(0.0F);
             }
         }
 
@@ -484,7 +522,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerBreakBlock(BlockEvent.BreakEvent event) {
         Player player = event.getPlayer();
-        if (player != null &&
+        if (RegistrySkills.TREASURE_HUNTER != null && player != null &&
                 event.getState().is(RegistryTags.Blocks.DIRT) && RegistrySkills.TREASURE_HUNTER.get().isEnabled(player)) {
             Level level = player.level();
             BlockPos pos = event.getPos();
@@ -500,7 +538,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerCraft(PlayerEvent.ItemCraftedEvent event) {
         Player player = event.getEntity();
-        if (player != null) {
+        if (player != null && RegistrySkills.CONVERGENCE != null) {
             int randomizer = (int) Math.floor(Math.random() * RegistrySkills.CONVERGENCE.get().getValue()[0]);
             if (RegistrySkills.CONVERGENCE.get().isEnabled(player) && randomizer == 1) {
                 ItemStack convergenceItem = ConvergenceSkill.drop(event.getCrafting());
@@ -517,14 +555,16 @@ public class RegistryCommonEvents {
             if (!(event.getEntity() instanceof Player)) {
                 Entity entity1 = event.getSource().getEntity();
                 if (entity1 instanceof Player player) {
-                    new RegistryEffects.addEffect((ServerPlayer) player, RegistrySkills.FIGHTING_SPIRIT.get().isEnabled(player), MobEffects.DAMAGE_BOOST).add((int) (10.0D + 20.0D * RegistrySkills.FIGHTING_SPIRIT.get().getValue()[1]), (int) (RegistrySkills.FIGHTING_SPIRIT.get().getValue()[0] - 1.0D));
+                    if (RegistrySkills.FIGHTING_SPIRIT != null){
+                        new RegistryEffects.addEffect((ServerPlayer) player, RegistrySkills.FIGHTING_SPIRIT.get().isEnabled(player), MobEffects.DAMAGE_BOOST).add((int) (10.0D + 20.0D * RegistrySkills.FIGHTING_SPIRIT.get().getValue()[1]), (int) (RegistrySkills.FIGHTING_SPIRIT.get().getValue()[0] - 1.0D));
+                    }
                 }
             }
 
             Entity entity = event.getSource().getEntity();
             if (entity instanceof Player) {
                 Player player = (Player) entity;
-                if (RegistrySkills.LIFE_EATER.get().isEnabled(player)) {
+                if (RegistrySkills.LIFE_EATER != null && RegistrySkills.LIFE_EATER.get().isEnabled(player)) {
                     player.heal((float) RegistrySkills.LIFE_EATER.get().getValue()[0]);
                 }
             }
@@ -532,7 +572,7 @@ public class RegistryCommonEvents {
             if (!(event.getEntity() instanceof Player)) {
                 entity = event.getSource().getEntity();
                 if (entity instanceof Player player) {
-                    if (RegistrySkills.LUCKY_DROP.get().isEnabled(player)) {
+                    if (RegistrySkills.LUCKY_DROP != null && RegistrySkills.LUCKY_DROP.get().isEnabled(player)) {
                         int random = (int) Math.floor(Math.random() * RegistrySkills.LUCKY_DROP.get().getValue()[0]);
                         if (random == 0) {
                             List<ItemStack> equipment = new ArrayList<>();

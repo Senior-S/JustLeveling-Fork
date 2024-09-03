@@ -1,11 +1,13 @@
 package com.seniors.justlevelingfork.registry.skills;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.client.core.Value;
 import com.seniors.justlevelingfork.client.core.ValueType;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerConfigClient;
 import com.seniors.justlevelingfork.handler.HandlerResources;
+import com.seniors.justlevelingfork.registry.RegistryAptitudes;
 import com.seniors.justlevelingfork.registry.RegistryCapabilities;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import net.minecraft.ChatFormatting;
@@ -35,6 +37,17 @@ public class Skill {
         this.requiredLevel = levelRequirement;
         this.texture = skillTexture;
         this.configValues = skillValues;
+    }
+
+    // KubeJS support
+    public static Skill add(String skillName, String aptitudeName, int levelRequirement, String texture, Value... skillValues){
+        Aptitude aptitude = RegistryAptitudes.getAptitude(aptitudeName);
+        if (aptitude == null){
+            throw new IllegalArgumentException("Aptitude name doesn't exist: " + aptitudeName);
+        }
+
+        ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, skillName);
+        return new Skill(key, aptitude, levelRequirement, HandlerResources.create(texture), skillValues);
     }
 
     public Skill get() {

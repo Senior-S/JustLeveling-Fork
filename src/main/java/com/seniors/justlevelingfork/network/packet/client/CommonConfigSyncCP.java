@@ -2,6 +2,7 @@ package com.seniors.justlevelingfork.network.packet.client;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import com.seniors.justlevelingfork.handler.HandlerConvergenceItemsConfig;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -115,7 +116,7 @@ public class CommonConfigSyncCP {
         treasureHunterProbability = HandlerCommonConfig.HANDLER.instance().treasureHunterProbability;
         treasureHunterItemList = HandlerCommonConfig.HANDLER.instance().treasureHunterItemList;
         convergenceProbability = HandlerCommonConfig.HANDLER.instance().convergenceProbability;
-        convergenceItemList = HandlerCommonConfig.HANDLER.instance().convergenceItemList;
+        convergenceItemList = HandlerConvergenceItemsConfig.HANDLER.instance().convergenceItemList;
         lifeEaterModifier = HandlerCommonConfig.HANDLER.instance().lifeEaterModifier;
         criticalRoll6Modifier = HandlerCommonConfig.HANDLER.instance().criticalRoll6Modifier;
         criticalRoll1Probability = HandlerCommonConfig.HANDLER.instance().criticalRoll1Probability;
@@ -318,7 +319,7 @@ public class CommonConfigSyncCP {
                 HandlerCommonConfig.HANDLER.instance().treasureHunterProbability = this.treasureHunterProbability;
                 HandlerCommonConfig.HANDLER.instance().treasureHunterItemList = this.treasureHunterItemList;
                 HandlerCommonConfig.HANDLER.instance().convergenceProbability = this.convergenceProbability;
-                HandlerCommonConfig.HANDLER.instance().convergenceItemList = this.convergenceItemList;
+                HandlerConvergenceItemsConfig.HANDLER.instance().convergenceItemList = this.convergenceItemList;
                 HandlerCommonConfig.HANDLER.instance().lifeEaterModifier = this.lifeEaterModifier;
                 HandlerCommonConfig.HANDLER.instance().criticalRoll6Modifier = this.criticalRoll6Modifier;
                 HandlerCommonConfig.HANDLER.instance().criticalRoll1Probability = this.criticalRoll1Probability;

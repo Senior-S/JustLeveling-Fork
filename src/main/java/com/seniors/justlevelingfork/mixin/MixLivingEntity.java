@@ -107,7 +107,7 @@ public abstract class MixLivingEntity {
     @Unique
     private boolean this$onAddEffect(MobEffectInstance effect, Player player) {
         int duration = effect.getDuration();
-        if (effect.getEffect().getCategory() == MobEffectCategory.HARMFUL && RegistrySkills.LION_HEART.get().isEnabled(player)) {
+        if (effect.getEffect().getCategory() == MobEffectCategory.HARMFUL && (RegistrySkills.LION_HEART != null && RegistrySkills.LION_HEART.get().isEnabled(player))) {
             duration -= (int)((double)effect.getDuration() * RegistrySkills.LION_HEART.get().getValue()[0] / 100.0D);
         }
 
@@ -135,7 +135,7 @@ public abstract class MixLivingEntity {
         int duration = effect.getDuration();
         int amplifier = effect.getAmplifier();
         if (effect.getEffect().getCategory() == MobEffectCategory.BENEFICIAL && player.isUsingItem() && (player.getMainHandItem().getItem() instanceof PotionItem || player.getOffhandItem().getItem() instanceof PotionItem)) {
-            if (RegistrySkills.ALCHEMY_MANIPULATION.get().isEnabled(player)) {
+            if (RegistrySkills.ALCHEMY_MANIPULATION != null && RegistrySkills.ALCHEMY_MANIPULATION.get().isEnabled(player)) {
                 amplifier += (int)RegistrySkills.ALCHEMY_MANIPULATION.get().getValue()[0];
             }
 
@@ -172,9 +172,11 @@ public abstract class MixLivingEntity {
         LivingEntity var6 = this.this$class;
         if (var6 instanceof ServerPlayer) {
             ServerPlayer player = (ServerPlayer)var6;
-            double isSneaking = player.isShiftKeyDown() ? RegistrySkills.STEALTH_MASTERY.get().getValue()[0] : RegistrySkills.STEALTH_MASTERY.get().getValue()[1];
-            if (RegistrySkills.STEALTH_MASTERY.get().isEnabled(player)) {
-                cir.setReturnValue(visibilityPercent * isSneaking / 100.0D);
+            if(RegistrySkills.STEALTH_MASTERY != null){
+                double isSneaking = player.isShiftKeyDown() ? RegistrySkills.STEALTH_MASTERY.get().getValue()[0] : RegistrySkills.STEALTH_MASTERY.get().getValue()[1];
+                if (RegistrySkills.STEALTH_MASTERY.get().isEnabled(player)) {
+                    cir.setReturnValue(visibilityPercent * isSneaking / 100.0D);
+                }
             }
         }
 

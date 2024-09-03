@@ -19,7 +19,7 @@ public abstract class MixPlayer extends LivingEntity {
 
 
     public int getMaxAirSupply() {
-        if (RegistrySkills.ATHLETICS.get().isEnabled(this.this$class)) {
+        if (RegistrySkills.ATHLETICS != null && RegistrySkills.ATHLETICS.get().isEnabled(this.this$class)) {
             return (int) (300.0D * RegistrySkills.ATHLETICS.get().getValue()[0]);
         }
         return 300;

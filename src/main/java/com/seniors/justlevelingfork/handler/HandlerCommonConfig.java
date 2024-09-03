@@ -306,10 +306,6 @@ public class HandlerCommonConfig {
     @IntField(min = 1, max = 10000)
     public int convergenceProbability = 8;
 
-    @SerialEntry(comment = "Convergence skill convergence item list")
-    @ListGroup(controllerFactory = StringListGroup.class, valueFactory = StringListGroup.class)
-    public List<String> convergenceItemList = List.of();
-
     @SerialEntry(comment = "Life Eater skill life steal amplifier increase")
     @AutoGen(category = "common", group = "skills")
     @FloatField(min = 0.0f, max = 10000.0f)

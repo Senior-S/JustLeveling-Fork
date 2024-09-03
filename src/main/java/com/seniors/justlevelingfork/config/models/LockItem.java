@@ -1,10 +1,12 @@
 package com.seniors.justlevelingfork.config.models;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class LockItem {
 
@@ -52,7 +54,15 @@ public class LockItem {
 
     @Override
     public String toString() {
-        List<String> strings = Aptitudes.stream().map(Aptitude::toString).toList();
+        if(Aptitudes.stream().anyMatch(Objects::isNull)){
+            JustLevelingFork.getLOGGER().info(">> Found null aptitude at item {}", this.Item);
+        }
+        List<String> strings = new ArrayList<>();
+        try{
+            strings = Aptitudes.stream().map(Aptitude::toString).toList();
+        } catch (NullPointerException e){
+            JustLevelingFork.getLOGGER().info(">> Found null aptitude at item {}", this.Item);
+        }
 
         String aptitudeStringList = String.join(";", strings);
 
@@ -66,7 +76,12 @@ public class LockItem {
         public int Level;
 
         public Aptitude(String aptitudeName, int level) {
-            Aptitude = EAptitude.valueOf(StringUtils.capitalize(aptitudeName));
+            try {
+                Aptitude = EAptitude.valueOf(StringUtils.capitalize(aptitudeName));
+            } catch (IllegalArgumentException e){
+                JustLevelingFork.getLOGGER().info(">> Wrong aptitude name {}", aptitudeName);
+                Aptitude = EAptitude.Strength;
+            }
             Level = level;
         }
 

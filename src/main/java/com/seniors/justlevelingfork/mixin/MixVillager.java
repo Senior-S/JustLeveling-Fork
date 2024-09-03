@@ -17,7 +17,7 @@ public abstract class MixVillager {
 
     @Inject(method = {"updateSpecialPrices"}, at = {@At("TAIL")})
     public void updateSpecialPrices(Player player, CallbackInfo info) {
-        if (player != null && RegistrySkills.HAGGLER.get().isEnabled(player))
+        if (player != null && RegistrySkills.HAGGLER != null && RegistrySkills.HAGGLER.get().isEnabled(player))
             for (MerchantOffer merchantoffer : this.this$class.getOffers()) {
                 double d0 = RegistrySkills.HAGGLER.get().getValue()[0] / 100.0D;
                 int j = (int) Math.floor(d0 * merchantoffer.getBaseCostA().getCount());

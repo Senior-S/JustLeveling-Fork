@@ -14,7 +14,7 @@ public abstract class MixPowderSnowBlock {
     @Inject(method = {"canEntityWalkOnPowderSnow"}, at = {@At("HEAD")}, cancellable = true)
     private static void canEntityWalkOnPowderSnow(Entity entity, CallbackInfoReturnable<Boolean> info) {
         if (entity instanceof Player player) {
-            if (RegistrySkills.SNOW_WALKER.get().isEnabled(player))
+            if (RegistrySkills.SNOW_WALKER != null && RegistrySkills.SNOW_WALKER.get().isEnabled(player))
                 info.setReturnValue(Boolean.TRUE);
         }
 

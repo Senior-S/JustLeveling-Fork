@@ -21,6 +21,8 @@ public class Configuration {
         Path clientConfigPath = Paths.get("JLFork").resolve("just_leveling-client.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, HandlerConfigClient.SPEC, clientConfigPath.toString());
 
+        HandlerConvergenceItemsConfig.HANDLER.load();
+
         LoadDefaultTitles();
         ManageOldConfig();
     }

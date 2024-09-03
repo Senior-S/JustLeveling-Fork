@@ -46,7 +46,7 @@ public abstract class MixInventoryScreen extends EffectRenderingInventoryScreen<
 
         DrawTabs.render(matrixStack, mouseX, mouseY, 176, 166, getRecipeBookComponent().isVisible() ? 77 : 0);
 
-        if (RegistrySkills.WORMHOLE_STORAGE.get().isEnabled()) {
+        if (RegistrySkills.WORMHOLE_STORAGE != null && RegistrySkills.WORMHOLE_STORAGE.get().isEnabled()) {
             this.this$isMouseCheck = false;
             matrixStack.pose().pushPose();
             int width = (getMinecraft().getWindow().getGuiScaledWidth() - 176) / 2;
