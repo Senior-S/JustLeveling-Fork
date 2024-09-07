@@ -6,11 +6,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.event.CurioChangeEvent;
+import top.theillusivec4.curios.api.event.CurioEquipEvent;
 import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 
 public class HandlerCurios {
@@ -19,21 +20,15 @@ public class HandlerCurios {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onChangeCurio(CurioChangeEvent event) {
+    public void onCurioCanEquipEvent(CurioEquipEvent event){
         LivingEntity livingEntity = event.getEntity();
         if (livingEntity instanceof Player player) {
             if (!player.isCreative()) {
-                ItemStack item1 = event.getTo();
-                ItemStack item2 = event.getFrom();
+                ItemStack item1 = event.getStack();
 
                 AptitudeCapability aptitudeCapability = AptitudeCapability.get(player);
                 if (!aptitudeCapability.canUseItem(player, item1)) {
-                    player.drop(item1.copy(), false);
-                    item1.setCount(0);
-                }
-                if (!aptitudeCapability.canUseItem(player, item2)) {
-                    player.drop(item2.copy(), false);
-                    item2.setCount(0);
+                    event.setResult(Event.Result.DENY);
                 }
             }
         }

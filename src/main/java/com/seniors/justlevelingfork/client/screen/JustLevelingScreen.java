@@ -61,7 +61,6 @@ public class JustLevelingScreen extends Screen {
         super(Component.translatable("screen.aptitude.title"));
     }
 
-
     protected void init() {
         int x = (this.width - 176) / 2;
         int y = (this.height - 166) / 2;
@@ -203,7 +202,7 @@ public class JustLevelingScreen extends Screen {
         matrixStack.blit(HandlerResources.SKILL_PAGE[1], x + 16, y + 144, 30, 167, 11, 11);
         if (Utils.checkMouse(x + 16, y + 144, mouseX, mouseY, 11, 11) && !this.scrollingDropDown) {
             matrixStack.blit(HandlerResources.SKILL_PAGE[1], x + 16, y + 144, 30, 179, 11, 11);
-            List<Component> tooltipList = new ArrayList();
+            List<Component> tooltipList = new ArrayList<>();
             tooltipList.add(Component.translatable("tooltip.sort.button.mod_names").withStyle(ChatFormatting.DARK_AQUA));
             tooltipList.add(Component.translatable("tooltip.sort.button.true").withStyle((Boolean) HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
             tooltipList.add(Component.translatable("tooltip.sort.button.false").withStyle(!(Boolean) HandlerConfigClient.showTitleModName.get() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));

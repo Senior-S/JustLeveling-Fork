@@ -108,6 +108,10 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
         return this.aptitudeLevel.get(aptitude.getName());
     }
 
+    public int getAptitudeLevel(String aptitudeName) {
+        return this.aptitudeLevel.get(aptitudeName);
+    }
+
     public void setAptitudeLevel(Aptitude aptitude, int lvl) {
         this.aptitudeLevel.put(aptitude.getName(), lvl);
     }

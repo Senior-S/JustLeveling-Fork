@@ -54,7 +54,7 @@ public class HandlerTitlesConfig {
             new TitleModel("enchanter", List.of("stat/enchant_item/greater_or_equal/10"), false),
             new TitleModel("enchanter_great", List.of("stat/enchant_item/greater_or_equal/100"), false),
             new TitleModel("enchanter_master", List.of("stat/enchant_item/greater_or_equal/1000"), false),
-            new TitleModel("survivor", List.of("stat/time_since_death/greater_or_equal/100"), false),
+            new TitleModel("survivor", List.of("stat/time_since_death/greater_or_equal/2400000"), false),
             new TitleModel("businessman", List.of("stat/traded_with_villager/greater_or_equal/100"), false),
             new TitleModel("driver_boat", List.of("stat/boat_one_cm/greater_or_equal/1000000"), false),
             new TitleModel("driver_cart", List.of("stat/minecart_one_cm/greater_or_equal/1000000"), false),

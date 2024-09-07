@@ -42,10 +42,7 @@ import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.CriticalHitEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -419,25 +416,32 @@ public class RegistryCommonEvents {
             float attribute = (float) event.getEntity().getAttributeValue(RegistryAttributes.CRITICAL_DAMAGE.get());
             event.setDamageModifier(damage + attribute);
 
-            if (RegistrySkills.BERSERKER != null & RegistrySkills.BERSERKER.get().isEnabled(player) && player.getHealth() <= player.getMaxHealth() * (float) (RegistrySkills.BERSERKER.get().getValue()[0] / 100.0D)) {
-                float newDamage = event.getDamageModifier();
-                if (player.onGround() || player.isInWater()) {
-                    event.setResult(Event.Result.ALLOW);
-                    event.setDamageModifier(newDamage * 1.5F);
+            if (RegistrySkills.BERSERKER != null && RegistrySkills.BERSERKER.isPresent()){
+                if (RegistrySkills.BERSERKER.get().isEnabled(player) && player.getHealth() <= player.getMaxHealth() * (float) (RegistrySkills.BERSERKER.get().getValue()[0] / 100.0D)) {
+                    float newDamage = event.getDamageModifier();
+                    if (player.onGround() || player.isInWater()) {
+                        event.setResult(Event.Result.ALLOW);
+                        event.setDamageModifier(newDamage * 1.5F);
+                    }
                 }
             }
 
             if (player instanceof ServerPlayer serverPlayer) {
-                if (RegistrySkills.CRITICAL_ROLL != null && RegistrySkills.CRITICAL_ROLL.get().isEnabled(serverPlayer) && (event.isVanillaCritical() || (RegistrySkills.BERSERKER != null && RegistrySkills.BERSERKER.get().isEnabled(player) && player.getHealth() <= player.getMaxHealth() * (float) (RegistrySkills.BERSERKER.get().getValue()[0] / 100.0D)))) {
-                    float newDamage = event.getDamageModifier();
-                    int dice = (int) Math.floor(Math.random() * 7.0D);
-                    if (dice == 1) {
-                        PlayerMessagesCP.send(serverPlayer, "overlay.skill.justlevelingfork.critical_roll_1", 0);
-                        event.setDamageModifier(newDamage / (1.0F + 1.0F / (float) RegistrySkills.CRITICAL_ROLL.get().getValue()[1]));
-                    }
-                    if (dice == 6) {
-                        PlayerMessagesCP.send(serverPlayer, "overlay.skill.justlevelingfork.critical_roll_6", 0);
-                        event.setDamageModifier(newDamage * (float) RegistrySkills.CRITICAL_ROLL.get().getValue()[0]);
+                if(RegistrySkills.CRITICAL_ROLL != null && RegistrySkills.CRITICAL_ROLL.isPresent()){
+                    if(RegistrySkills.CRITICAL_ROLL.get().isEnabled(serverPlayer)){
+
+                        if(event.isVanillaCritical() || (RegistrySkills.BERSERKER != null && RegistrySkills.BERSERKER.isPresent() && RegistrySkills.BERSERKER.get().isEnabled(player) && player.getHealth() <= player.getMaxHealth() * (float) (RegistrySkills.BERSERKER.get().getValue()[0] / 100.0D))){
+                            float newDamage = event.getDamageModifier();
+                            int dice = (int) Math.floor(Math.random() * 7.0D);
+                            if (dice == 1) {
+                                PlayerMessagesCP.send(serverPlayer, "overlay.skill.justlevelingfork.critical_roll_1", 0);
+                                event.setDamageModifier(newDamage / (1.0F + 1.0F / (float) RegistrySkills.CRITICAL_ROLL.get().getValue()[1]));
+                            }
+                            if (dice == 6) {
+                                PlayerMessagesCP.send(serverPlayer, "overlay.skill.justlevelingfork.critical_roll_6", 0);
+                                event.setDamageModifier(newDamage * (float) RegistrySkills.CRITICAL_ROLL.get().getValue()[0]);
+                            }
+                        }
                     }
                 }
             }
@@ -490,7 +494,7 @@ public class RegistryCommonEvents {
     public void onPlayerShootArrow(ProjectileImpactEvent event) {
         Projectile projectile = event.getProjectile();
         if (projectile instanceof Arrow arrow) {
-            Entity entity = event.getProjectile().getOwner();
+            Entity entity = projectile.getOwner();
             if (entity instanceof Player player) {
                 double baseDamage = arrow.getBaseDamage();
                 double arrowDamage = baseDamage + player.getAttributeValue(RegistryAttributes.PROJECTILE_DAMAGE.get()) / 5.0D;
@@ -505,7 +509,20 @@ public class RegistryCommonEvents {
                     (new RegistryEffects.addEffect(serverPlayer, (RegistrySkills.QUICK_REPOSITION != null && RegistrySkills.QUICK_REPOSITION.get().isEnabled(serverPlayer)), MobEffects.MOVEMENT_SPEED)).add((int) (10.0D + 20.0D * RegistrySkills.QUICK_REPOSITION.get().getValue()[1]), (int) (RegistrySkills.QUICK_REPOSITION.get().getValue()[0] - 1.0D));
             }
         }
+    }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onArrowNockEvent(ArrowNockEvent event) {
+        Player player = event.getEntity();
+        if(player == null){
+            return;
+        }
+        ItemStack projectile = player.getProjectile(event.getBow());
+
+        AptitudeCapability provider = AptitudeCapability.get(player);
+        if (!provider.canUseItem(player, projectile)) {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
