@@ -5,15 +5,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraftforge.common.ToolAction;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
+import se.mickelus.tetra.module.data.VariantData;
 import se.mickelus.tetra.util.TierHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class TetraIntegration {
     private static final String _prefix = "tetra*tier*";
-    public static final List<String> TetraItems = List.of("tetra:modular_double", "tetra:modular_sword");
+    public static final List<String> TetraItems = List.of("tetra:modular_double", "tetra:modular_single", "tetra:modular_sword", "tetra:modular_shield", "tetra:modular_bow", "tetra:modular_crossbow");
 
     /**
      * Get a list of formatted modules.
@@ -29,6 +31,7 @@ public class TetraIntegration {
             for (int i = 0; i < toolActions.size(); i++) {
                 ToolAction action = toolActions.stream().toList().get(i);
                 String actionName = action.name();
+
                 Tier tier = TierHelper.getTier(modularHandheld.getHarvestTier(item, action));
 
                 if(tier == null){
@@ -53,7 +56,14 @@ public class TetraIntegration {
                         list.add(String.format("%shoe:%s", _prefix, tier.toString().toLowerCase()));
                         break;
                     case "cut":
-                        list.add(String.format("%scut:%s", _prefix, tier.toString().toLowerCase()));
+                        modularHandheld.getAllModules(item).stream().filter(c -> c.getKey().startsWith("sword/")).forEach(c -> {
+                            VariantData variantData = c.getVariantData(item);
+                            if (variantData != null && !Objects.equals(variantData.category, "misc")){
+                                String material = variantData.key.split("/")[1];
+                                list.add(String.format("%ssword:%s", _prefix, material.toLowerCase()));
+                            }
+                        });
+
                         break;
                 }
             }

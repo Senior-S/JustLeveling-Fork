@@ -9,6 +9,7 @@ import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.handler.HandlerConfigClient;
 import com.seniors.justlevelingfork.handler.HandlerResources;
+import com.seniors.justlevelingfork.integration.KubeJSIntegration;
 import com.seniors.justlevelingfork.network.packet.common.*;
 import com.seniors.justlevelingfork.registry.RegistryAptitudes;
 import com.seniors.justlevelingfork.registry.RegistryTitles;
@@ -449,7 +450,17 @@ public class JustLevelingScreen extends Screen {
                     this.isMouseCheck = true;
                     if (this.checkMouse) {
                         Utils.playSound();
-                        AptitudeLevelUpSP.send(aptitude);
+                        if (KubeJSIntegration.isModLoaded()) {
+                            boolean cancelled = KubeJSIntegration.postLevelUpEvent(client.player, aptitude);
+
+                            if (!cancelled) {
+                                AptitudeLevelUpSP.send(aptitude);
+                            }
+                        }
+                        else {
+                            AptitudeLevelUpSP.send(aptitude);
+                        }
+
                         this.checkMouse = false;
                     }
                 } else {

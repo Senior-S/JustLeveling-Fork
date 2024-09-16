@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ConvergenceSkill {
+    public static ArrayList<ItemDrops> items = null;
+
     public static ItemStack drop(ItemStack getCrafting) {
         ItemStack stack = null;
 
@@ -22,13 +24,15 @@ public class ConvergenceSkill {
             }
         }
 
-
         return stack;
     }
 
     public static ArrayList<ItemDrops> getItems() {
-        ArrayList<ItemDrops> dropList = new ArrayList<>();
-        List<? extends String> configList = HandlerConvergenceItemsConfig.HANDLER.instance().convergenceItemList;
+        if (items != null){
+            return items;
+        }
+
+        List<String> configList = HandlerConvergenceItemsConfig.HANDLER.instance().convergenceItemList;
 
         for (String getValue : configList) {
             String getCraftingItem = getValue.split("#")[0];
@@ -41,9 +45,9 @@ public class ConvergenceSkill {
             String getConvergenceItemPath = getConvergenceItem.split(":")[1];
             Item convergenceItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(getConvergenceItemNamespace, getConvergenceItemPath));
 
-            dropList.add(new ItemDrops(craftingItem, convergenceItem));
+            items.add(new ItemDrops(craftingItem, convergenceItem));
         }
-        return dropList;
+        return items;
     }
 
     public static final class ItemDrops {

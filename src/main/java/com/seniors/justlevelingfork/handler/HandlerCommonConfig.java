@@ -71,6 +71,11 @@ public class HandlerCommonConfig {
     @Boolean(formatter = Boolean.Formatter.ON_OFF)
     public boolean logSpellIds = false;
 
+    @SerialEntry(comment = "If true this will display the player titles as prefixes when a player chat.")
+    @AutoGen(category = "common", group = "general")
+    @Boolean(formatter = Boolean.Formatter.TRUE_FALSE)
+    public boolean displayTitlesAsPrefix = true;
+
     // Passive options
     @SerialEntry(comment = "Attack Damage passive value at max level")
     @AutoGen(category = "common", group = "passives")

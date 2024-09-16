@@ -12,6 +12,7 @@ import com.seniors.justlevelingfork.integration.*;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import com.seniors.justlevelingfork.registry.*;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -49,6 +50,9 @@ public class JustLevelingFork {
     }
 
     public static MutablePair<Boolean, String> UpdatesAvailable = new MutablePair<>(false, "");
+
+    // Required for the titles prefix
+    public static MinecraftServer server;
 
     public JustLevelingFork() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();

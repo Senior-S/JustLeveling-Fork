@@ -24,7 +24,7 @@ public abstract class MixItemStack {
         for (int i = 0; i < tags.size(); i++) {
             CompoundTag nbt = tags.getCompound(i);
 
-            if (RegistrySkills.SCHOLAR != null && RegistrySkills.SCHOLAR.get().isEnabled()) {
+            if (RegistrySkills.SCHOLAR == null || (RegistrySkills.SCHOLAR.get().isEnabled())) {
                 ForgeRegistries.ENCHANTMENTS.getDelegate(EnchantmentHelper.getEnchantmentId(nbt)).ifPresent(enchantment -> list.add(enchantment.get().getFullname(EnchantmentHelper.getEnchantmentLevel(nbt))));
             } else {
                 ForgeRegistries.ENCHANTMENTS.getDelegate(EnchantmentHelper.getEnchantmentId(nbt)).ifPresent(enchantment -> list.add(Component.translatable("tooltip.skill.scholar.lock_item").withStyle(ChatFormatting.GRAY)));

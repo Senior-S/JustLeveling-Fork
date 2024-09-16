@@ -84,6 +84,8 @@ public class RegistryCommonEvents {
             HandlerCommonConfig.HANDLER.instance().usingNewConfig = true;
             HandlerCommonConfig.HANDLER.save();
         }
+
+        JustLevelingFork.server = event.getServer();
     }
 
     @SubscribeEvent
@@ -364,6 +366,10 @@ public class RegistryCommonEvents {
                 }
             }
 
+            if(event.isCanceled()){
+                return;
+            }
+
             if (RegistrySkills.LIMIT_BREAKER != null){
                 int random = (int) Math.floor(Math.random() * RegistrySkills.LIMIT_BREAKER.get().getValue()[0]);
 
@@ -377,6 +383,7 @@ public class RegistryCommonEvents {
                     }
                 }
             }
+
 
             player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(capability -> {
                 AptitudeCapability aptitudeCapability = AptitudeCapability.get(player);
