@@ -47,6 +47,21 @@ public class RegisterItem {
             if (optionalLockItem.isPresent()) {
                 LockItem lockItem = optionalLockItem.get();
                 int index = HandlerLockItemsConfig.HANDLER.instance().lockItemList.indexOf(lockItem);
+                if (level < 1) {
+                    if (lockItem.Aptitudes.size() <= 1) {
+                        HandlerLockItemsConfig.HANDLER.instance().lockItemList.remove(index);
+                        player.sendSystemMessage(Component.literal("Removing item from lockItemList..."));
+                    }
+                    else {
+                        Optional<LockItem.Aptitude> aptitude = lockItem.Aptitudes.stream().filter(c -> c.Aptitude.toString().equalsIgnoreCase(aptitudeName)).findFirst();
+                        aptitude.ifPresent(value -> lockItem.Aptitudes.remove(value));
+
+                        HandlerLockItemsConfig.HANDLER.instance().lockItemList.set(index, lockItem);
+                        player.sendSystemMessage(Component.literal("Removing aptitude from item..."));
+                    }
+
+                    return Command.SINGLE_SUCCESS;
+                }
 
                 lockItem.Aptitudes.stream().filter(c -> c.Aptitude.toString().equalsIgnoreCase(aptitudeName)).findFirst().ifPresent(value -> lockItem.Aptitudes.remove(value));
 

@@ -451,7 +451,7 @@ public class JustLevelingScreen extends Screen {
                     if (this.checkMouse) {
                         Utils.playSound();
                         if (KubeJSIntegration.isModLoaded()) {
-                            boolean cancelled = KubeJSIntegration.postLevelUpEvent(client.player, aptitude);
+                            boolean cancelled = new KubeJSIntegration().postLevelUpEvent(client.player, aptitude);
 
                             if (!cancelled) {
                                 AptitudeLevelUpSP.send(aptitude);
