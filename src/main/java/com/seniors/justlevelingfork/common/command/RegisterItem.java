@@ -60,6 +60,7 @@ public class RegisterItem {
                         player.sendSystemMessage(Component.literal("Removing aptitude from item..."));
                     }
 
+                    HandlerLockItemsConfig.HANDLER.save();
                     return Command.SINGLE_SUCCESS;
                 }
 

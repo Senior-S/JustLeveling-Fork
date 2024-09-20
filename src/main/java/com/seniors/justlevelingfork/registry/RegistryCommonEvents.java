@@ -143,6 +143,8 @@ public class RegistryCommonEvents {
         if (!event.getLevel().isClientSide()) {
             Entity entity = event.getEntity();
             if (entity instanceof ServerPlayer serverPlayer) {
+                JustLevelingFork.server = serverPlayer.server;
+
                 SyncAptitudeCapabilityCP.send(serverPlayer);
                 RegistryAttributes.modifierAttributes(serverPlayer);
                 RegistryTitles.syncTitles(serverPlayer);

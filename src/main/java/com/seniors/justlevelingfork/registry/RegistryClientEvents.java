@@ -32,7 +32,7 @@ public class RegistryClientEvents {
 
     @SubscribeEvent
     public void onClientChatReceivedEvent(ClientChatReceivedEvent event){
-        if (HandlerCommonConfig.HANDLER.instance().displayTitlesAsPrefix) {
+        if (JustLevelingFork.server != null && HandlerCommonConfig.HANDLER.instance().displayTitlesAsPrefix) {
             ServerPlayer serverPlayer = JustLevelingFork.server.getPlayerList().getPlayer(event.getSender());
             if(serverPlayer == null) return;
             AptitudeCapability capability = AptitudeCapability.get(serverPlayer);
