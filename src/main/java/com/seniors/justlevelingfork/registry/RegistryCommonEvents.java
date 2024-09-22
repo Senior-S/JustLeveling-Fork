@@ -10,6 +10,7 @@ import com.seniors.justlevelingfork.network.packet.client.*;
 import com.seniors.justlevelingfork.network.packet.common.CounterAttackSP;
 import com.seniors.justlevelingfork.registry.skills.ConvergenceSkill;
 import com.seniors.justlevelingfork.registry.skills.TreasureHunterSkill;
+import com.seniors.justlevelingfork.registry.title.Title;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -62,6 +63,24 @@ import java.util.*;
  */
 @Mod.EventBusSubscriber(modid = JustLevelingFork.MOD_ID)
 public class RegistryCommonEvents {
+
+    @SubscribeEvent
+    public void onPlayerNameFormat(PlayerEvent.NameFormat event) {
+        if (JustLevelingFork.server != null && HandlerCommonConfig.HANDLER.instance().displayTitlesAsPrefix) {
+            ServerPlayer serverPlayer = JustLevelingFork.server.getPlayerList().getPlayer(event.getEntity().getUUID());
+            if(serverPlayer == null) return;
+            AptitudeCapability capability = AptitudeCapability.get(serverPlayer);
+            if(capability == null) return;
+            Title titleKey = RegistryTitles.getTitle(capability.getPlayerTitle());
+            String title = (titleKey != null) ? Component.translatable(RegistryTitles.getTitle(capability.getPlayerTitle()).getKey()).getString() : "";
+
+            event.setDisplayname(Component.literal(String.format("[%s] %s",
+                    title.isEmpty()
+                            ? Component.translatable(RegistryTitles.TITLELESS.get().getKey()).getString()
+                            : title,
+                    event.getDisplayname().getString())));
+        }
+    }
     @SubscribeEvent
     public void onPlayerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
@@ -76,6 +95,8 @@ public class RegistryCommonEvents {
 
     @SubscribeEvent
     public void onServerStarting(final ServerStartingEvent event) { // Let's migrate the config on server start to it runs on client and server.
+        JustLevelingFork.server = event.getServer();
+
         File oldConfigFile = FMLPaths.CONFIGDIR.get().resolve("just_leveling-common.toml").toFile();
         if (!HandlerCommonConfig.HANDLER.instance().usingNewConfig && oldConfigFile.exists()) {
             JustLevelingFork.getLOGGER().info("Configuration not migrated yet, starting migration...");
@@ -84,8 +105,6 @@ public class RegistryCommonEvents {
             HandlerCommonConfig.HANDLER.instance().usingNewConfig = true;
             HandlerCommonConfig.HANDLER.save();
         }
-
-        JustLevelingFork.server = event.getServer();
     }
 
     @SubscribeEvent
@@ -143,8 +162,6 @@ public class RegistryCommonEvents {
         if (!event.getLevel().isClientSide()) {
             Entity entity = event.getEntity();
             if (entity instanceof ServerPlayer serverPlayer) {
-                JustLevelingFork.server = serverPlayer.server;
-
                 SyncAptitudeCapabilityCP.send(serverPlayer);
                 RegistryAttributes.modifierAttributes(serverPlayer);
                 RegistryTitles.syncTitles(serverPlayer);

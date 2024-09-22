@@ -141,7 +141,7 @@ repositories {
         name 'Xander Maven'
         url 'https://maven.isxander.dev/releases'
     }
-    // Tetra, PointBlank, Tac:Zero, MrCrayfish's Gun Mod & ScorchedGuns 2
+    // Tetra, PointBlank, Tac:Zero, MrCrayfish's Gun Mod, ScorchedGuns 2 & JEI
     maven {
         url "https://cursemaven.com"
         content {
