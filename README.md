@@ -5,6 +5,9 @@ The idea behind this fork is fixing some bugs, performance issues and allow othe
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/6c6cDU2mKj)](https://discord.gg/6c6cDU2mKj)
 
+## FAQ
+[Click here.](https://github.com/Senior-S/JustLeveling-Fork/wiki/FAQ)
+
 ## Installation
 The mod requires the next libraries:<br>
 [ClothConfig](https://www.curseforge.com/minecraft/mc-mods/cloth-config)<br>
