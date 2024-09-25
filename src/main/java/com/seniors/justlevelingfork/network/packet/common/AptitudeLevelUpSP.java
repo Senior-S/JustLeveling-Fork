@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.network.packet.common;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.network.ServerNetworking;
@@ -35,7 +36,18 @@ public class AptitudeLevelUpSP {
                 AptitudeCapability capability = AptitudeCapability.get(player);
                 Aptitude aptitudePlayer = RegistryAptitudes.getAptitude(this.aptitude);
                 int aptitudeLevel = capability.getAptitudeLevel(aptitudePlayer);
+
+                boolean canLevelUpAptitude = (player.isCreative()
+                        || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= player.totalExperience
+                        || AptitudeLevelUpSP.requiredLevels(aptitudeLevel) <= player.experienceLevel);
+
+                if (!canLevelUpAptitude){
+                    JustLevelingFork.getLOGGER().info("Received level up packet without the required EXP needed to level up, skipping packet...");
+                    return;
+                }
+
                 int requiredLevel = requiredPoints(aptitudeLevel);
+
                 capability.addAptitudeLevel(aptitudePlayer, 1);
                 SyncAptitudeCapabilityCP.send(player);
                 if (!player.isCreative()) {

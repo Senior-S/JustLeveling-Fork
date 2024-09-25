@@ -97,6 +97,7 @@
  "commands.message.aptitude.set" : "The player %s now has %s levels in %s",
  "commands.message.title.set" : "The player %s now has the Title %s",
  "commands.message.title.unset" : "The player %s now no longer has the Title %s",
+ "commands.message.capability.not_found" : "The player doesn't have a valid capability!",
 
  "overlay.title.you_gain_a_title" : "You gain the Title:",
  "overlay.title.format" : "<%s>",

@@ -1,5 +1,6 @@
 package com.seniors.justlevelingfork.common.command;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -21,17 +22,24 @@ public class AptitudeLevelCommand {
         dispatcher.register(
                 (Commands.literal("aptitudes").requires(source -> source.hasPermission(2)))
                 .then(Commands.argument("player", EntityArgument.player())
-                        .then(Commands.argument("aptitude", AptitudeArgument.getArgument())
+                        .then(
+                                Commands.argument("aptitude", AptitudeArgument.getArgument())
                                 .then(Commands.literal("get")
                                         .executes(source -> getAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class)))
                                 )
                                 .then(Commands.literal("set")
                                         .then(Commands.argument("level", IntegerArgumentType.integer(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel))
-                                        .executes(source -> setAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class), IntegerArgumentType.getInteger(source, "level")))
+                                            .executes(source -> setAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class), IntegerArgumentType.getInteger(source, "level")))
+                                        )
                                 )
-                                .then(Commands.literal(("add")))
+                                .then(Commands.literal(("add"))
                                         .then(Commands.argument("level", IntegerArgumentType.integer(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel))
-                                        .executes(source -> addAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class), IntegerArgumentType.getInteger(source, "level"))))
+                                                .executes(source -> addAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class), IntegerArgumentType.getInteger(source, "level"))))
+                                )
+                                .then(Commands.literal(("subtract"))
+                                        .then(Commands.argument("level", IntegerArgumentType.integer(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel))
+                                                .executes(source -> addAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class), IntegerArgumentType.getInteger(source, "level")))
+                                        )
                                 )
                         )
                 )
@@ -44,10 +52,14 @@ public class AptitudeLevelCommand {
 
         if (player != null && aptitude != null) {
             AptitudeCapability capability = AptitudeCapability.get(player);
+            if (capability == null) {
+                source.getSource().sendFailure(Component.translatable("commands.message.capability.not_found"));
+                return 0;
+            }
 
             source.getSource().sendSuccess(() -> Component.translatable("commands.message.aptitude.get", player.getName().copy().withStyle(ChatFormatting.BOLD), Component.literal(String.valueOf(capability.getAptitudeLevel(aptitude))).withStyle(ChatFormatting.BOLD), Component.translatable(aptitude.getKey()).withStyle(ChatFormatting.BOLD)), false);
 
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
 
@@ -59,13 +71,17 @@ public class AptitudeLevelCommand {
 
         if (player != null && aptitude != null) {
             AptitudeCapability capability = AptitudeCapability.get(player);
+            if (capability == null) {
+                source.getSource().sendFailure(Component.translatable("commands.message.capability.not_found"));
+                return 0;
+            }
             capability.setAptitudeLevel(aptitude, setLevel);
             SyncAptitudeCapabilityCP.send(player);
 
             source.getSource().sendSuccess(() -> Component.translatable("commands.message.aptitude.set", player.getName().copy().withStyle(ChatFormatting.BOLD), Component.literal(String.valueOf(capability.getAptitudeLevel(aptitude))).withStyle(ChatFormatting.BOLD), Component.translatable(aptitude.getKey()).withStyle(ChatFormatting.BOLD)), false);
 
 
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
         return 0;
@@ -76,6 +92,10 @@ public class AptitudeLevelCommand {
 
         if (player != null && aptitude != null) {
             AptitudeCapability capability = AptitudeCapability.get(player);
+            if (capability == null) {
+                source.getSource().sendFailure(Component.translatable("commands.message.capability.not_found"));
+                return 0;
+            }
             int actualLevel = capability.getAptitudeLevel(aptitude);
 
             capability.setAptitudeLevel(aptitude,
@@ -87,7 +107,31 @@ public class AptitudeLevelCommand {
             source.getSource().sendSuccess(() -> Component.translatable("commands.message.aptitude.set", player.getName().copy().withStyle(ChatFormatting.BOLD), Component.literal(String.valueOf(capability.getAptitudeLevel(aptitude))).withStyle(ChatFormatting.BOLD), Component.translatable(aptitude.getKey()).withStyle(ChatFormatting.BOLD)), false);
 
 
-            return 1;
+            return Command.SINGLE_SUCCESS;
+        }
+
+        return 0;
+    }
+
+    public static int subtractAptitude(CommandContext<CommandSourceStack> source, ServerPlayer player, String aptitudeKey, int subtractLevel) {
+        Aptitude aptitude = RegistryAptitudes.getAptitude(aptitudeKey);
+
+        if (player != null && aptitude != null) {
+            AptitudeCapability capability = AptitudeCapability.get(player);
+            if (capability == null) {
+                source.getSource().sendFailure(Component.translatable("commands.message.capability.not_found"));
+                return 0;
+            }
+            int actualLevel = capability.getAptitudeLevel(aptitude);
+
+            capability.setAptitudeLevel(aptitude,
+                    Math.max((actualLevel - subtractLevel), 1));
+
+            SyncAptitudeCapabilityCP.send(player);
+
+            source.getSource().sendSuccess(() -> Component.translatable("commands.message.aptitude.set", player.getName().copy().withStyle(ChatFormatting.BOLD), Component.literal(String.valueOf(capability.getAptitudeLevel(aptitude))).withStyle(ChatFormatting.BOLD), Component.translatable(aptitude.getKey()).withStyle(ChatFormatting.BOLD)), false);
+
+            return Command.SINGLE_SUCCESS;
         }
 
         return 0;

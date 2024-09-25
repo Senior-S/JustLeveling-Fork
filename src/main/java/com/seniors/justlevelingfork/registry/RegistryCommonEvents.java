@@ -185,6 +185,9 @@ public class RegistryCommonEvents {
         ItemStack item = event.getItemStack();
         Block block = event.getLevel().getBlockState(event.getPos()).getBlock();
         AptitudeCapability provider = AptitudeCapability.get(player);
+        if (provider == null) {
+            return;
+        }
 
         ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
         if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
@@ -211,6 +214,9 @@ public class RegistryCommonEvents {
         ItemStack item = event.getItemStack();
         Block block = event.getLevel().getBlockState(event.getPos()).getBlock();
         AptitudeCapability provider = AptitudeCapability.get(player);
+        if (provider == null) {
+            return;
+        }
 
         ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
         if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
@@ -236,6 +242,9 @@ public class RegistryCommonEvents {
         if (player.isCreative()) return;
         ItemStack item = event.getItemStack();
         AptitudeCapability provider = AptitudeCapability.get(player);
+        if (provider == null) {
+            return;
+        }
 
         ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
         if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
@@ -262,6 +271,9 @@ public class RegistryCommonEvents {
         Entity entity = event.getTarget();
         ItemStack item = event.getItemStack();
         AptitudeCapability provider = AptitudeCapability.get(player);
+        if (provider == null) {
+            return;
+        }
 
         ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
         if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
@@ -307,6 +319,9 @@ public class RegistryCommonEvents {
             if (HandlerCommonConfig.HANDLER.instance().dropLockedItems) {
                 player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {
                     AptitudeCapability provider = AptitudeCapability.get(player);
+                    if (provider == null) {
+                        return;
+                    }
 
                     ItemStack hand = player.getMainHandItem();
                     ItemStack offHand = player.getOffhandItem();
@@ -324,6 +339,9 @@ public class RegistryCommonEvents {
         if (player instanceof ServerPlayer serverPlayer) {
             serverPlayer.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {
                 AptitudeCapability provider = AptitudeCapability.get(serverPlayer);
+                if (provider == null) {
+                    return;
+                }
 
                 if (provider.getCounterAttack()) {
                     provider.setCounterAttackTimer(provider.getCounterAttackTimer() + 1);
@@ -365,8 +383,8 @@ public class RegistryCommonEvents {
         Entity target = event.getTarget();
         Player player = event.getEntity();
         if (player != null) {
-            if (!player.isCreative()) {
-                AptitudeCapability provider = AptitudeCapability.get(player);
+            AptitudeCapability provider = AptitudeCapability.get(player);
+            if (!player.isCreative() && provider != null) {
                 ItemStack item = player.getMainHandItem();
 
                 ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
@@ -403,13 +421,9 @@ public class RegistryCommonEvents {
                 }
             }
 
-
-            player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(capability -> {
-                AptitudeCapability aptitudeCapability = AptitudeCapability.get(player);
-                if (aptitudeCapability.getCounterAttack()) {
-                    CounterAttackSP.send(false, 0.0F);
-                }
-            });
+            if (provider != null && provider.getCounterAttack()) {
+                CounterAttackSP.send(false, 0.0F);
+            }
         }
     }
 
@@ -484,8 +498,8 @@ public class RegistryCommonEvents {
                     float sourceDamage = (float) livingEntity.getAttributeValue(Attributes.ATTACK_DAMAGE);
                     LivingEntity livingEntity1 = event.getEntity();
                     if (livingEntity1 instanceof ServerPlayer player) {
-                        if (!player.isCreative()) {
-                            AptitudeCapability provider = AptitudeCapability.get(player);
+                        AptitudeCapability provider = AptitudeCapability.get(player);
+                        if (!player.isCreative() && provider != null) {
                             ItemStack item = player.getMainHandItem();
 
                             ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
@@ -504,7 +518,7 @@ public class RegistryCommonEvents {
                             }
                         }
 
-                        if (!event.isCanceled() && RegistrySkills.COUNTER_ATTACK != null && RegistrySkills.COUNTER_ATTACK.get().isEnabled(player)) {
+                        if (provider != null && !event.isCanceled() && RegistrySkills.COUNTER_ATTACK != null && RegistrySkills.COUNTER_ATTACK.get().isEnabled(player)) {
                             player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {
                                 CounterAttackSP.sendToPlayer(true, (float) (sourceDamage * RegistrySkills.COUNTER_ATTACK.get().getValue()[1] / 100.0D), player);
                             });
@@ -546,7 +560,7 @@ public class RegistryCommonEvents {
         ItemStack projectile = player.getProjectile(event.getBow());
 
         AptitudeCapability provider = AptitudeCapability.get(player);
-        if (!provider.canUseItem(player, projectile)) {
+        if (provider != null && !provider.canUseItem(player, projectile)) {
             event.setCanceled(true);
         }
     }
@@ -583,7 +597,7 @@ public class RegistryCommonEvents {
         Player player = event.getEntity();
         if (player != null && RegistrySkills.CONVERGENCE != null) {
             int randomizer = (int) Math.floor(Math.random() * RegistrySkills.CONVERGENCE.get().getValue()[0]);
-            if (RegistrySkills.CONVERGENCE.get().isEnabled(player) && randomizer == 1) {
+            if (RegistrySkills.CONVERGENCE.get().isEnabled(player) && (RegistrySkills.CONVERGENCE.get().getValue()[0] >= 100 || randomizer == 1)) {
                 ItemStack convergenceItem = ConvergenceSkill.drop(event.getCrafting());
                 if (convergenceItem != null) {
                     player.drop(convergenceItem, false);
@@ -605,8 +619,7 @@ public class RegistryCommonEvents {
             }
 
             Entity entity = event.getSource().getEntity();
-            if (entity instanceof Player) {
-                Player player = (Player) entity;
+            if (entity instanceof Player player) {
                 if (RegistrySkills.LIFE_EATER != null && RegistrySkills.LIFE_EATER.get().isEnabled(player)) {
                     player.heal((float) RegistrySkills.LIFE_EATER.get().getValue()[0]);
                 }

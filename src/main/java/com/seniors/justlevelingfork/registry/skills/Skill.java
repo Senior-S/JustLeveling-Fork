@@ -16,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -80,21 +79,17 @@ public class Skill {
             newValue[i] = 0.0D;
             if (this.configValues[i] != null) {
                 Object object = (this.configValues[i]).value;
-                if (object instanceof ForgeConfigSpec.DoubleValue) {
-                    ForgeConfigSpec.DoubleValue value = (ForgeConfigSpec.DoubleValue) object;
-                    newValue[i] = value.get();
+                if (object instanceof Double) {
+                    newValue[i] = (Double) object;
                 }
                 object = (this.configValues[i]).value;
-                if (object instanceof ForgeConfigSpec.IntValue) {
-                    ForgeConfigSpec.IntValue value = (ForgeConfigSpec.IntValue) object;
-                    newValue[i] = value.get();
+                if (object instanceof Integer) {
+                    newValue[i] = (Integer) object;
                 }
                 object = (this.configValues[i]).value;
-                if (object instanceof Number) {
-                    Number value = (Number) object;
+                if (object instanceof Number value) {
                     newValue[i] = value.doubleValue();
                 }
-
             }
         }
         return newValue;
