@@ -135,6 +135,8 @@ run-data
 run-data/*
 runs/
 .cache/
+server/
+server/*
 
 ### Gradle ###
 build/

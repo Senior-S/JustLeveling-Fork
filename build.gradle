@@ -120,17 +120,18 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {
     // Cloth Config API
     maven {
-        url "https://maven.shedaniel.me/"
+        url = "https://maven.shedaniel.me/"
     }
     // Player Animation
     maven {
-        name "KosmX's maven"
-        url 'https://maven.kosmx.dev/'
+        name = "KosmX's maven"
+        url = 'https://maven.kosmx.dev/'
     }
     // BetterCombat
     maven {
-        url 'https://api.modrinth.com/maven'
+        url = 'https://api.modrinth.com/maven'
     }
+
     // Curios API
     maven {
         name = "Illusive Soulworks maven"
@@ -138,12 +139,17 @@ repositories {
     }
     // YetAnotherConfigLib
     maven {
-        name 'Xander Maven'
-        url 'https://maven.isxander.dev/releases'
+        name = 'Kotlin for Forge'
+        url = 'https://thedarkcolour.github.io/KotlinForForge/'
     }
+    maven {
+        name = 'Xander Maven'
+        url = 'https://maven.isxander.dev/releases'
+    }
+
     // Tetra, PointBlank, Tac:Zero, MrCrayfish's Gun Mod, ScorchedGuns 2 & JEI
     maven {
-        url "https://cursemaven.com"
+        url = "https://cursemaven.com"
         content {
             includeGroup "curse.maven"
         }
@@ -172,7 +178,7 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
@@ -200,14 +206,12 @@ dependencies {
     // BetterCombat implementation
     implementation fg.deobf('maven.modrinth:better-combat:1.8.5+1.20.1-forge')
 
-    // Compile against only the API artifact
+    runtimeOnly(implementation fg.deobf("top.theillusivec4.curios:curios-forge:5.9.1+1.20.1"))
     compileOnly(fg.deobf("top.theillusivec4.curios:curios-forge:5.9.1+1.20.1:api"))
-    // Use the full Curios API jar at runtime
-    runtimeOnly(fg.deobf("top.theillusivec4.curios:curios-forge:5.9.1+1.20.1"))
 
     // YetAnotherConfigLib implementation
-    implementation fg.deobf("dev.isxander:yet-another-config-lib:3.4.2+1.20.1-forge")
-    compileOnly(fg.deobf("dev.isxander:yet-another-config-lib:3.4.2+1.20.1-forge"))
+    runtimeOnly(implementation fg.deobf("dev.isxander:yet-another-config-lib:${yacl_version}"))
+    compileOnly(fg.deobf("dev.isxander:yet-another-config-lib:${yacl_version}"))
 
     // Tetra compatibility
     compileOnly fg.deobf("curse.maven:tetra-289712:${tetra_version}")
