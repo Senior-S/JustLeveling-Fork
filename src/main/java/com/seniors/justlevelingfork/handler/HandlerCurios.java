@@ -1,13 +1,13 @@
 package com.seniors.justlevelingfork.handler;
 
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -19,17 +19,26 @@ public class HandlerCurios {
         return ModList.get().isLoaded("curios");
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent
     public void onCurioCanEquipEvent(CurioEquipEvent event){
         LivingEntity livingEntity = event.getEntity();
-        if (livingEntity instanceof Player player) {
+        if (livingEntity instanceof ServerPlayer player) {
             if (!player.isCreative()) {
-                ItemStack item1 = event.getStack();
+                ItemStack item = event.getStack();
 
                 AptitudeCapability aptitudeCapability = AptitudeCapability.get(player);
-                if (!aptitudeCapability.canUseItem(player, item1)) {
+                if (aptitudeCapability == null) return;
+
+                try {
+                    if (!aptitudeCapability.canUseItem(player, item)) {
+                        event.setResult(Event.Result.DENY);
+                    }
+                }
+                // This NullPointerException can happen if this event is triggered before the player fully establish the connection.
+                catch (NullPointerException ignored) {
                     event.setResult(Event.Result.DENY);
                 }
+
             }
         }
     }
@@ -44,6 +53,7 @@ public class HandlerCurios {
             Player player = event.getEntity();
 
             AptitudeCapability aptitudeCapability = AptitudeCapability.get(player);
+            if (aptitudeCapability == null) return;
             CuriosApi.getCuriosInventory(player).ifPresent(curiosInventory -> {
                 curiosInventory.getCurios().forEach((id, slotInventory) -> {
                     IDynamicStackHandler stackHandler =  slotInventory.getStacks();
