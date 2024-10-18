@@ -499,24 +499,6 @@ public class RegistryCommonEvents {
                     LivingEntity livingEntity1 = event.getEntity();
                     if (livingEntity1 instanceof ServerPlayer player) {
                         AptitudeCapability provider = AptitudeCapability.get(player);
-                        if (!player.isCreative() && provider != null) {
-                            ItemStack item = player.getMainHandItem();
-
-                            ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
-                            if (ModList.get().isLoaded("tetra") && TetraIntegration.TetraItems.contains(location.toString())) {
-                                List<String> extractedTypes = TetraIntegration.GetItemTypes(item);
-                                if (!extractedTypes.isEmpty()) {
-                                    for (String tetraItem : extractedTypes) {
-                                        if (!provider.canUseSpecificID(player, tetraItem)) {
-                                            event.setCanceled(true);
-                                        }
-                                    }
-                                }
-                            }
-                            else if (!provider.canUseItem(player, item)) {
-                                event.setCanceled(true);
-                            }
-                        }
 
                         if (provider != null && !event.isCanceled() && RegistrySkills.COUNTER_ATTACK != null && RegistrySkills.COUNTER_ATTACK.get().isEnabled(player)) {
                             player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {

@@ -23,7 +23,6 @@ import java.util.function.Supplier;
 public class CommonConfigSyncCP {
 
     private final int aptitudeFirstCostLevel;
-    private final boolean closeCraftingMenu;
     private final boolean dropLockedItems;
     private final boolean displayTitlesAsPrefix;
 
@@ -78,7 +77,6 @@ public class CommonConfigSyncCP {
 
     public CommonConfigSyncCP() {
         aptitudeFirstCostLevel = HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel;
-        closeCraftingMenu = HandlerCommonConfig.HANDLER.instance().closeCraftingMenu;
         dropLockedItems = HandlerCommonConfig.HANDLER.instance().dropLockedItems;
         displayTitlesAsPrefix = HandlerCommonConfig.HANDLER.instance().displayTitlesAsPrefix;
         attackDamageValue = HandlerCommonConfig.HANDLER.instance().attackDamageValue;
@@ -131,7 +129,6 @@ public class CommonConfigSyncCP {
     @SuppressWarnings("unchecked")
     public CommonConfigSyncCP(FriendlyByteBuf buffer) {
         aptitudeFirstCostLevel = buffer.readInt();
-        closeCraftingMenu = buffer.readBoolean();
         dropLockedItems = buffer.readBoolean();
         displayTitlesAsPrefix = buffer.readBoolean();
         attackDamageValue = buffer.readFloat();
@@ -208,7 +205,6 @@ public class CommonConfigSyncCP {
 
     public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeInt(this.aptitudeFirstCostLevel);
-        buffer.writeBoolean(this.closeCraftingMenu);
         buffer.writeBoolean(this.dropLockedItems);
         buffer.writeBoolean(this.displayTitlesAsPrefix);
         buffer.writeFloat(this.attackDamageValue);
@@ -284,7 +280,6 @@ public class CommonConfigSyncCP {
             LocalPlayer localPlayer = (Minecraft.getInstance()).player;
             if(localPlayer != null){
                 HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel = this.aptitudeFirstCostLevel;
-                HandlerCommonConfig.HANDLER.instance().closeCraftingMenu = this.closeCraftingMenu;
                 HandlerCommonConfig.HANDLER.instance().dropLockedItems = this.dropLockedItems;
                 HandlerCommonConfig.HANDLER.instance().displayTitlesAsPrefix = displayTitlesAsPrefix;
                 HandlerCommonConfig.HANDLER.instance().attackDamageValue = this.attackDamageValue;

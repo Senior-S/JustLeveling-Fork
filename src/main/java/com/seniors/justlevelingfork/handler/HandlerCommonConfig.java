@@ -51,10 +51,6 @@ public class HandlerCommonConfig {
     @AutoGen(category = "common", group = "general")
     @Boolean(formatter = Boolean.Formatter.ON_OFF)
     public boolean showPotionsHud = true;
-    @SerialEntry(comment = "If true, when trying to craft a non unlocked item, it will close the crafting the menu")
-    @AutoGen(category = "common", group = "general")
-    @Boolean(formatter = Boolean.Formatter.ON_OFF)
-    public boolean closeCraftingMenu = true;
 
     @SerialEntry(comment = "If true, locked items will be automatically dropped from player hands")
     @AutoGen(category = "common", group = "general")

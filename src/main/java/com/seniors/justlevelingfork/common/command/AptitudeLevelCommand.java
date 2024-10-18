@@ -38,7 +38,7 @@ public class AptitudeLevelCommand {
                                 )
                                 .then(Commands.literal(("subtract"))
                                         .then(Commands.argument("level", IntegerArgumentType.integer(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel))
-                                                .executes(source -> addAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class), IntegerArgumentType.getInteger(source, "level")))
+                                                .executes(source -> subtractAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class), IntegerArgumentType.getInteger(source, "level")))
                                         )
                                 )
                         )

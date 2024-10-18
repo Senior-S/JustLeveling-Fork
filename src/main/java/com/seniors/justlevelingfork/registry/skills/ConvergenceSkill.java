@@ -16,8 +16,13 @@ public class ConvergenceSkill {
     public static ItemStack drop(ItemStack getCrafting) {
         ItemStack stack = null;
 
-        for (int i = 0; i < getItems().size(); i++) {
-            ItemDrops drops = getItems().get(i);
+        ArrayList<ItemDrops> itemDrops = getItems();
+
+        if (itemDrops == null || itemDrops.isEmpty()){
+           return stack;
+        }
+
+        for (ItemDrops drops : itemDrops) {
             if (drops.getCraftingItem != null && drops.getConvergenceItem != null &&
                     getCrafting.is(drops.getCraftingItem)) {
                 stack = drops.getConvergenceItem.getDefaultInstance();
