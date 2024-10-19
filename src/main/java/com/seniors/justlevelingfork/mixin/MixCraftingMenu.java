@@ -1,30 +1,31 @@
 package com.seniors.justlevelingfork.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CraftingMenu.class)
 public abstract class MixCraftingMenu {
-    @WrapOperation(method = "slotChangedCraftingGrid", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ResultContainer;setItem(ILnet/minecraft/world/item/ItemStack;)V"))
-    private static void slotChangedCraftingGrid(ResultContainer container, int slotIndex, ItemStack stack, Operation<Void> original, @Local(argsOnly = true, index = 2) Player player, @Local(argsOnly = true, index = 3) CraftingContainer craftingInventory) {
+    @Inject(at = @At("TAIL"), method = "slotChangedCraftingGrid")
+    private static void slotChangedCraftingGrid(AbstractContainerMenu pMenu, Level level, Player player, CraftingContainer container, ResultContainer resultContainer, CallbackInfo ci){
         if (player instanceof ServerPlayer serverPlayer){
+            ItemStack itemStack = resultContainer.getItem(0);
+
             if (!serverPlayer.isCreative()) {
                 AptitudeCapability provider = AptitudeCapability.get(player);
 
-                if (provider != null && !provider.canUseItem(serverPlayer, stack)){
-                    stack = ItemStack.EMPTY;
-
-                    original.call(container, slotIndex, stack);
+                if (provider != null && !provider.canUseItem(serverPlayer, itemStack)){
+                    resultContainer.setItem(0, ItemStack.EMPTY);
                 }
             }
         }
