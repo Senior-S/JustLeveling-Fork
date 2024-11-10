@@ -6,6 +6,8 @@ import net.bettercombat.client.collision.OrientedBoundingBox;
 import net.bettercombat.client.collision.TargetFinder;
 import net.bettercombat.client.collision.WeaponHitBoxes;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
@@ -25,17 +27,26 @@ import java.util.UUID;
 public abstract class MixTargetFinder {
     @Inject(method = {"findAttackTargetResult"}, at = {@At("HEAD")}, cancellable = true, remap = false)
     private static void findAttackTargetResult(Player player, Entity cursorTarget, WeaponAttributes.Attack attack, double attackRange, CallbackInfoReturnable<TargetFinder.TargetResult> info) {
-        if(player == null || cursorTarget == null){
+        if(player == null || cursorTarget == null || !ForgeMod.ENTITY_REACH.isPresent()){
             return;
         }
-        info.cancel();
 
         Vec3 origin = TargetFinder.getInitialTracingPoint(player);
         List<Entity> entities = TargetFinder.getInitialTargets(player, cursorTarget, attackRange);
         if (!AttackRangeExtensions.sources().isEmpty()) {
             attackRange = apply$AttackRangeModifiers(player, attackRange);
         }
-        attackRange += Objects.requireNonNull(Objects.requireNonNull(player.getAttribute(ForgeMod.ENTITY_REACH.get())).getModifier(UUID.fromString("96a891fe-5919-418d-8205-f50464391509"))).getAmount();
+        AttributeInstance playerReach = player.getAttribute(ForgeMod.ENTITY_REACH.get());
+        if (playerReach == null) {
+            return;
+        }
+        AttributeModifier modifier = playerReach.getModifier(UUID.fromString("96a891fe-5919-418d-8205-f50464391509"));
+        if (modifier == null){
+            return;
+        }
+        info.cancel();
+
+        attackRange += modifier.getAmount();
 
         // Quality equipment directly changes the register function through reflection.
         // So I need to "replicate" what the reflection does here.
