@@ -11,6 +11,7 @@ import com.seniors.justlevelingfork.registry.passive.Passive;
 import com.seniors.justlevelingfork.registry.skills.Skill;
 import com.seniors.justlevelingfork.registry.title.Title;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -100,8 +101,13 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
         return null;
     }
 
+    @Nullable
     public static AptitudeCapability get() {
-        return (Minecraft.getInstance()).player.getCapability(RegistryCapabilities.APTITUDE).orElseThrow(() -> new IllegalArgumentException("Player does not have Capabilities!"));
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null ) {
+            return null;
+        }
+        return player.getCapability(RegistryCapabilities.APTITUDE).orElseThrow(() -> new IllegalArgumentException("Player does not have Capabilities!"));
     }
 
     public int getAptitudeLevel(Aptitude aptitude) {

@@ -1,3 +1,5 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 buildscript {
     repositories {
         // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
@@ -15,12 +17,13 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id "com.modrinth.minotaur" version "2.+"
+    id 'net.darkhax.curseforgegradle' version '1.1.25'
 }
 
 modrinth {
     token = System.getenv("MODRINTH_TOKEN") // Remember to have the MODRINTH_TOKEN environment variable set or else this will fail - just make sure it stays private!
     projectId = "justleveling-fork" // This can be the project ID or the slug. Either will work!
-    versionNumber = "1.1.7" // You don't need to set this manually. Will fail if Modrinth has this version already
+    versionNumber = "${project.mod_version}" // You don't need to set this manually. Will fail if Modrinth has this version already
     versionType = "release" // This is the default -- can also be `beta` or `alpha`
     uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
     gameVersions = ["1.20.1"] // Must be an array, even with only one version
@@ -297,4 +300,27 @@ tasks.named('jar', Jar).configure {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
+
+    // This token is used to authenticate with CurseForge. It should be handled
+    // with the same level of care and security as your actual password. You
+    // should never share your token with an untrusted source or publish it
+    // publicly to GitHub or embed it within a project. The best practice is to
+    // store this token in an environment variable or a build secret.
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+    // Tells CurseForgeGradle to publish the output of the jar task. This will
+    // return a UploadArtifact object that can be used to further configure the
+    // file.
+    def mainFile = upload('1073400', jar)
+    mainFile.releaseType = "release"
+    mainFile.displayName = "JLFork-${project.mod_version} ${project.minecraft_version}"
+    mainFile.changelog = ""
+    mainFile.addModLoader("Forge")
+    mainFile.addGameVersion("${project.minecraft_version}")
+    mainFile.addRequirement("cloth-config")
+    mainFile.addRequirement("curios")
+    mainFile.addRequirement("yacl")
 }

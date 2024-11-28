@@ -1,6 +1,7 @@
 package com.seniors.justlevelingfork.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.SortPassives;
 import com.seniors.justlevelingfork.client.core.SortSkills;
 import com.seniors.justlevelingfork.client.core.Utils;
@@ -237,7 +238,8 @@ public class JustLevelingScreen extends Screen {
     public void drawAptitudes(GuiGraphics matrixStack, int x, int y, int mouseX, int mouseY) {
         assert client.player != null;
         Utils.drawCenter(matrixStack, client.player.getName(), x + 88, y + 7);
-        Utils.drawCenter(matrixStack, Component.translatable("screen.aptitude.level", client.player.experienceLevel, client.player.totalExperience), x + 88, y + 17);
+
+        Utils.drawCenter(matrixStack, Component.translatable("screen.aptitude.level", client.player.experienceLevel, AptitudeLevelUpSP.requiredPoints(client.player.experienceLevel)), x + 88, y + 17);
 
         Title titleKey = RegistryTitles.getTitle(AptitudeCapability.get().getPlayerTitle());
         String title = (titleKey != null) ? Component.translatable(RegistryTitles.getTitle(AptitudeCapability.get().getPlayerTitle()).getKey()).getString() : "";
@@ -430,8 +432,9 @@ public class JustLevelingScreen extends Screen {
         matrixStack.blit(HandlerResources.SKILL_PAGE[this.selectedPage], x + 153, y + 14, 177 + j, 1, 6, 6);
 
         boolean canLevelUpAptitude = (client.player.isCreative()
-                || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= client.player.totalExperience
+                || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= AptitudeLevelUpSP.requiredPoints(client.player.experienceLevel)
                 || AptitudeLevelUpSP.requiredLevels(aptitudeLevel) <= client.player.experienceLevel);
+
         if (Utils.checkMouse(x + 149, y + 10, mouseX, mouseY, 14, 14)) {
             if (AptitudeCapability.get(client.player).getGlobalLevel() >= HandlerCommonConfig.HANDLER.instance().playersMaxGlobalLevel) {
                 Utils.drawToolTip(matrixStack,

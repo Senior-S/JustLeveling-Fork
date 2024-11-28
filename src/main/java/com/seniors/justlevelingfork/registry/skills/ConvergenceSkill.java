@@ -37,6 +37,12 @@ public class ConvergenceSkill {
             return items;
         }
 
+        // If the user didn't set up any items or somehow doesn't have the file correctly set up, this will be null or empty.
+        if (HandlerConvergenceItemsConfig.HANDLER.instance().convergenceItemList == null ||
+                HandlerConvergenceItemsConfig.HANDLER.instance().convergenceItemList.isEmpty()) {
+           return new ArrayList<ItemDrops>();
+        }
+
         List<String> configList = HandlerConvergenceItemsConfig.HANDLER.instance().convergenceItemList;
 
         for (String getValue : configList) {
