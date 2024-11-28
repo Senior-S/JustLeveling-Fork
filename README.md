@@ -6,7 +6,7 @@ The idea behind this fork is fixing some bugs, performance issues and allow othe
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/6c6cDU2mKj)](https://discord.gg/6c6cDU2mKj)
 
 ## Download
-[**CurseForge Page**](https://www.curseforge.com/minecraft/mc-mods/justleveling-fork)
+[**CurseForge Page**](https://www.curseforge.com/minecraft/mc-mods/justleveling-fork)<br>
 [**Modrinth Page**](https://modrinth.com/mod/justleveling-fork)
 
 ## FAQ
