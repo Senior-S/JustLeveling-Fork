@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -85,7 +86,7 @@ public class RegistryCommonEvents {
     public void onPlayerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
         if (!player.level().isClientSide()) {
-            if (player instanceof ServerPlayer serverPlayer) {
+            if (player instanceof ServerPlayer serverPlayer && !(player instanceof FakePlayer)) {
                 ConfigSyncCP.sendToPlayer(serverPlayer);
                 CommonConfigSyncCP.sendToPlayer(serverPlayer);
                 DynamicConfigSyncCP.sendToPlayer(serverPlayer);
@@ -119,7 +120,7 @@ public class RegistryCommonEvents {
 
     @SubscribeEvent
     public static void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof Player) {
+        if (event.getObject() instanceof Player && !(event.getObject() instanceof FakePlayer)) {
             AptitudeCapability AptitudeCapability = new AptitudeCapability();
             LazyAptitudeCapability lazyAptitudeCapability = new LazyAptitudeCapability(AptitudeCapability);
             event.addCapability(new ResourceLocation(JustLevelingFork.MOD_ID, "aptitudes"), lazyAptitudeCapability);
@@ -161,6 +162,7 @@ public class RegistryCommonEvents {
     public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
         if (!event.getLevel().isClientSide()) {
             Entity entity = event.getEntity();
+            if (entity instanceof FakePlayer) return;
             if (entity instanceof ServerPlayer serverPlayer) {
                 SyncAptitudeCapabilityCP.send(serverPlayer);
                 RegistryAttributes.modifierAttributes(serverPlayer);
@@ -181,7 +183,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
         Player player = event.getEntity();
-        if (player.isCreative()) return;
+        if (player.isCreative() || player instanceof FakePlayer) return;
         ItemStack item = event.getItemStack();
         Block block = event.getLevel().getBlockState(event.getPos()).getBlock();
         AptitudeCapability provider = AptitudeCapability.get(player);
@@ -210,7 +212,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
-        if (player.isCreative()) return;
+        if (player.isCreative() || player instanceof FakePlayer) return;
         ItemStack item = event.getItemStack();
         Block block = event.getLevel().getBlockState(event.getPos()).getBlock();
         AptitudeCapability provider = AptitudeCapability.get(player);
@@ -239,7 +241,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getEntity();
-        if (player.isCreative()) return;
+        if (player.isCreative() || player instanceof FakePlayer) return;
         ItemStack item = event.getItemStack();
         AptitudeCapability provider = AptitudeCapability.get(player);
         if (provider == null) {
@@ -267,7 +269,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClickEntity(PlayerInteractEvent.EntityInteract event) {
         Player player = event.getEntity();
-        if (player.isCreative()) return;
+        if (player.isCreative() || player instanceof FakePlayer) return;
         Entity entity = event.getTarget();
         ItemStack item = event.getItemStack();
         AptitudeCapability provider = AptitudeCapability.get(player);
@@ -382,6 +384,7 @@ public class RegistryCommonEvents {
     public void onPlayerAttackEntity(AttackEntityEvent event) {
         Entity target = event.getTarget();
         Player player = event.getEntity();
+        if (player instanceof FakePlayer) return;
         if (player != null) {
             AptitudeCapability provider = AptitudeCapability.get(player);
             if (!player.isCreative() && provider != null) {
@@ -430,28 +433,30 @@ public class RegistryCommonEvents {
     @SubscribeEvent
     public static void onPlayerMining(PlayerEvent.BreakSpeed event) {
         Player player = event.getEntity();
+        if (player instanceof FakePlayer) return;
         float modifier = event.getOriginalSpeed() * (1.0F + (float) player.getAttributeValue(RegistryAttributes.BREAK_SPEED.get()));
         if (player.getMainHandItem().is(itemHolder -> itemHolder.get() instanceof net.minecraft.world.item.PickaxeItem)) {
             if (event.getState().is(RegistryTags.Blocks.OBSIDIAN)) {
                 if (RegistrySkills.OBSIDIAN_SMASHER != null && RegistrySkills.OBSIDIAN_SMASHER.get().isEnabled(player)) {
-                    event.setNewSpeed((float) (event.getOriginalSpeed() * RegistrySkills.OBSIDIAN_SMASHER.get().getValue()[0]) + modifier);
+                    event.setNewSpeed((float) (event.getNewSpeed() * RegistrySkills.OBSIDIAN_SMASHER.get().getValue()[0]) + modifier);
                 } else {
-                    event.setNewSpeed(event.getOriginalSpeed());
+                    event.setNewSpeed(event.getNewSpeed());
                 }
             } else {
-                event.setNewSpeed(event.getOriginalSpeed() + modifier);
+                event.setNewSpeed(event.getNewSpeed() + modifier);
             }
         }
         if (player.getMainHandItem().is(itemHolder -> itemHolder.get() instanceof net.minecraft.world.item.ShovelItem))
-            event.setNewSpeed(event.getOriginalSpeed() + modifier);
+            event.setNewSpeed(event.getNewSpeed() + modifier);
         if (player.getMainHandItem().is(itemHolder -> itemHolder.get() instanceof net.minecraft.world.item.AxeItem))
-            event.setNewSpeed(event.getOriginalSpeed() + modifier);
+            event.setNewSpeed(event.getNewSpeed() + modifier);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerCriticalHit(CriticalHitEvent event) {
         Player player = event.getEntity();
         if (player != null) {
+            if (player instanceof FakePlayer) return;
             float damage = event.getDamageModifier();
             float attribute = (float) event.getEntity().getAttributeValue(RegistryAttributes.CRITICAL_DAMAGE.get());
             event.setDamageModifier(damage + attribute);
@@ -485,7 +490,6 @@ public class RegistryCommonEvents {
                     }
                 }
             }
-
         }
     }
 
@@ -497,6 +501,7 @@ public class RegistryCommonEvents {
                 if (livingEntity.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
                     float sourceDamage = (float) livingEntity.getAttributeValue(Attributes.ATTACK_DAMAGE);
                     LivingEntity livingEntity1 = event.getEntity();
+                    if (livingEntity1 instanceof FakePlayer) return;
                     if (livingEntity1 instanceof ServerPlayer player) {
                         AptitudeCapability provider = AptitudeCapability.get(player);
 
@@ -561,6 +566,7 @@ public class RegistryCommonEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerBreakBlock(BlockEvent.BreakEvent event) {
         Player player = event.getPlayer();
+        if (player instanceof FakePlayer) return;
         if (RegistrySkills.TREASURE_HUNTER != null && player != null &&
                 event.getState().is(RegistryTags.Blocks.DIRT) && RegistrySkills.TREASURE_HUNTER.get().isEnabled(player)) {
             Level level = player.level();
@@ -578,6 +584,7 @@ public class RegistryCommonEvents {
     public static void onPlayerCraft(PlayerEvent.ItemCraftedEvent event) {
         Player player = event.getEntity();
         if (player != null && RegistrySkills.CONVERGENCE != null) {
+            if (player instanceof FakePlayer) return; // Probably not needed
             int randomizer = (int) Math.floor(Math.random() * RegistrySkills.CONVERGENCE.get().getValue()[0]);
             if (RegistrySkills.CONVERGENCE.get().isEnabled(player) && (RegistrySkills.CONVERGENCE.get().getValue()[0] >= 100 || randomizer == 1)) {
                 ItemStack convergenceItem = ConvergenceSkill.drop(event.getCrafting());

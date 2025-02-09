@@ -26,7 +26,7 @@ import java.util.Objects;
 public class RegistryClientEvents {
     @SubscribeEvent
     public void onTooltipDisplay(ItemTooltipEvent event) {
-        if ((Minecraft.getInstance()).player != null) {
+        if ((Minecraft.getInstance()).player != null && (Minecraft.getInstance()).player.isAlive()) {
             List<Component> tooltips = event.getToolTip();
             ItemStack itemStack = event.getItemStack();
 
