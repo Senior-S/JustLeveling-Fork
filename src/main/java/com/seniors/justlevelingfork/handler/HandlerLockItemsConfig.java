@@ -1,6 +1,5 @@
 package com.seniors.justlevelingfork.handler;
 
-import com.google.gson.GsonBuilder;
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.config.Configuration;
 import com.seniors.justlevelingfork.config.models.LockItem;
@@ -19,7 +18,6 @@ public class HandlerLockItemsConfig {
             .id(new ResourceLocation(JustLevelingFork.MOD_ID, "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(Configuration.getAbsoluteDirectory().resolve("justleveling-fork.lockItems.json5"))
-                    .appendGsonBuilder(GsonBuilder::setPrettyPrinting)
                     .setJson5(true)
                     .build())
             .build();
@@ -97,7 +95,7 @@ public class HandlerLockItemsConfig {
             new LockItem("minecraft:pitcher_pod", new LockItem.Aptitude("intelligence", 6)),
             new LockItem("minecraft:glow_berries", new LockItem.Aptitude("intelligence", 6)),
             new LockItem("minecraft:sweet_berries", new LockItem.Aptitude("intelligence", 6)),
-            new LockItem("minecraft:nether_wart:", new LockItem.Aptitude("intelligence", 10), new LockItem.Aptitude("magic", 8)),
+            new LockItem("minecraft:nether_wart", new LockItem.Aptitude("intelligence", 10), new LockItem.Aptitude("magic", 8)),
             new LockItem("minecraft:egg", new LockItem.Aptitude("constitution", 4)),
             new LockItem("minecraft:frogspawn", new LockItem.Aptitude("intelligence", 12), new LockItem.Aptitude("constitution", 16)),
             new LockItem("minecraft:turtle_egg", new LockItem.Aptitude("intelligence", 12), new LockItem.Aptitude("constitution", 16)),

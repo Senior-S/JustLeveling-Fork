@@ -82,7 +82,7 @@
  "config.cloth-config.justlevelingfork.convergenceItemList.tooltip" : "How to add a convergence item: (to make it fair the convergence only will give you 1 result)\n<Mod name>§b:§f<Item name>§b#§f<Mod name result>§b:§f<Item name result>",
 
  "screen.aptitude.title" : "Aptitudes",
- "screen.aptitude.level" : "Lvl: %s/ Exp: %s",
+ "screen.aptitude.level" : "Lvl: %s / Exp: %s",
  "screen.aptitude.experience" : "%s/%s",
 
  "screen.skill.level_and_rank" : "%s/%s [ %s ]",

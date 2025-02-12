@@ -430,7 +430,7 @@ public class RegistryCommonEvents {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerMining(PlayerEvent.BreakSpeed event) {
         Player player = event.getEntity();
         if (player instanceof FakePlayer) return;

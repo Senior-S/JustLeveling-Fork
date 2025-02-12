@@ -1,6 +1,7 @@
 package com.seniors.justlevelingfork.network.packet.common;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
+import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.network.ServerNetworking;
@@ -39,19 +40,19 @@ public class AptitudeLevelUpSP {
 
                 boolean canLevelUpAptitude = (player.isCreative()
                         || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= player.totalExperience
-                        || AptitudeLevelUpSP.requiredLevels(aptitudeLevel) <= player.experienceLevel);
+                        || AptitudeLevelUpSP.requiredExperienceLevels(aptitudeLevel) <= player.experienceLevel);
 
                 if (!canLevelUpAptitude){
                     JustLevelingFork.getLOGGER().info("Received level up packet without the required EXP needed to level up, skipping packet...");
                     return;
                 }
 
-                int requiredLevel = requiredPoints(aptitudeLevel);
+                int requiredPoints = requiredPoints(aptitudeLevel);
 
                 capability.addAptitudeLevel(aptitudePlayer, 1);
                 SyncAptitudeCapabilityCP.send(player);
                 if (!player.isCreative()) {
-                    player.giveExperiencePoints(-requiredLevel);
+                    Utils.addPlayerXP(player, requiredPoints * -1);
                 }
             }
         });
@@ -59,25 +60,11 @@ public class AptitudeLevelUpSP {
     }
 
     public static int requiredPoints(int aptitudeLevel) {
-        return getXpNeededForLevel(aptitudeLevel + HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel - 1);
+        return Utils.getExperienceForLevel(aptitudeLevel + HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel - 1);
     }
 
-    public static int requiredLevels(int aptitudeLevel) {
+    public static int requiredExperienceLevels(int aptitudeLevel) {
         return aptitudeLevel + HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel - 1;
-    }
-
-    private static int getXpNeededForLevel(int level) {
-        int xp = 0;
-        for (int i = 0; i < level; i++) {
-            if (level < 17) {
-                xp = level * level + 6 * level;
-            } else if (level < 32) {
-                xp = (int) (2.5D * (level * level) - 40.5D * level + 360.0D);
-            } else {
-                xp = (int) (4.5D * (level * level) - 162.5D * level + 2220.0D);
-            }
-        }
-        return xp;
     }
 
     public static void send(Aptitude aptitude) {

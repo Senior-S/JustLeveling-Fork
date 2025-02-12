@@ -44,6 +44,7 @@ public class ConvergenceSkill {
         }
 
         List<String> configList = HandlerConvergenceItemsConfig.HANDLER.instance().convergenceItemList;
+        items = new ArrayList<>();
 
         for (String getValue : configList) {
             String getCraftingItem = getValue.split("#")[0];

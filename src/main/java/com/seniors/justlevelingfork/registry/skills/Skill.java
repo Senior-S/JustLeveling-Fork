@@ -164,7 +164,10 @@ public class Skill {
     }
 
     public boolean isEnabled() {
-        return (this.requiredLevel > 0 && AptitudeCapability.get().getAptitudeLevel(this.aptitude) >= this.requiredLevel && AptitudeCapability.get().getToggleSkill(this));
+        if (this.requiredLevel < 1) return true;
+        if(AptitudeCapability.get() == null) return false;
+
+        return (AptitudeCapability.get().getAptitudeLevel(this.aptitude) >= this.requiredLevel && AptitudeCapability.get().getToggleSkill(this));
     }
 
     public boolean isEnabled(Player player) {
