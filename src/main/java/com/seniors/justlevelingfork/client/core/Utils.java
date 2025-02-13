@@ -118,14 +118,6 @@ public class Utils {
         return (int)(getExperienceForLevel(player.experienceLevel) + (player.experienceProgress * player.getXpNeededForNextLevel()));
     }
 
-    public static void addPlayerXP(Player player, int amount) {
-        int experience = getPlayerXP(player) + amount;
-        player.totalExperience = experience;
-        player.experienceLevel = getLevelForExperience(experience);
-        int expForLevel = getExperienceForLevel(player.experienceLevel);
-        player.experienceProgress = (experience - expForLevel) / (float)player.getXpNeededForNextLevel();
-    }
-
     public static int xpBarCap(int level) {
         if (level >= 30)
             return 112 + (level - 30) * 9;
@@ -147,15 +139,7 @@ public class Utils {
         return n * (2 * a0 + (n - 1) * d) / 2;
     }
 
-    public static int getLevelForExperience(int targetXp) {
-        int level = 0;
-        while (true) {
-            final int xpToNextLevel = xpBarCap(level);
-            if (targetXp < xpToNextLevel) return level;
-            level++;
-            targetXp -= xpToNextLevel;
-        }
-    }
+
 }
 
 
