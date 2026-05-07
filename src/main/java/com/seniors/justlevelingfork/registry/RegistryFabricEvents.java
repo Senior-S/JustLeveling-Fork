@@ -4,6 +4,7 @@ import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerAptitude;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.handler.HandlerTrinkets;
+import com.seniors.justlevelingfork.integration.MiapiIntegration;
 import com.seniors.justlevelingfork.network.packet.common.CounterAttackSP;
 import com.seniors.justlevelingfork.network.packet.client.PlayerMessagesCP;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
@@ -215,7 +216,7 @@ public class RegistryFabricEvents {
             return true;
         }
 
-        if (!provider.canUseItem(player, Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(stack.getItem())))) {
+        if (!provider.canUseItem(player, stack)) {
             return false;
         }
 
@@ -272,7 +273,15 @@ public class RegistryFabricEvents {
             return false;
         }
 
-        List<com.seniors.justlevelingfork.client.core.Aptitudes> aptitudes = HandlerAptitude.getValue(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(stack.getItem())).toString());
+        if (hasDroppableRestriction(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(stack.getItem())))) {
+            return true;
+        }
+
+        return MiapiIntegration.isModularItem(stack) && MiapiIntegration.getModuleIds(stack).stream().anyMatch(RegistryFabricEvents::hasDroppableRestriction);
+    }
+
+    private static boolean hasDroppableRestriction(net.minecraft.resources.ResourceLocation id) {
+        List<com.seniors.justlevelingfork.client.core.Aptitudes> aptitudes = HandlerAptitude.getValue(id.toString());
         return aptitudes != null && aptitudes.stream().anyMatch(com.seniors.justlevelingfork.client.core.Aptitudes::isDroppable);
     }
 

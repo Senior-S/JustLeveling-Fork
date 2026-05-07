@@ -4,6 +4,8 @@ import com.seniors.justlevelingfork.client.core.Aptitudes;
 import com.seniors.justlevelingfork.client.gui.OverlayAptitudeGui;
 import com.seniors.justlevelingfork.handler.HandlerAptitude;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import com.seniors.justlevelingfork.integration.MiapiIntegration;
+import com.seniors.justlevelingfork.network.packet.common.AptitudeLevelUpSP;
 import com.seniors.justlevelingfork.network.packet.client.AptitudeOverlayCP;
 import com.seniors.justlevelingfork.registry.*;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
@@ -146,6 +148,33 @@ public class AptitudeCapability {
         this.toggleSkill.put(skill.getName(), toggle);
     }
 
+    public int getSpentAptitudeExperience() {
+        int spentExperience = 0;
+        for (Aptitude aptitude : RegistryAptitudes.APTITUDES_REGISTRY.getValues().stream().toList()) {
+            int aptitudeLevel = this.aptitudeLevel.get(aptitude.getName());
+            for (int level = 1; level < aptitudeLevel; level++) {
+                spentExperience += AptitudeLevelUpSP.requiredPoints(level);
+            }
+        }
+        return spentExperience;
+    }
+
+    public void resetSkills() {
+        for (Aptitude aptitude : RegistryAptitudes.APTITUDES_REGISTRY.getValues().stream().toList()) {
+            this.aptitudeLevel.put(aptitude.getName(), 1);
+        }
+        for (Passive passive : RegistryPassives.PASSIVES_REGISTRY.getValues().stream().toList()) {
+            this.passiveLevel.put(passive.getName(), 0);
+        }
+        for (Skill skill : RegistrySkills.SKILLS_REGISTRY.getValues().stream().toList()) {
+            this.toggleSkill.put(skill.getName(), false);
+        }
+
+        this.counterAttackTimer = 0;
+        this.counterAttack = false;
+        this.betterCombatEntityRange = 0.0D;
+    }
+
     public boolean getLockTitle(Title title) {
         return this.unlockTitle.get(title.getName());
     }
@@ -163,7 +192,20 @@ public class AptitudeCapability {
     }
 
     public boolean canUseItem(Player player, ItemStack item) {
-        return canUse(player, Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item.getItem())));
+        ResourceLocation itemId = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item.getItem()));
+        if (!canUse(player, itemId)) {
+            return false;
+        }
+
+        if (MiapiIntegration.isModularItem(item)) {
+            for (ResourceLocation moduleId : MiapiIntegration.getModuleIds(item)) {
+                if (!canUse(player, moduleId)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public boolean canUseItem(Player player, ResourceLocation resourceLocation) {
@@ -171,7 +213,20 @@ public class AptitudeCapability {
     }
 
     public boolean canUseItemClient(ItemStack item) {
-        return canUseClient(Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item.getItem())));
+        ResourceLocation itemId = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item.getItem()));
+        if (!canUseClient(itemId)) {
+            return false;
+        }
+
+        if (MiapiIntegration.isModularItem(item)) {
+            for (ResourceLocation moduleId : MiapiIntegration.getModuleIds(item)) {
+                if (!canUseClient(moduleId)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public boolean canUseSpecificID(Player player, String specificID){

@@ -3,6 +3,8 @@ package com.seniors.justlevelingfork.registry;
 import com.seniors.justlevelingfork.client.core.Aptitudes;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerAptitude;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import com.seniors.justlevelingfork.integration.MiapiIntegration;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.ChatFormatting;
@@ -14,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 
 public class RegistryClientEvents {
@@ -26,20 +30,53 @@ public class RegistryClientEvents {
             return;
         }
 
-        ResourceLocation location = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(itemStack.getItem()));
-        List<Aptitudes> list = HandlerAptitude.getValue(location.toString());
         AptitudeCapability capability = AptitudeCapability.get();
-        if (list != null && capability != null) {
-            tooltips.add(Component.empty());
-            tooltips.add(Component.translatable("tooltip.aptitude.item_requirement").withStyle(ChatFormatting.DARK_PURPLE));
-            for (Aptitudes aptitudes : list) {
-                Aptitude aptitude = aptitudes.getAptitude();
-                if (aptitude != null) {
-                    ChatFormatting colour = capability.getAptitudeLevel(aptitude) >= aptitudes.getAptitudeLvl() ? ChatFormatting.GREEN : ChatFormatting.RED;
-                    tooltips.add(Component.translatable("tooltip.aptitude.item_requirements", Component.translatable(aptitude.getKey()), Component.literal(String.valueOf(aptitudes.getAptitudeLvl())).withStyle(colour)));
-                }
+        if (capability == null) {
+            return;
+        }
+
+        List<Aptitudes> visibleRequirements = getVisibleRequirements(itemStack, capability);
+        if (visibleRequirements.isEmpty()) {
+            return;
+        }
+
+        tooltips.add(Component.empty());
+        tooltips.add(Component.translatable("tooltip.aptitude.item_requirement").withStyle(ChatFormatting.DARK_PURPLE));
+        for (Aptitudes aptitudes : visibleRequirements) {
+            Aptitude aptitude = aptitudes.getAptitude();
+            if (aptitude != null) {
+                ChatFormatting colour = capability.getAptitudeLevel(aptitude) >= aptitudes.getAptitudeLvl() ? ChatFormatting.GREEN : ChatFormatting.RED;
+                tooltips.add(Component.translatable("tooltip.aptitude.item_requirements", Component.translatable(aptitude.getKey()), Component.literal(String.valueOf(aptitudes.getAptitudeLvl())).withStyle(colour)));
             }
         }
+    }
+
+    private static List<Aptitudes> getVisibleRequirements(ItemStack itemStack, AptitudeCapability capability) {
+        List<Aptitudes> requirements = new ArrayList<>();
+        addRequirements(requirements, Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(itemStack.getItem())));
+
+        if (MiapiIntegration.isModularItem(itemStack)) {
+            MiapiIntegration.getModuleIds(itemStack).forEach(moduleId -> addRequirements(requirements, moduleId));
+        }
+
+        return getVisibleRequirements(requirements, capability);
+    }
+
+    private static void addRequirements(List<Aptitudes> requirements, ResourceLocation id) {
+        List<Aptitudes> list = HandlerAptitude.getValue(id.toString());
+        if (list != null) {
+            requirements.addAll(list);
+        }
+    }
+
+    private static List<Aptitudes> getVisibleRequirements(List<Aptitudes> list, AptitudeCapability capability) {
+        if (!HandlerCommonConfig.HANDLER.instance().hideMetUsageRequirements) {
+            return list;
+        }
+
+        return list.stream()
+                .filter(aptitudes -> aptitudes.getAptitude() == null || capability.getAptitudeLevel(aptitudes.getAptitude()) < aptitudes.getAptitudeLvl())
+                .collect(Collectors.toList());
     }
 }
 

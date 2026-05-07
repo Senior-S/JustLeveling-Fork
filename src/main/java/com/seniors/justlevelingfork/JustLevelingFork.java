@@ -2,6 +2,7 @@ package com.seniors.justlevelingfork;
 
 import com.mojang.logging.LogUtils;
 import com.seniors.justlevelingfork.config.Configuration;
+import com.seniors.justlevelingfork.integration.ftbquests.FTBQuestsIntegration;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.integration.TacZIntegration;
 import com.seniors.justlevelingfork.network.ServerNetworking;
@@ -55,6 +56,9 @@ public class JustLevelingFork implements ModInitializer {
         RegistryFabricEvents.load();
         if (FabricLoader.getInstance().isModLoaded("tacz")) {
             TacZIntegration.load();
+        }
+        if (FabricLoader.getInstance().isModLoaded("ftbquests")) {
+            FTBQuestsIntegration.load();
         }
 
         ServerNetworking.init();

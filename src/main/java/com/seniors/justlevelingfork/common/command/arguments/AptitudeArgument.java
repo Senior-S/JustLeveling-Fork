@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.seniors.justlevelingfork.registry.RegistryAptitudes;
 import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
@@ -29,7 +30,11 @@ public class AptitudeArgument implements ArgumentType<String> {
 
     @Override
     public String parse(StringReader reader) throws CommandSyntaxException {
-        return reader.readString();
+        String aptitudeName = reader.readString();
+        if (RegistryAptitudes.getAptitude(aptitudeName) == null) {
+            throw ERROR_UNKNOWN_TITLE.create(aptitudeName);
+        }
+        return aptitudeName;
     }
 
     @Override

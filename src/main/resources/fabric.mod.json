@@ -29,6 +29,7 @@
     "cloth-config": "*"
   },
   "suggests": {
-    "bettercombat": "*"
+    "bettercombat": "*",
+    "ftbquests": "*"
   }
 }

@@ -2,6 +2,8 @@
  "key.justlevelingfork.title" : "Just Leveling",
  "key.justlevelingfork.open_aptitudes" : "Open Aptitudes",
  "item.justlevelingfork.leveling_book" : "Leveling Book",
+ "item.justlevelingfork.skill_reset_crystal" : "Skill Reset Crystal",
+ "message.justlevelingfork.skills_reset" : "Your skills have been reset.",
 
  "yacl3.config.justlevelingfork:config.category.common": "Common configuration",
  "yacl3.config.justlevelingfork:config.category.blocked": "Blocked items",
@@ -12,19 +14,23 @@
 
  "yacl3.config.justlevelingfork:config.aptitudeMaxLevel": "Aptitude max level",
  "yacl3.config.justlevelingfork:config.aptitudeFirstCostLevel": "Aptitude first cost level",
+ "yacl3.config.justlevelingfork:config.skillResetRefundsSpentLevels": "Skill reset refunds spent levels",
  "yacl3.config.justlevelingfork:config.showPotionsHud": "Show potions hud",
  "yacl3.config.justlevelingfork:config.logErrors": "Log errors",
  "yacl3.config.justlevelingfork:config.closeCraftingMenu": "Close crafting menu",
- "yacl3.config.justlevelingfork:config.dropLockedItems": "Drop locked items",
+"yacl3.config.justlevelingfork:config.dropLockedItems": "Drop locked items",
+"yacl3.config.justlevelingfork:config.hideMetUsageRequirements": "Hide met usage requirements",
  "yacl3.config.justlevelingfork:config.logTaczGunNames": "Log TAC:Zero gun names",
  "yacl3.config.justlevelingfork:config.playersMaxGlobalLevel": "Players max global level",
 
  "yacl3.config.justlevelingfork:config.aptitudeMaxLevel.desc": "Aptitudes max level",
  "yacl3.config.justlevelingfork:config.aptitudeFirstCostLevel.desc": "First aptitudes level cost",
+ "yacl3.config.justlevelingfork:config.skillResetRefundsSpentLevels.desc": "If enabled, the skill reset item refunds the experience spent on aptitude levels.",
  "yacl3.config.justlevelingfork:config.showPotionsHud.desc": "Show potions overlay over skills",
  "yacl3.config.justlevelingfork:config.logErrors.desc": "If true, when populating the items a extra check will be made, if a item have a incorrect format it will log the line and continue loading without crashing",
  "yacl3.config.justlevelingfork:config.closeCraftingMenu.desc": "If true, when trying to craft a non unlocked item, it will close the crafting the menu",
- "yacl3.config.justlevelingfork:config.dropLockedItems.desc": "If true, locked items will be automatically dropped from player hands",
+"yacl3.config.justlevelingfork:config.dropLockedItems.desc": "If true, locked items will be automatically dropped from player hands",
+"yacl3.config.justlevelingfork:config.hideMetUsageRequirements.desc": "If true, item usage requirements are hidden from tooltips after the required aptitude levels are reached.",
  "yacl3.config.justlevelingfork:config.logTaczGunNames.desc": "TAC:Zero have a special id system, so if you wanna get the id to restrict you need to enable this and shoot.",
  "yacl3.config.justlevelingfork:config.playersMaxGlobalLevel.desc": "Global max level, the global level is calculated summing all aptitudes level, so if this is set to 32 players will be able to only maximize 1 skill.",
 
@@ -339,5 +345,15 @@
  "title.justlevelingfork.rider_strider.description" : "Travel 10k by Strider.",
  "title.justlevelingfork.traveler_nether.description" : "Travel to the Nether.",
  "title.justlevelingfork.traveler_end.description" : "Travel to the End.",
- "title.justlevelingfork.administrator.description" : "Be a server Admin."
+ "title.justlevelingfork.administrator.description" : "Be a server Admin.",
+  "ftbquests.task.justlevelingfork.aptitude_level": "Aptitude Level",
+  "ftbquests.task.justlevelingfork.aptitude": "Aptitude",
+  "ftbquests.task.justlevelingfork.level": "Level",
+  "ftbquests.reward.justlevelingfork.aptitude_level": "Aptitude Level",
+  "ftbquests.reward.justlevelingfork.aptitude": "Aptitude",
+  "ftbquests.reward.justlevelingfork.level": "Level",
+  "ftbquests.reward.justlevelingfork.only_increase": "Only Increase",
+  "ftbquests.reward.justlevelingfork.title": "Title",
+  "ftbquests.reward.justlevelingfork.title_id": "Title",
+  "ftbquests.reward.justlevelingfork.equip_title": "Equip Title"
 }

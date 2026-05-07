@@ -9,7 +9,6 @@ import com.seniors.justlevelingfork.network.packet.client.DynamicConfigSyncCP;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
 
 public class GlobalLimitCommand {
 
@@ -25,12 +24,6 @@ public class GlobalLimitCommand {
 
     private static int execute(CommandContext<CommandSourceStack> command) {
         int globalLimitLevel = command.getArgument("level", Integer.class);
-
-        if(command.getSource().getEntity() != null
-                && command.getSource().getEntity() instanceof Player){
-            command.getSource().sendSystemMessage(Component.literal("This command can't be called client side!"));
-            return Command.SINGLE_SUCCESS;
-        }
 
         HandlerCommonConfig.HANDLER.instance().playersMaxGlobalLevel = globalLimitLevel;
         HandlerCommonConfig.HANDLER.save();

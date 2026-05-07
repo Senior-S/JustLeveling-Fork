@@ -9,7 +9,6 @@ import com.seniors.justlevelingfork.network.packet.client.DynamicConfigSyncCP;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
 
 public class UpdateAptitudeLevelCommand {
 
@@ -25,12 +24,6 @@ public class UpdateAptitudeLevelCommand {
     }
 
     private static int execute(CommandContext<CommandSourceStack> command) {
-        if(command.getSource().getEntity() != null
-                && command.getSource().getEntity() instanceof Player){
-            command.getSource().sendSystemMessage(Component.literal("This command can't be called client side!"));
-            return Command.SINGLE_SUCCESS;
-        }
-
         int levelLimit = command.getArgument("level", Integer.class);
 
         HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel = levelLimit;

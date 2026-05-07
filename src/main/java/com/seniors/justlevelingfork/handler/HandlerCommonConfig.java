@@ -43,6 +43,12 @@ public class HandlerCommonConfig {
     @AutoGen(category = "common", group = "general")
     @IntField(min = 1, max = 1000)
     public int aptitudeFirstCostLevel = 5;
+
+    @SerialEntry(comment = "If true, the skill reset item refunds the experience spent on aptitude levels.")
+    @AutoGen(category = "common", group = "general")
+    @Boolean(formatter = Boolean.Formatter.ON_OFF)
+    public boolean skillResetRefundsSpentLevels = false;
+
     @SerialEntry(comment = "Show potions overlay over skills")
     @AutoGen(category = "common", group = "general")
     @Boolean(formatter = Boolean.Formatter.ON_OFF)
@@ -52,6 +58,11 @@ public class HandlerCommonConfig {
     @AutoGen(category = "common", group = "general")
     @Boolean(formatter = Boolean.Formatter.ON_OFF)
     public boolean dropLockedItems = false;
+
+    @SerialEntry(comment = "If true, item usage requirements are hidden from tooltips after the player reaches the required aptitude levels.")
+    @AutoGen(category = "common", group = "general")
+    @Boolean(formatter = Boolean.Formatter.ON_OFF)
+    public boolean hideMetUsageRequirements = false;
 
     @SerialEntry(comment = "TAC:Zero have a special id system, so if you wanna get the id to restrict you need to enable this and shoot.")
     @AutoGen(category = "common", group = "general")

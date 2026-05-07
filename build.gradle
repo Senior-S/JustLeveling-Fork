@@ -66,6 +66,11 @@ dependencies {
     compileOnly "org.quiltmc.parsers:gson:0.2.1"
 
     modCompileOnly "curse.maven:tacz-refabricated-1334246:${tacz_refabricated_version}"
+    modCompileOnly "dev.architectury:architectury-fabric:${architectury_version}"
+    modCompileOnly "curse.maven:ftb-library-fabric-438495:${ftb_library_version}"
+    modCompileOnly "curse.maven:ftb-teams-fabric-438497:${ftb_teams_version}"
+    modCompileOnly "curse.maven:ftb-quests-fabric-438496:${ftb_quests_version}"
+    modCompileOnly "curse.maven:modular-item-api-904056:${miapi_version}"
 }
 
 processResources {
