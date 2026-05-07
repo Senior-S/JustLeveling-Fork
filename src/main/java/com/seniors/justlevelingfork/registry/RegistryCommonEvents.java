@@ -1,10 +1,14 @@
 package com.seniors.justlevelingfork.registry;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
+import com.seniors.justlevelingfork.client.core.Aptitudes;
+import com.seniors.justlevelingfork.common.HorseEquipmentRestrictions;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.common.capability.LazyAptitudeCapability;
 import com.seniors.justlevelingfork.common.command.*;
+import com.seniors.justlevelingfork.handler.HandlerAptitude;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import com.seniors.justlevelingfork.integration.MiapiIntegration;
 import com.seniors.justlevelingfork.integration.TetraIntegration;
 import com.seniors.justlevelingfork.network.packet.client.*;
 import com.seniors.justlevelingfork.network.packet.common.CounterAttackSP;
@@ -24,6 +28,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
@@ -204,7 +209,7 @@ public class RegistryCommonEvents {
             }
         }
 
-        if ((!provider.canUseItem(player, location) || !provider.canUseBlock(player, block))) {
+        if ((!provider.canUseItem(player, item) || !provider.canUseBlock(player, block))) {
             event.setCanceled(true);
         }
     }
@@ -233,7 +238,7 @@ public class RegistryCommonEvents {
             }
         }
 
-        if ((!provider.canUseItem(player, location) || !provider.canUseBlock(player, block))) {
+        if ((!provider.canUseItem(player, item) || !provider.canUseBlock(player, block))) {
             event.setCanceled(true);
         }
     }
@@ -261,7 +266,7 @@ public class RegistryCommonEvents {
             }
         }
 
-        if (!provider.canUseItem(player, location)) {
+        if (!provider.canUseItem(player, item)) {
             event.setCanceled(true);
         }
     }
@@ -290,7 +295,28 @@ public class RegistryCommonEvents {
             }
         }
 
-        if (!provider.canUseEntity(player, entity) || !provider.canUseItem(player, location)) {
+        if (!provider.canUseEntity(player, entity) || !provider.canUseItem(player, item)) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onRightClickEntitySpecific(PlayerInteractEvent.EntityInteractSpecific event) {
+        Player player = event.getEntity();
+        if (player.isCreative() || player instanceof FakePlayer) return;
+        Entity entity = event.getTarget();
+        ItemStack item = event.getItemStack();
+        AptitudeCapability provider = AptitudeCapability.get(player);
+        if (provider == null) {
+            return;
+        }
+
+        if (!provider.canUseEntity(player, entity) || !provider.canUseItem(player, item)) {
+            event.setCanceled(true);
+            return;
+        }
+
+        if (entity instanceof AbstractHorse horse && !HorseEquipmentRestrictions.canEquip(player, horse, item)) {
             event.setCanceled(true);
         }
     }
@@ -318,25 +344,23 @@ public class RegistryCommonEvents {
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
         if (!player.isCreative()) {
-            if (HandlerCommonConfig.HANDLER.instance().dropLockedItems) {
-                player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {
-                    AptitudeCapability provider = AptitudeCapability.get(player);
-                    if (provider == null) {
-                        return;
-                    }
+            player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {
+                AptitudeCapability provider = AptitudeCapability.get(player);
+                if (provider == null) {
+                    return;
+                }
 
-                    ItemStack hand = player.getMainHandItem();
-                    ItemStack offHand = player.getOffhandItem();
-                    if (!provider.canUseItem(player, hand)) {
-                        player.drop(hand.copy(), false);
-                        hand.setCount(0);
-                    }
-                    if (!provider.canUseItem(player, offHand)) {
-                        player.drop(offHand.copy(), false);
-                        offHand.setCount(0);
-                    }
-                });
-            }
+                ItemStack hand = player.getMainHandItem();
+                ItemStack offHand = player.getOffhandItem();
+                if (shouldDropLockedItem(player, provider, hand)) {
+                    player.drop(hand.copy(), false);
+                    hand.setCount(0);
+                }
+                if (shouldDropLockedItem(player, provider, offHand)) {
+                    player.drop(offHand.copy(), false);
+                    offHand.setCount(0);
+                }
+            });
         }
         if (player instanceof ServerPlayer serverPlayer) {
             serverPlayer.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> {
@@ -664,5 +688,24 @@ public class RegistryCommonEvents {
 
         MinecraftServer server = ((ServerLevel) world).getServer();
         server.submit(new TickTask(server.getTickCount() + delay, task));
+    }
+
+    private static boolean shouldDropLockedItem(Player player, AptitudeCapability provider, ItemStack stack) {
+        if (stack.isEmpty() || provider.canUseItem(player, stack)) {
+            return false;
+        }
+        if (HandlerCommonConfig.HANDLER.instance().dropLockedItems) {
+            return true;
+        }
+        ResourceLocation itemId = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem()));
+        if (hasDroppableRestriction(itemId)) {
+            return true;
+        }
+        return MiapiIntegration.isModularItem(stack) && MiapiIntegration.getModuleIds(stack).stream().anyMatch(RegistryCommonEvents::hasDroppableRestriction);
+    }
+
+    private static boolean hasDroppableRestriction(ResourceLocation id) {
+        List<Aptitudes> aptitudes = HandlerAptitude.getValue(id.toString());
+        return aptitudes != null && aptitudes.stream().anyMatch(Aptitudes::isDroppable);
     }
 }

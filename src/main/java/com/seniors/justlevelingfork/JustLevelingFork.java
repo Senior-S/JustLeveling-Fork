@@ -9,6 +9,7 @@ import com.seniors.justlevelingfork.handler.HandlerConfigCommon;
 import com.seniors.justlevelingfork.handler.HandlerCurios;
 import com.seniors.justlevelingfork.handler.HandlerLockItemsConfig;
 import com.seniors.justlevelingfork.integration.*;
+import com.seniors.justlevelingfork.integration.ftbquests.FTBQuestsIntegration;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import com.seniors.justlevelingfork.registry.*;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
@@ -81,33 +82,36 @@ public class JustLevelingFork {
             MinecraftForge.EVENT_BUS.register(new ScorchedGuns2Integration());
         if (IronsSpellsbooksIntegration.isModLoaded())
             MinecraftForge.EVENT_BUS.register(new IronsSpellsbooksIntegration());
+        if (ModList.get().isLoaded("ftbquests"))
+            FTBQuestsIntegration.load();
 
         ServerNetworking.init();
 
         // Check for new updates
-    if (HandlerCommonConfig.HANDLER.instance().checkForUpdates) {
-        CompletableFuture.runAsync(() -> {
-            try {
-                String version = getLatestVersion();
-    
-                Optional<IModInfo> optionalModInfo = ModList.get().getMods()
-                        .stream()
-                        .filter(c -> Objects.equals(c.getModId(), MOD_ID))
-                        .findFirst();
-                
-                // Is this somehow isn't present then some really strange shit happen
-                if (optionalModInfo.isPresent()) {
-                    ModInfo modInfo = (ModInfo) optionalModInfo.get();
-                    if (!Objects.equals(modInfo.getVersion().toString(), version)) {
-                        UpdatesAvailable.left = true;
-                        UpdatesAvailable.right = version;
-                        LOGGER.info(">> NEW VERSION AVAILABLE: {}", version);
+        if (HandlerCommonConfig.HANDLER.instance().checkForUpdates) {
+            CompletableFuture.runAsync(() -> {
+                try {
+                    String version = getLatestVersion();
+
+                    Optional<IModInfo> optionalModInfo = ModList.get().getMods()
+                            .stream()
+                            .filter(c -> Objects.equals(c.getModId(), MOD_ID))
+                            .findFirst();
+
+                    // Is this somehow isn't present then some really strange shit happen
+                    if (optionalModInfo.isPresent()) {
+                        ModInfo modInfo = (ModInfo) optionalModInfo.get();
+                        if (!Objects.equals(modInfo.getVersion().toString(), version)) {
+                            UpdatesAvailable.left = true;
+                            UpdatesAvailable.right = version;
+                            LOGGER.info(">> NEW VERSION AVAILABLE: {}", version);
+                        }
                     }
+                } catch (Exception e) {
+                    LOGGER.warn(">> Error checking for updates!", e);
                 }
-            } catch (Exception e) {
-                LOGGER.warn(">> Error checking for updates!", e);
-            }
-        });
+            });
+        }
     }
 
     @NotNull
@@ -151,6 +155,7 @@ public class JustLevelingFork {
                 continue;
             }
             String aptitudeValue = values[1];
+            lockItem.Droppable = aptitudeValue.contains("<droppable>");
             String getAptitude = aptitudeValue.contains("<droppable>") ? aptitudeValue.split("<droppable>")[0] : aptitudeValue;
             String[] aptitudeList = getAptitude.split(";");
 

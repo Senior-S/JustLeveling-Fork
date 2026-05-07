@@ -57,6 +57,16 @@ public class HandlerCommonConfig {
     @Boolean(formatter = Boolean.Formatter.ON_OFF)
     public boolean dropLockedItems = false;
 
+    @SerialEntry(comment = "If true, item usage requirement tooltips will hide requirements the player already meets.")
+    @AutoGen(category = "common", group = "general")
+    @Boolean(formatter = Boolean.Formatter.ON_OFF)
+    public boolean hideMetUsageRequirements = false;
+
+    @SerialEntry(comment = "If true, using a Skill Reset Crystal refunds the experience spent on aptitude levels.")
+    @AutoGen(category = "common", group = "general")
+    @Boolean(formatter = Boolean.Formatter.ON_OFF)
+    public boolean skillResetRefundsSpentLevels = false;
+
     @SerialEntry(comment = "TAC:Zero have a special id system, so if you wanna get the id to restrict you need to enable this and shoot.")
     @AutoGen(category = "common", group = "general")
     @Boolean(formatter = Boolean.Formatter.ON_OFF)

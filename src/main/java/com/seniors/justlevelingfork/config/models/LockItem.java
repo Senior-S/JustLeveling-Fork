@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class LockItem {
+    private static final String DROPPABLE_MARKER = "<droppable>";
 
     public String Item = "minecraft:diamond";
 
     public List<Aptitude> Aptitudes = List.of(new Aptitude());
+    public boolean Droppable = false;
 
     public LockItem() {
     }
@@ -37,9 +39,10 @@ public class LockItem {
     private static LockItem formatString(String value) {
         String[] initialSplit = value.split("#");
         LockItem lockItem = new LockItem(initialSplit[0]);
+        lockItem.Droppable = initialSplit[1].contains(DROPPABLE_MARKER);
 
         List<Aptitude> aptitudeList = new ArrayList<>();
-        String[] aptitudeSplit = initialSplit[1].split(";");
+        String[] aptitudeSplit = initialSplit[1].replace(DROPPABLE_MARKER, "").split(";");
 
         for (String aptitudeString : aptitudeSplit) {
             String[] aptitude = aptitudeString.split(":");
@@ -66,7 +69,7 @@ public class LockItem {
 
         String aptitudeStringList = String.join(";", strings);
 
-        return String.format("%s#%s", Item, aptitudeStringList);
+        return String.format("%s#%s%s", Item, aptitudeStringList, Droppable ? DROPPABLE_MARKER : "");
     }
 
     public static class Aptitude {

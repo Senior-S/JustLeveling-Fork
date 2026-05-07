@@ -25,7 +25,7 @@ public class HandlerAptitude {
                     continue;
                 }
 
-                aptitudesList.add(new Aptitudes(aptitude.Aptitude.toString(), lockItem.Item, false, aptitudeName, aptitude.Level));
+                aptitudesList.add(new Aptitudes(aptitude.Aptitude.toString(), lockItem.Item, lockItem.Droppable, aptitudeName, aptitude.Level));
             }
             if (aptitudesList.isEmpty()) {
                 continue;
@@ -54,7 +54,7 @@ public class HandlerAptitude {
                     continue;
                 }
 
-                aptitudesList.add(new Aptitudes(aptitude.Aptitude.toString(), lockItem.Item, false, aptitudeName, aptitude.Level));
+                aptitudesList.add(new Aptitudes(aptitude.Aptitude.toString(), lockItem.Item, lockItem.Droppable, aptitudeName, aptitude.Level));
             }
             if (aptitudesList.isEmpty()) {
                 JustLevelingFork.getLOGGER().warn("Item {} with no aptitudes (ITEM WITH NO APTITUDES), Skipping...", lockItem.Item);

@@ -74,7 +74,7 @@ public class AptitudeLevelUpSP {
         return 7 + level * 2;
     }
 
-    public void addPlayerXP(Player player, int amount) {
+    public static void addPlayerXP(Player player, int amount) {
         int experience = getPlayerXP(player) + amount;
         player.totalExperience = experience;
         player.experienceLevel = getLevelForExperience(experience);

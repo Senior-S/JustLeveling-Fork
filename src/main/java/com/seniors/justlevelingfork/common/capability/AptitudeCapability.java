@@ -4,7 +4,9 @@ import com.seniors.justlevelingfork.client.core.Aptitudes;
 import com.seniors.justlevelingfork.client.gui.OverlayAptitudeGui;
 import com.seniors.justlevelingfork.handler.HandlerAptitude;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import com.seniors.justlevelingfork.integration.MiapiIntegration;
 import com.seniors.justlevelingfork.network.packet.client.AptitudeOverlayCP;
+import com.seniors.justlevelingfork.network.packet.common.AptitudeLevelUpSP;
 import com.seniors.justlevelingfork.registry.*;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import com.seniors.justlevelingfork.registry.passive.Passive;
@@ -122,6 +124,32 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
         this.aptitudeLevel.put(aptitude.getName(), lvl);
     }
 
+    public int getSpentAptitudeExperience() {
+        int spentExperience = 0;
+        for (Aptitude aptitude : RegistryAptitudes.APTITUDES_REGISTRY.get().getValues()) {
+            int aptitudeLevel = getAptitudeLevel(aptitude);
+            for (int level = 1; level < aptitudeLevel; level++) {
+                spentExperience += AptitudeLevelUpSP.requiredPoints(level);
+            }
+        }
+        return spentExperience;
+    }
+
+    public void resetSkills() {
+        for (Aptitude aptitude : RegistryAptitudes.APTITUDES_REGISTRY.get().getValues()) {
+            this.aptitudeLevel.put(aptitude.getName(), 1);
+        }
+        for (Passive passive : RegistryPassives.PASSIVES_REGISTRY.get().getValues()) {
+            this.passiveLevel.put(passive.getName(), 0);
+        }
+        for (Skill skill : RegistrySkills.SKILLS_REGISTRY.get().getValues()) {
+            this.toggleSkill.put(skill.getName(), false);
+        }
+        this.counterAttack = false;
+        this.counterAttackTimer = 0;
+        this.betterCombatEntityRange = 0.0D;
+    }
+
     public int getGlobalLevel(){
         return this.aptitudeLevel.values().stream().mapToInt(Integer::intValue).sum();
     }
@@ -167,7 +195,18 @@ public class AptitudeCapability implements INBTSerializable<CompoundTag> {
     }
 
     public boolean canUseItem(Player player, ItemStack item) {
-        return canUse(player, Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem())));
+        ResourceLocation itemId = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.getItem()));
+        if (!canUse(player, itemId)) {
+            return false;
+        }
+        if (MiapiIntegration.isModularItem(item)) {
+            for (ResourceLocation moduleId : MiapiIntegration.getModuleIds(item)) {
+                if (!canUse(player, moduleId)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public boolean canUseItem(Player player, ResourceLocation resourceLocation) {

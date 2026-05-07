@@ -18,7 +18,8 @@
     "MixShulkerBullet",
     "MixTargetFinder",
     "MixVillager",
-    "MixCraftingMenu"
+    "MixCraftingMenu",
+    "MixHorseInventoryMenu"
   ],
   "injectors": {
     "defaultRequire": 1
