@@ -1,17 +1,19 @@
 package com.seniors.justlevelingfork.mixin;
 
+import com.seniors.justlevelingfork.JustLevelingFork;
+import net.fabricmc.loader.api.FabricLoader;
 import net.bettercombat.api.WeaponAttributes;
 import net.bettercombat.api.client.AttackRangeExtensions;
 import net.bettercombat.client.collision.OrientedBoundingBox;
 import net.bettercombat.client.collision.TargetFinder;
 import net.bettercombat.client.collision.WeaponHitBoxes;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fml.ModList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,14 +22,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @Mixin({TargetFinder.class})
 public abstract class MixTargetFinder {
     @Inject(method = {"findAttackTargetResult"}, at = {@At("HEAD")}, cancellable = true, remap = false)
     private static void findAttackTargetResult(Player player, Entity cursorTarget, WeaponAttributes.Attack attack, double attackRange, CallbackInfoReturnable<TargetFinder.TargetResult> info) {
-        if(player == null || cursorTarget == null || !ForgeMod.ENTITY_REACH.isPresent()){
+        if(player == null || cursorTarget == null){
             return;
         }
 
@@ -36,21 +36,21 @@ public abstract class MixTargetFinder {
         if (!AttackRangeExtensions.sources().isEmpty()) {
             attackRange = apply$AttackRangeModifiers(player, attackRange);
         }
-        AttributeInstance playerReach = player.getAttribute(ForgeMod.ENTITY_REACH.get());
+        AttributeInstance playerReach = player.getAttribute(Attributes.ENTITY_INTERACTION_RANGE);
         if (playerReach == null) {
             return;
         }
-        AttributeModifier modifier = playerReach.getModifier(UUID.fromString("96a891fe-5919-418d-8205-f50464391509"));
+        AttributeModifier modifier = playerReach.getModifier(ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, "96a891fe-5919-418d-8205-f50464391509"));
         if (modifier == null){
             return;
         }
         info.cancel();
 
-        attackRange += modifier.getAmount();
+        attackRange += modifier.amount();
 
         // Quality equipment directly changes the register function through reflection.
         // So I need to "replicate" what the reflection does here.
-        if(ModList.get().isLoaded("quality_equipment")){
+        if(FabricLoader.getInstance().isModLoaded("quality_equipment")){
             attackRange += 3.0D;
         }
 
@@ -79,11 +79,11 @@ public abstract class MixTargetFinder {
             switch (modifier.operation()) {
                 case ADD:
                     result += modifier.value();
+                    break;
                 case MULTIPLY:
                     result *= modifier.value();
+                    break;
             }
-
-
         }
         return result;
     }

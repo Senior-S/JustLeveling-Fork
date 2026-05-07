@@ -1,5 +1,7 @@
 package com.seniors.justlevelingfork.network.packet.common;
 
+import com.seniors.justlevelingfork.network.packet.JustLevelingPacket;
+
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
@@ -11,11 +13,9 @@ import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.function.Supplier;
 
-public class AptitudeLevelUpSP {
+public class AptitudeLevelUpSP implements JustLevelingPacket {
     private final String aptitude;
 
     public AptitudeLevelUpSP(Aptitude aptitude) {
@@ -30,10 +30,8 @@ public class AptitudeLevelUpSP {
         buffer.writeUtf(this.aptitude);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
+    public void handle(ServerPlayer sender) {
+            ServerPlayer player = sender;
             if (player != null) {
                 AptitudeCapability capability = AptitudeCapability.get(player);
                 Aptitude aptitudePlayer = RegistryAptitudes.getAptitude(this.aptitude);
@@ -56,8 +54,6 @@ public class AptitudeLevelUpSP {
                     addPlayerXP(player, requiredPoints * -1);
                 }
             }
-        });
-        context.setPacketHandled(true);
     }
 
     public static int getPlayerXP(Player player) {

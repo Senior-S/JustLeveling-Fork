@@ -1,6 +1,7 @@
 package com.seniors.justlevelingfork.registry;
 
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -9,9 +10,9 @@ public class RegistryEffects {
     public static class addEffect {
         public final ServerPlayer player;
         public final boolean toggle;
-        public final MobEffect effect;
+        public final Holder<MobEffect> effect;
 
-        public addEffect(ServerPlayer player, boolean toggle, MobEffect mobEffect) {
+        public addEffect(ServerPlayer player, boolean toggle, Holder<MobEffect> mobEffect) {
             this.player = player;
             this.toggle = toggle;
             this.effect = mobEffect;

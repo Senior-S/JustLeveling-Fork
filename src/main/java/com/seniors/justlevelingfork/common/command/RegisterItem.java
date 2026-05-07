@@ -10,11 +10,11 @@ import com.seniors.justlevelingfork.config.models.LockItem;
 import com.seniors.justlevelingfork.handler.HandlerLockItemsConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -39,7 +39,7 @@ public class RegisterItem {
                 player.sendSystemMessage(Component.literal("No item detected in main hand!"));
                 return Command.SINGLE_SUCCESS;
             }
-            ResourceLocation location = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem()));
+            ResourceLocation location = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(stack.getItem()));
             String aptitudeName = command.getArgument("aptitude", String.class);
             Integer level = command.getArgument("level", Integer.class);
 

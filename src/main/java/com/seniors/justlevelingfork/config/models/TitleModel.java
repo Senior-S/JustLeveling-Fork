@@ -3,11 +3,12 @@ package com.seniors.justlevelingfork.config.models;
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.config.conditions.ConditionImpl;
 import com.seniors.justlevelingfork.handler.HandlerConditions;
+import com.seniors.justlevelingfork.registry.FabricRegistryRef;
+import com.seniors.justlevelingfork.registry.RegistryItems;
+import com.seniors.justlevelingfork.registry.RegistryTitles;
 import com.seniors.justlevelingfork.registry.title.Title;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,13 +92,13 @@ public class TitleModel {
         return passedConditions == Conditions.size();
     }
 
-    public RegistryObject<Title> registry(DeferredRegister<Title> TITLES) {
+    public FabricRegistryRef<Title> registry() {
         _title = register(TitleId, Default);
-        return TITLES.register(TitleId, () -> _title);
+        return RegistryTitles.register(TitleId, _title);
     }
 
     private Title register(String name, boolean requirement) {
-        ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, name);
+        ResourceLocation key = RegistryItems.id(name);
         return new Title(key, requirement, this.HideRequirements);
     }
 

@@ -1,18 +1,18 @@
 package com.seniors.justlevelingfork.network.packet.common;
 
+import com.seniors.justlevelingfork.network.packet.JustLevelingPacket;
+
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
 import com.seniors.justlevelingfork.registry.RegistrySkills;
 import com.seniors.justlevelingfork.registry.skills.Skill;
 
-import java.util.function.Supplier;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
 
-public class ToggleSkillSP {
+public class ToggleSkillSP implements JustLevelingPacket {
     private final String skill;
     private final boolean toggle;
 
@@ -31,10 +31,8 @@ public class ToggleSkillSP {
         buffer.writeBoolean(this.toggle);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
+    public void handle(ServerPlayer sender) {
+            ServerPlayer player = sender;
 
             if (player != null) {
                 AptitudeCapability capability = AptitudeCapability.get(player);
@@ -44,8 +42,6 @@ public class ToggleSkillSP {
                 capability.setToggleSkill(skill, !setToggleSkills);
                 SyncAptitudeCapabilityCP.send(player);
             }
-        });
-        context.setPacketHandled(true);
     }
 
     public static void send(Skill skill, boolean toggle) {

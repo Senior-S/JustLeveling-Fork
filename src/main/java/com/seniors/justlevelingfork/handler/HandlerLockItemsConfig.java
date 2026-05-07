@@ -15,7 +15,7 @@ import java.util.List;
 public class HandlerLockItemsConfig {
 
     public static ConfigClassHandler<HandlerLockItemsConfig> HANDLER = ConfigClassHandler.createBuilder(HandlerLockItemsConfig.class)
-            .id(new ResourceLocation(JustLevelingFork.MOD_ID, "config"))
+            .id(ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(Configuration.getAbsoluteDirectory().resolve("justleveling-fork.lockItems.json5"))
                     .setJson5(true)

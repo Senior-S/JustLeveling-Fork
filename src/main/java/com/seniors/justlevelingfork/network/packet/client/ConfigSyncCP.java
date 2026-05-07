@@ -1,5 +1,7 @@
 package com.seniors.justlevelingfork.network.packet.client;
 
+import com.seniors.justlevelingfork.network.packet.JustLevelingPacket;
+
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.config.models.LockItem;
 import com.seniors.justlevelingfork.handler.HandlerAptitude;
@@ -10,18 +12,16 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Client packet to notify client of locked items of the serer.
  * Must only be sent on player join.
  */
-public class ConfigSyncCP {
+public class ConfigSyncCP implements JustLevelingPacket {
     private final byte[] stringListBytes;
 
     public ConfigSyncCP(byte[] array) {
@@ -39,9 +39,7 @@ public class ConfigSyncCP {
     }
 
     @SuppressWarnings("unchecked")
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
+    public void handle(ServerPlayer sender) {
             LocalPlayer localPlayer = (Minecraft.getInstance()).player;
             if(localPlayer != null){
                 List<String> lockItemsStrings = new ArrayList<>();
@@ -56,8 +54,6 @@ public class ConfigSyncCP {
 
                 HandlerAptitude.UpdateLockItems(lockItemList);
             }
-        });
-        context.setPacketHandled(true);
     }
 
     public static void sendToPlayer(Player player) {

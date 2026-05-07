@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.seniors.justlevelingfork.handler.HandlerAptitude;
+import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -19,6 +20,7 @@ public class AptitudesReloadCommand {
 
     private static int execute(CommandContext<CommandSourceStack> command){
         HandlerAptitude.ForceRefresh();
+        SyncAptitudeCapabilityCP.sendToAllPlayers();
 
         if(command.getSource().getEntity() instanceof Player player) {
             player.sendSystemMessage(Component.literal("Forcing refresh of aptitudes..."));

@@ -4,45 +4,35 @@ import com.seniors.justlevelingfork.client.core.Aptitudes;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerAptitude;
-import com.seniors.justlevelingfork.registry.RegistryCapabilities;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import java.awt.Color;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@OnlyIn(Dist.CLIENT)
 public class OverlayAptitudeGui {
-    private final Minecraft client = Minecraft.getInstance();
+    private static final Minecraft client = Minecraft.getInstance();
     private static List<Aptitudes> aptitudes = null;
     private static int showTicks = 0;
 
-    @SubscribeEvent(priority = EventPriority.NORMAL)
-    public void onHudRender(CustomizeGuiOverlayEvent.DebugText event) {
-        GuiGraphics matrixStack = event.getGuiGraphics();
-        if (this.client.level != null && this.client.player != null && showTicks > 0 && this.client.player.getCapability(RegistryCapabilities.APTITUDE).isPresent()) {
+    public static void render(GuiGraphics matrixStack) {
+        if (client.level != null && client.player != null && showTicks > 0 && AptitudeCapability.get(client.player) != null && aptitudes != null) {
             matrixStack.pose().pushPose();
-            int xOff = this.client.getWindow().getGuiScaledWidth() / 2;
-            int yOff = this.client.getWindow().getGuiScaledHeight() / 4;
+            int xOff = client.getWindow().getGuiScaledWidth() / 2;
+            int yOff = client.getWindow().getGuiScaledHeight() / 4;
 
             MutableComponent overlayMessage = Component.translatable("overlay.aptitude.message");
-            int overlayWidth = this.client.font.width(overlayMessage) / 2;
+            int overlayWidth = client.font.width(overlayMessage) / 2;
 
             RenderSystem.enableBlend();
             for (int i = 0; i < 16; i++) {
                 float f = (showTicks < 40) ? (0.003F * i / 40.0F * showTicks) : (0.003F * i);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, f);
-                matrixStack.fill(xOff - overlayWidth - 14 - 16 - i, yOff - 11 - 16 - i, xOff + overlayWidth + 14 + 16 - i, yOff + 45 + 16 - i, Color.BLACK.getRGB());
+                int alpha = Math.round(f * 255.0F);
+                int color = alpha << 24;
+                matrixStack.fill(xOff - overlayWidth - 14 - 16 - i, yOff - 11 - 16 - i, xOff + overlayWidth + 14 + 16 - i, yOff + 45 + 16 - i, color);
             }
             float alpha = (showTicks < 40) ? (0.025F * showTicks) : 1.0F;
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
@@ -67,8 +57,7 @@ public class OverlayAptitudeGui {
         }
     }
 
-    @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
+    public static void clientTick() {
         if (showTicks > 0) showTicks--;
     }
 

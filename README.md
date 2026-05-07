@@ -1,5 +1,5 @@
 # JustLeveling Fork
-This repo is a fork of the [JustLeveling](https://www.curseforge.com/minecraft/mc-mods/just-leveling) mod for minecraft forge 1.20.1
+This repo is a Fabric 1.21.1 fork of the [JustLeveling](https://www.curseforge.com/minecraft/mc-mods/just-leveling) mod.
 
 The idea behind this fork is fixing some bugs, performance issues and allow other persons to contribute onto it, so we can get a good mod (:
 
@@ -15,12 +15,12 @@ The idea behind this fork is fixing some bugs, performance issues and allow othe
 ## Installation
 The mod requires the next libraries:<br>
 [ClothConfig](https://www.curseforge.com/minecraft/mc-mods/cloth-config)<br>
-[Curios API](https://www.curseforge.com/minecraft/mc-mods/curios)<br>
-[YetAnotherConfigLib](https://modrinth.com/mod/yacl/version/3.4.2+1.20.1-forge) (3.4.2 VERSION ONLY! NEW VERSIONS OF THE LIB MIGHT CRASH YOUR GAME)<br>
+[Trinkets](https://modrinth.com/mod/trinkets)<br>
+[YetAnotherConfigLib](https://modrinth.com/mod/yacl)<br>
 If you're using BetterCombat you require the next library:<br>
 [PlayerAnimator](https://modrinth.com/mod/playeranimator)
 
-Once you have all the libraries installed you can download the latest version for Forge 1.20.1 [**HERE**](https://github.com/Senior-S/JustLeveling-Fork/releases)
+Once you have all the libraries installed you can download the latest version for Fabric 1.21.1 [**HERE**](https://github.com/Senior-S/JustLeveling-Fork/releases)
 
 ## How to contribute
 If you have ideas for the project you can open a issue [**here**](https://github.com/Senior-S/JustLeveling-Fork/issues).

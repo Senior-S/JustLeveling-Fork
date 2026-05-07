@@ -12,17 +12,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.entity.SkullBlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.ModList;
+import net.minecraft.world.item.component.ResolvableProfile;
+import net.fabricmc.loader.api.FabricLoader;
 
 
 public class Utils {
@@ -30,17 +27,12 @@ public class Utils {
     public static final Minecraft client = Minecraft.getInstance();
 
     public static ItemStack playerHead() {
-        ItemStack head = new ItemStack(Items.PLAYER_HEAD);
+        ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
         if (client.player != null) {
-            if (client.player.getGameProfile().getProperties().isEmpty()) {
-                return head;
-            }
-            CompoundTag nbt = head.getOrCreateTag();
-            GameProfile gameProfile = client.player.getGameProfile();
-            SkullBlockEntity.updateGameprofile(gameProfile, profile -> nbt.put("SkullOwner", NbtUtils.writeGameProfile(new CompoundTag(), profile)));
-            head.setTag(nbt);
+            GameProfile profile = client.player.getGameProfile();
+            stack.set(DataComponents.PROFILE, new ResolvableProfile(profile));
         }
-        return head;
+        return stack;
     }
 
     public static void playSound() {
@@ -104,12 +96,11 @@ public class Utils {
     public static String getModName(String modId) {
         AtomicReference<String> modName = new AtomicReference<>("Misspelled Mod");
         if (modId != null) {
-            ModList.get().getModContainerById(modId).ifPresent(modContainer -> modName.set(modContainer.getModInfo().getDisplayName()));
+            FabricLoader.getInstance().getModContainer(modId).ifPresent(modContainer -> modName.set(modContainer.getMetadata().getName()));
         }
         return modName.get();
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void getTitleSound() {
         client.getSoundManager().play(SimpleSoundInstance.forUI(RegistrySounds.GAIN_TITLE.get(), 1.0F));
     }

@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.client.gui.DrawTabs;
-import com.seniors.justlevelingfork.integration.L2TabsIntegration;
 import com.seniors.justlevelingfork.network.packet.common.OpenEnderChestSP;
 import com.seniors.justlevelingfork.registry.RegistrySkills;
 import net.minecraft.client.gui.GuiGraphics;
@@ -40,17 +39,13 @@ public abstract class MixInventoryScreen extends EffectRenderingInventoryScreen<
 
     @Inject(method = {"renderBg"}, at = {@At("TAIL")})
     private void render(GuiGraphics matrixStack, float delta, int mouseX, int mouseY, CallbackInfo info) {
-        if(L2TabsIntegration.isModLoaded()){
-            return;
-        }
-
         DrawTabs.render(matrixStack, mouseX, mouseY, 176, 166, getRecipeBookComponent().isVisible() ? 77 : 0);
 
         if (RegistrySkills.WORMHOLE_STORAGE != null && RegistrySkills.WORMHOLE_STORAGE.get().isEnabled()) {
             this.this$isMouseCheck = false;
             matrixStack.pose().pushPose();
-            int width = (getMinecraft().getWindow().getGuiScaledWidth() - 176) / 2;
-            int height = (getMinecraft().getWindow().getGuiScaledHeight() - 166) / 2;
+            int width = (this.minecraft.getWindow().getGuiScaledWidth() - 176) / 2;
+            int height = (this.minecraft.getWindow().getGuiScaledHeight() - 166) / 2;
             int buttonX = width + 127 + (getRecipeBookComponent().isVisible() ? 77 : 0);
             int buttonY = height + 61;
             int checkButton = 0;
@@ -64,16 +59,13 @@ public abstract class MixInventoryScreen extends EffectRenderingInventoryScreen<
                 }
             }
             RenderSystem.enableBlend();
-            matrixStack.blit(new ResourceLocation(JustLevelingFork.MOD_ID, "textures/skill/ender_chest_button.png"), buttonX, buttonY, 0.0F, checkButton, 20, 18, 20, 36);
+            matrixStack.blit(ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, "textures/skill/ender_chest_button.png"), buttonX, buttonY, 0.0F, checkButton, 20, 18, 20, 36);
             matrixStack.pose().popPose();
         }
     }
 
     @Inject(method = {"mouseClicked"}, at = {@At("HEAD")})
     private void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> info) {
-        if(L2TabsIntegration.isModLoaded()){
-            return;
-        }
         if (button == 0 && this.this$isMouseCheck) this.this$checkMouse = true;
         DrawTabs.mouseClicked(button);
     }

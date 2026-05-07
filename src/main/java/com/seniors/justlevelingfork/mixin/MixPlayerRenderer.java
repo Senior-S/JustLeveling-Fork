@@ -14,7 +14,9 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.EntityAttachment;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -29,8 +31,8 @@ public abstract class MixPlayerRenderer extends LivingEntityRenderer<AbstractCli
         super(context, new PlayerModel<>(context.bakeLayer(isSlim ? ModelLayers.PLAYER_SLIM : ModelLayers.PLAYER), isSlim), 0.5F);
     }
 
-    @Inject(method = {"renderNameTag(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"}, at = {@At("HEAD")})
-    private void render(AbstractClientPlayer entity, Component par2, PoseStack matrices, MultiBufferSource buffer, int light, CallbackInfo info) {
+    @Inject(method = {"renderNameTag(Lnet/minecraft/client/player/AbstractClientPlayer;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IF)V"}, at = {@At("HEAD")})
+    private void render(AbstractClientPlayer entity, Component par2, PoseStack matrices, MultiBufferSource buffer, int light, float partialTick, CallbackInfo info) {
         if (entity.getCustomName() != null) {
             MutableComponent name = Component.literal("<").append(entity.getCustomName().copy().withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.BOLD)).append(Component.literal(">"));
             if (!entity.getCustomName().equals(Component.translatable(RegistryTitles.TITLELESS.get().getKey()))) {
@@ -42,9 +44,13 @@ public abstract class MixPlayerRenderer extends LivingEntityRenderer<AbstractCli
     @Unique
     private void draw$Text(Component component, int y, Entity entity, PoseStack matrices, MultiBufferSource buffer, int light) {
         boolean flag = !entity.isDiscrete();
-        float f = entity.getNameTagOffsetY();
+        Vec3 nameTagOffset = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, entity.getYRot());
+        if (nameTagOffset == null) {
+            return;
+        }
+
         matrices.pushPose();
-        matrices.translate(0.0F, f, 0.0F);
+        matrices.translate(nameTagOffset.x, nameTagOffset.y + 0.5F, nameTagOffset.z);
         matrices.mulPose(this.entityRenderDispatcher.cameraOrientation());
         matrices.scale(-0.025F, -0.025F, 0.025F);
         Matrix4f matrix4f = matrices.last().pose();

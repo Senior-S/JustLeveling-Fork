@@ -2,12 +2,15 @@ package com.seniors.justlevelingfork.mixin;
 
 import com.seniors.justlevelingfork.registry.RegistrySkills;
 import com.google.common.base.MoreObjects;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.phys.EntityHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,10 +30,12 @@ public abstract class MixShulkerBullet {
         Entity entity = hitResult.getEntity();
         Entity entity1 = this.this$class.getOwner();
         LivingEntity livingentity = (entity1 instanceof LivingEntity) ? (LivingEntity) entity1 : null;
-        boolean flag = entity.hurt(this.this$class.damageSources().mobProjectile(this.this$class, livingentity), 4.0F);
+        DamageSource damageSource = this.this$class.damageSources().mobProjectile(this.this$class, livingentity);
+        boolean flag = entity.hurt(damageSource, 4.0F);
         if (flag) {
-            assert livingentity != null;
-            this.this$class.doEnchantDamageEffects(livingentity, entity);
+            if (this.this$class.level() instanceof ServerLevel serverLevel) {
+                EnchantmentHelper.doPostAttackEffects(serverLevel, entity, damageSource);
+            }
             if (entity instanceof LivingEntity livingentity1) {
                 if (livingentity1 instanceof Player player) {
                     if (RegistrySkills.TURTLE_SHIELD == null || !RegistrySkills.TURTLE_SHIELD.get().isEnabled(player)) {

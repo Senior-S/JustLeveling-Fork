@@ -4,7 +4,7 @@ import com.seniors.justlevelingfork.handler.HandlerConvergenceItemsConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,12 +50,12 @@ public class ConvergenceSkill {
             String getCraftingItem = getValue.split("#")[0];
             String getCraftingItemNamespace = getCraftingItem.split(":")[0];
             String getCraftingItemPath = getCraftingItem.split(":")[1];
-            Item craftingItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(getCraftingItemNamespace, getCraftingItemPath));
+            Item craftingItem = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(getCraftingItemNamespace, getCraftingItemPath));
 
             String getConvergenceItem = getValue.split("#")[1];
             String getConvergenceItemNamespace = getConvergenceItem.split(":")[0];
             String getConvergenceItemPath = getConvergenceItem.split(":")[1];
-            Item convergenceItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(getConvergenceItemNamespace, getConvergenceItemPath));
+            Item convergenceItem = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(getConvergenceItemNamespace, getConvergenceItemPath));
 
             items.add(new ItemDrops(craftingItem, convergenceItem));
         }

@@ -14,7 +14,7 @@ import java.util.List;
 public class HandlerTitlesConfig {
 
     public static ConfigClassHandler<HandlerTitlesConfig> HANDLER = ConfigClassHandler.createBuilder(HandlerTitlesConfig.class)
-            .id(new ResourceLocation(JustLevelingFork.MOD_ID, "config"))
+            .id(ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(Configuration.getAbsoluteDirectory().resolve("justleveling-fork.titles.json5"))
                     .appendGsonBuilder(GsonBuilder::setPrettyPrinting)

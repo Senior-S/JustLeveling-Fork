@@ -8,7 +8,6 @@ import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerConfigClient;
 import com.seniors.justlevelingfork.handler.HandlerResources;
 import com.seniors.justlevelingfork.registry.RegistryAptitudes;
-import com.seniors.justlevelingfork.registry.RegistryCapabilities;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -21,7 +20,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Skill {
     public final ResourceLocation key;
@@ -38,14 +36,13 @@ public class Skill {
         this.configValues = skillValues;
     }
 
-    // KubeJS support
     public static Skill add(String skillName, String aptitudeName, int levelRequirement, String texture, Value... skillValues){
         Aptitude aptitude = RegistryAptitudes.getAptitude(aptitudeName);
         if (aptitude == null){
             throw new IllegalArgumentException("Aptitude name doesn't exist: " + aptitudeName);
         }
 
-        ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, skillName);
+        ResourceLocation key = ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, skillName);
         return new Skill(key, aptitude, levelRequirement, HandlerResources.create(texture), skillValues);
     }
 
@@ -171,14 +168,9 @@ public class Skill {
     }
 
     public boolean isEnabled(Player player) {
-        AtomicBoolean b = new AtomicBoolean(false);
-        if (player != null &&
-                !player.isDeadOrDying()) {
-            player.getCapability(RegistryCapabilities.APTITUDE).ifPresent(aptitudeCapability -> b.set(
-                    this.requiredLevel > 0 && (AptitudeCapability.get(player).getAptitudeLevel(this.aptitude) >= this.requiredLevel && AptitudeCapability.get(player).getToggleSkill(this))));
-        }
-
-        return b.get();
+        if (player == null || player.isDeadOrDying()) return false;
+        AptitudeCapability aptitudeCapability = AptitudeCapability.get(player);
+        return aptitudeCapability != null && this.requiredLevel > 0 && aptitudeCapability.getAptitudeLevel(this.aptitude) >= this.requiredLevel && aptitudeCapability.getToggleSkill(this);
     }
 
     public ResourceLocation getTexture() {

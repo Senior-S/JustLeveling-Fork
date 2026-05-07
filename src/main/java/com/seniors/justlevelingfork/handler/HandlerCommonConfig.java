@@ -16,17 +16,13 @@ import java.util.List;
 
 public class HandlerCommonConfig {
     public static ConfigClassHandler<HandlerCommonConfig> HANDLER = ConfigClassHandler.createBuilder(HandlerCommonConfig.class)
-            .id(new ResourceLocation(JustLevelingFork.MOD_ID, "config"))
+            .id(ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(Configuration.getAbsoluteDirectory().resolve("justleveling-fork.common.json5"))
                     .appendGsonBuilder(GsonBuilder::setPrettyPrinting)
                     .setJson5(true)
                     .build())
             .build();
-
-    @SerialEntry(comment = "DON'T CHANGE THIS, REQUIRED TO AUTOMATICALLY TRY TO PORT LOCK ITEMS FROM THE OLD CONFIG.")
-    @Boolean(formatter = Boolean.Formatter.TRUE_FALSE)
-    public boolean usingNewConfig = false;
 
     @SerialEntry(comment = "Should the mod automatically check for updates on load?")
     @Boolean(formatter = Boolean.Formatter.ON_OFF)
@@ -61,11 +57,6 @@ public class HandlerCommonConfig {
     @AutoGen(category = "common", group = "general")
     @Boolean(formatter = Boolean.Formatter.ON_OFF)
     public boolean logTaczGunNames = false;
-
-    @SerialEntry(comment = "If Iron's Spells 'n Spellbooks is present, it will log the spells id's on cast required to restrict them.")
-    @AutoGen(category = "common", group = "general")
-    @Boolean(formatter = Boolean.Formatter.ON_OFF)
-    public boolean logSpellIds = false;
 
     @SerialEntry(comment = "If true this will display the player titles as prefixes when a player chat.")
     @AutoGen(category = "common", group = "general")

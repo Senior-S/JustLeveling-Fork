@@ -1,5 +1,7 @@
 package com.seniors.justlevelingfork.network.packet.client;
 
+import com.seniors.justlevelingfork.network.packet.JustLevelingPacket;
+
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import net.minecraft.client.Minecraft;
@@ -7,17 +9,15 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Arrays;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * Client packet to update dynamic config options.
  * Can be sent multiple times during a player session.
  */
-public class DynamicConfigSyncCP {
+public class DynamicConfigSyncCP implements JustLevelingPacket {
 
     private final int aptitudeMaxLevel;
     private final int playersMaxGlobalLevel;
@@ -213,9 +213,7 @@ public class DynamicConfigSyncCP {
                 .collect(Collectors.joining("-"));
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
+    public void handle(ServerPlayer sender) {
             LocalPlayer localPlayer = (Minecraft.getInstance()).player;
             if(localPlayer != null){
                 HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel = this.aptitudeMaxLevel;
@@ -264,8 +262,6 @@ public class DynamicConfigSyncCP {
 
                 HandlerCommonConfig.HANDLER.save();
             }
-        });
-        context.setPacketHandled(true);
     }
 
     public static void sendToPlayer(Player player) {

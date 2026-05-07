@@ -9,7 +9,6 @@ import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.handler.HandlerConfigClient;
 import com.seniors.justlevelingfork.handler.HandlerResources;
-import com.seniors.justlevelingfork.integration.KubeJSIntegration;
 import com.seniors.justlevelingfork.network.packet.common.*;
 import com.seniors.justlevelingfork.registry.RegistryAptitudes;
 import com.seniors.justlevelingfork.registry.RegistryTitles;
@@ -24,8 +23,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -34,7 +31,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@OnlyIn(Dist.CLIENT)
 public class JustLevelingScreen extends Screen {
     public static Minecraft client = Minecraft.getInstance();
     public int selectedPage = 0;
@@ -89,32 +85,51 @@ public class JustLevelingScreen extends Screen {
         super.render(matrixStack, mouseX, mouseY, delta);
     }
 
+    @Override
+    public void renderBackground(@NotNull GuiGraphics matrixStack, int mouseX, int mouseY, float delta) {
+        // Background rendering is handled by drawBackground; vanilla's implementation
+        // applies the screen blur pass after this screen has drawn its UI.
+    }
+
     public void drawBackground(GuiGraphics matrixStack, int x, int y, int mouseX, int mouseY, float delta) {
-        renderBackground(matrixStack);
+        matrixStack.flush();
+        client.getMainRenderTarget().bindWrite(false);
+        matrixStack.flush();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        renderTransparentBackground(matrixStack);
         assert client.player != null;
         int progress = (int) (client.player.experienceProgress * 151.0F);
         matrixStack.pose().pushPose();
         if (this.selectedPage == 0) {
             RenderSystem.enableBlend();
+            prepareGuiTexture(HandlerResources.SKILL_PAGE[0]);
             matrixStack.blit(HandlerResources.SKILL_PAGE[0], x, y, 0, 0, 176, 166);
             matrixStack.blit(HandlerResources.SKILL_PAGE[0], x + 12, y + 43, 0, 166, progress, 5);
             drawAptitudes(matrixStack, x, y, mouseX, mouseY);
         }
         if (this.selectedPage == 1) {
             RenderSystem.enableBlend();
-            if ((RegistryAptitudes.getAptitude(this.selectedAptitude)).background != null)
+            if ((RegistryAptitudes.getAptitude(this.selectedAptitude)).background != null) {
+                prepareGuiTexture((RegistryAptitudes.getAptitude(this.selectedAptitude)).background);
                 matrixStack.blit((RegistryAptitudes.getAptitude(this.selectedAptitude)).background, x + 7, y + 30, 0.0F, 0.0F, 160, 128, 16, 16);
+            }
+            prepareGuiTexture(HandlerResources.SKILL_PAGE[1]);
             matrixStack.blit(HandlerResources.SKILL_PAGE[1], x, y, 0, 0, 176, 166);
             drawSkills(matrixStack, x, y, mouseX, mouseY);
         }
         if (this.selectedPage == 2) {
             RenderSystem.enableBlend();
+            prepareGuiTexture(HandlerResources.SKILL_PAGE[2]);
             matrixStack.blit(HandlerResources.SKILL_PAGE[2], x, y, 0, 0, 176, 166);
             drawTitles(matrixStack, x, y, mouseX, mouseY, delta);
         }
 
         DrawTabs.render(matrixStack, mouseX, mouseY, 176, 166, 0);
         matrixStack.pose().popPose();
+    }
+
+    private static void prepareGuiTexture(net.minecraft.resources.ResourceLocation texture) {
+        client.getTextureManager().getTexture(texture).setFilter(false, false);
     }
 
     public void drawTitles(GuiGraphics matrixStack, int x, int y, int mouseX, int mouseY, float delta) {
@@ -452,17 +467,7 @@ public class JustLevelingScreen extends Screen {
                     this.isMouseCheck = true;
                     if (this.checkMouse) {
                         Utils.playSound();
-                        if (KubeJSIntegration.isModLoaded()) {
-                            boolean cancelled = new KubeJSIntegration().postLevelUpEvent(client.player, aptitude);
-
-                            if (!cancelled) {
-                                AptitudeLevelUpSP.send(aptitude);
-                            }
-                        }
-                        else {
-                            AptitudeLevelUpSP.send(aptitude);
-                        }
-
+                        AptitudeLevelUpSP.send(aptitude);
                         this.checkMouse = false;
                     }
                 } else {
@@ -635,7 +640,7 @@ public class JustLevelingScreen extends Screen {
             return true;
         }
 
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        return super.mouseScrolled(mouseX, mouseY, 0, amount);
     }
 
 

@@ -1,5 +1,7 @@
 package com.seniors.justlevelingfork.network.packet.client;
 
+import com.seniors.justlevelingfork.network.packet.JustLevelingPacket;
+
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.handler.HandlerConvergenceItemsConfig;
@@ -9,18 +11,16 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Client packet to update static config options that needs to match server.
  * Must only be sent on player join.
  */
-public class CommonConfigSyncCP {
+public class CommonConfigSyncCP implements JustLevelingPacket {
 
     private final int aptitudeFirstCostLevel;
     private final boolean dropLockedItems;
@@ -274,9 +274,7 @@ public class CommonConfigSyncCP {
         buffer.writeInt(this.limitBreakerProbability);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
+    public void handle(ServerPlayer sender) {
             LocalPlayer localPlayer = (Minecraft.getInstance()).player;
             if(localPlayer != null){
                 HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel = this.aptitudeFirstCostLevel;
@@ -330,8 +328,6 @@ public class CommonConfigSyncCP {
 
                 HandlerCommonConfig.HANDLER.save();
             }
-        });
-        context.setPacketHandled(true);
     }
 
     public static void sendToPlayer(Player player) {

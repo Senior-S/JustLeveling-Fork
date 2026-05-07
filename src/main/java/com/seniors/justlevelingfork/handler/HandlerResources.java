@@ -102,7 +102,7 @@ public class HandlerResources {
     public static final ResourceLocation LIMIT_BREAKER_SKILL = create("textures/skill/luck/limit_breaker.png");
 
     public static ResourceLocation create(String path) {
-        return new ResourceLocation(JustLevelingFork.MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, path);
     }
 }
 

@@ -2,7 +2,7 @@ package com.seniors.justlevelingfork.config.conditions;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.config.models.TitleModel;
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -16,7 +16,7 @@ public class AdvancementCondition extends ConditionImpl<Boolean> {
 
     @Override
     public void ProcessVariable(String value, ServerPlayer serverPlayer) {
-        Advancement advancement = Objects.requireNonNull(serverPlayer.getServer()).getAdvancements().getAdvancement(new ResourceLocation(value.replace("-", "/")));
+        AdvancementHolder advancement = Objects.requireNonNull(serverPlayer.getServer()).getAdvancements().get(ResourceLocation.parse(value.replace("-", "/")));
         if (advancement == null){
             JustLevelingFork.getLOGGER().error(">> Error! Advancement name {} not found!", value);
             setProcessedValue(false);

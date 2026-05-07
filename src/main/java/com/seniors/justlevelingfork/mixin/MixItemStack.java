@@ -1,36 +1,43 @@
 package com.seniors.justlevelingfork.mixin;
 
 import com.seniors.justlevelingfork.registry.RegistrySkills;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
+import java.util.function.Consumer;
 
-@Mixin({ItemStack.class})
+@Mixin(ItemEnchantments.class)
 public abstract class MixItemStack {
-    @Inject(method = {"appendEnchantmentNames"}, at = {@At("HEAD")}, cancellable = true)
-    private static void appendEnchantmentNames(List<Component> list, ListTag tags, CallbackInfo info) {
-        info.cancel();
+    @Shadow
+    @Final
+    private boolean showInTooltip;
 
-        for (int i = 0; i < tags.size(); i++) {
-            CompoundTag nbt = tags.getCompound(i);
+    @Inject(method = "addToTooltip", at = @At("HEAD"), cancellable = true)
+    private void justlevelingfork$hideEnchantmentsWithoutScholar(Item.TooltipContext tooltipContext, Consumer<Component> tooltipConsumer, TooltipFlag tooltipFlag, CallbackInfo ci) {
+        if (RegistrySkills.SCHOLAR == null || RegistrySkills.SCHOLAR.get().isEnabled()) {
+            return;
+        }
 
-            if (RegistrySkills.SCHOLAR == null || (RegistrySkills.SCHOLAR.get().isEnabled())) {
-                ForgeRegistries.ENCHANTMENTS.getDelegate(EnchantmentHelper.getEnchantmentId(nbt)).ifPresent(enchantment -> list.add(enchantment.get().getFullname(EnchantmentHelper.getEnchantmentLevel(nbt))));
-            } else {
-                ForgeRegistries.ENCHANTMENTS.getDelegate(EnchantmentHelper.getEnchantmentId(nbt)).ifPresent(enchantment -> list.add(Component.translatable("tooltip.skill.scholar.lock_item").withStyle(ChatFormatting.GRAY)));
-            }
+        ci.cancel();
+        if (!this.showInTooltip) {
+            return;
+        }
+
+        ItemEnchantments enchantments = (ItemEnchantments) (Object) this;
+        for (Object2IntMap.Entry<Holder<Enchantment>> ignored : enchantments.entrySet()) {
+            tooltipConsumer.accept(Component.translatable("tooltip.skill.scholar.lock_item").withStyle(ChatFormatting.GRAY));
         }
     }
 }
-
-

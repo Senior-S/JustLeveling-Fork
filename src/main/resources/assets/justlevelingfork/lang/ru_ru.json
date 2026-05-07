@@ -17,7 +17,6 @@
  "yacl3.config.justlevelingfork:config.closeCraftingMenu": "Закрыть меню крафта",
  "yacl3.config.justlevelingfork:config.dropLockedItems": "Выбрасывать блокированные предметы",
  "yacl3.config.justlevelingfork:config.logTaczGunNames": "В журнале ВИК:Ноль названий оружия",
- "yacl3.config.justlevelingfork:config.logSpellIds": "Идентификаторы заклинаний журнала",
  "yacl3.config.justlevelingfork:config.playersMaxGlobalLevel": "Макс. глобальный уровень игроков",
 
  "yacl3.config.justlevelingfork:config.aptitudeMaxLevel.desc": "Макс. уровень способностей",
@@ -27,7 +26,6 @@
  "yacl3.config.justlevelingfork:config.closeCraftingMenu.desc": "Если true, при попытке создания не разблокированного предмета меню создания будет закрыто",
  "yacl3.config.justlevelingfork:config.dropLockedItems.desc": "Если true, заблокированные предметы будут автоматически выпадать из рук игрока",
  "yacl3.config.justlevelingfork:config.logTaczGunNames.desc": "TAC: У Zero есть специальная система идентификаторов, поэтому, если вы хотите, чтобы идентификатор ограничивал вас, вам нужно включить её и стрелять",
- "yacl3.config.justlevelingfork:config.logSpellIds.desc": "В книгах заклинаний и заклинаний Айрона для каждого заклинания есть уникальный идентификатор заклинания, поэтому, если вы хотите, чтобы идентификатор ограничивал использование заклинания, вам нужно включить эту функцию и произнести заклинание",
  "yacl3.config.justlevelingfork:config.playersMaxGlobalLevel.desc": "Глобальный максимальный уровень. Глобальный уровень рассчитывается путем суммирования всех уровней способностей, поэтому, если он установлен на 32, игроки смогут максимально развить только 1 навык.",
 
  "yacl3.config.justlevelingfork:config.attackDamageValue" : "Значение урона от атаки",

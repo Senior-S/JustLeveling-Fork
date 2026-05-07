@@ -1,20 +1,22 @@
 package com.seniors.justlevelingfork.registry;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 public class RegistryItems {
-    public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, JustLevelingFork.MOD_ID);
+    public static final FabricRegistryRef<Item> LEVELING_BOOK = register("leveling_book", new Item(new Item.Properties()));
 
-    public static final RegistryObject<Item> LEVELING_BOOK = REGISTER.register("leveling_book", () -> new Item(new Item.Properties()));
+    public static void load() {
+    }
 
-    public static void load(IEventBus eventBus) {
-        REGISTER.register(eventBus);
+    private static FabricRegistryRef<Item> register(String name, Item item) {
+        return new FabricRegistryRef<>(Registry.register(BuiltInRegistries.ITEM, id(name), item));
+    }
+
+    public static ResourceLocation id(String name) {
+        return ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, name);
     }
 }
-
-

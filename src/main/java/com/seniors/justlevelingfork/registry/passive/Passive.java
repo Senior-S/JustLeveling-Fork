@@ -8,12 +8,12 @@ import com.seniors.justlevelingfork.handler.HandlerResources;
 import com.seniors.justlevelingfork.registry.RegistryAptitudes;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -24,12 +24,12 @@ public class Passive {
     public final ResourceLocation key;
     public final Aptitude aptitude;
     public final ResourceLocation texture;
-    public final Attribute attribute;
+    public final Holder<Attribute> attribute;
     public final String attributeUuid;
     public final Object attributeValue;
     public final int[] levelsRequired;
 
-    public Passive(ResourceLocation passiveKey, Aptitude aptitude, ResourceLocation passiveTexture, Attribute attribute, String attributeUuid, Object attributeValue, int... levelsRequired) {
+    public Passive(ResourceLocation passiveKey, Aptitude aptitude, ResourceLocation passiveTexture, Holder<Attribute> attribute, String attributeUuid, Object attributeValue, int... levelsRequired) {
         this.key = passiveKey;
         this.aptitude = aptitude;
         this.texture = passiveTexture;
@@ -39,14 +39,13 @@ public class Passive {
         this.levelsRequired = levelsRequired;
     }
 
-    // KubeJS support
-    public static Passive add(String passiveName, String aptitudeName, String texture, Attribute attribute, String attributeUUID, Object attributeValue, int... levelsRequired){
+    public static Passive add(String passiveName, String aptitudeName, String texture, Holder<Attribute> attribute, String attributeUUID, Object attributeValue, int... levelsRequired){
         Aptitude aptitude = RegistryAptitudes.getAptitude(aptitudeName);
         if (aptitude == null){
             throw new IllegalArgumentException("Aptitude name doesn't exist: " + aptitudeName);
         }
 
-        ResourceLocation key = new ResourceLocation(JustLevelingFork.MOD_ID, passiveName);
+        ResourceLocation key = ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, passiveName);
         return new Passive(key, aptitude, HandlerResources.create(texture), attribute, attributeUUID, attributeValue, levelsRequired);
     }
 
@@ -74,19 +73,10 @@ public class Passive {
         double newValue = 0.0D;
         if (this.attributeValue != null) {
             Object object = this.attributeValue;
-            if (object instanceof ForgeConfigSpec.DoubleValue) {
-                ForgeConfigSpec.DoubleValue value = (ForgeConfigSpec.DoubleValue) object;
-                newValue = value.get();
-            }
-            if (object instanceof ForgeConfigSpec.IntValue) {
-                ForgeConfigSpec.IntValue value = (ForgeConfigSpec.IntValue) object;
-                newValue = value.get();
-            }
             if (object instanceof Number) {
                 Number value = (Number) object;
                 newValue = value.doubleValue();
             }
-
         }
         return newValue;
     }

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class HandlerConvergenceItemsConfig {
     public static ConfigClassHandler<HandlerConvergenceItemsConfig> HANDLER = ConfigClassHandler.createBuilder(HandlerConvergenceItemsConfig.class)
-            .id(new ResourceLocation(JustLevelingFork.MOD_ID, "config"))
+            .id(ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(Configuration.getAbsoluteDirectory().resolve("justleveling-fork.convergence-items.json5"))
                     .appendGsonBuilder(GsonBuilder::setPrettyPrinting)

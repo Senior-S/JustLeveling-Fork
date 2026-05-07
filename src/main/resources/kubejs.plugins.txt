@@ -1,1 +1,0 @@
-com.seniors.justlevelingfork.kubejs.Plugin
