@@ -1,0 +1,180 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Mod version to publish, for example 1.0.1"
+        required: true
+        type: string
+      release_type:
+        description: "Release channel"
+        required: true
+        default: "release"
+        type: choice
+        options:
+          - release
+          - beta
+          - alpha
+      changelog:
+        description: "Release notes shown on Modrinth, CurseForge, and GitHub"
+        required: true
+        type: string
+      dry_run:
+        description: "Build only; skip publishing"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ inputs.version }}
+  cancel-in-progress: false
+
+env:
+  MINECRAFT_VERSION: 1.21.1
+  MOD_VERSION: ${{ inputs.version }}
+  RELEASE_TYPE: ${{ inputs.release_type }}
+  RELEASE_NAME: JustLevelingFork ${{ inputs.version }} for Minecraft 1.21.1
+  RELEASE_TAG: v${{ inputs.version }}
+  FABRIC_JAR: fabric/build/libs/justlevelingfork-fabric-${{ inputs.version }}.jar
+  NEOFORGE_JAR: neoforge/build/libs/justlevelingfork-neoforge-${{ inputs.version }}.jar
+
+jobs:
+  build:
+    name: Build release jars
+    runs-on: ubuntu-24.04
+    outputs:
+      artifact-name: release-jars
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate version input
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "${MOD_VERSION}" =~ ^[0-9]+(\.[0-9]+){1,3}([-+][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Version '${MOD_VERSION}' does not look like a release version." >&2
+            exit 1
+          fi
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build Fabric and NeoForge
+        run: ./gradlew clean :fabric:build :neoforge:build -Pmod_version="${MOD_VERSION}"
+
+      - name: Verify release jars
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "${FABRIC_JAR}"
+          test -f "${NEOFORGE_JAR}"
+          ls -lh "${FABRIC_JAR}" "${NEOFORGE_JAR}"
+
+      - name: Upload release jars
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-jars
+          if-no-files-found: error
+          path: |
+            ${{ env.FABRIC_JAR }}
+            ${{ env.NEOFORGE_JAR }}
+
+  publish:
+    name: Publish release
+    needs: build
+    if: ${{ !inputs.dry_run }}
+    runs-on: ubuntu-24.04
+    env:
+      MODRINTH_PROJECT_ID: ${{ vars.MODRINTH_PROJECT_ID }}
+      CURSEFORGE_PROJECT_ID: ${{ vars.CURSEFORGE_PROJECT_ID }}
+      HAS_MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN != '' }}
+      HAS_CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate publishing configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${MODRINTH_PROJECT_ID}" || { echo "Missing repository variable MODRINTH_PROJECT_ID" >&2; exit 1; }
+          test -n "${CURSEFORGE_PROJECT_ID}" || { echo "Missing repository variable CURSEFORGE_PROJECT_ID" >&2; exit 1; }
+          [[ "${HAS_MODRINTH_TOKEN}" == "true" ]] || { echo "Missing repository secret MODRINTH_TOKEN" >&2; exit 1; }
+          [[ "${HAS_CURSEFORGE_TOKEN}" == "true" ]] || { echo "Missing repository secret CURSEFORGE_TOKEN" >&2; exit 1; }
+
+      - name: Download release jars
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact-name }}
+          path: release-jars
+
+      - name: Publish GitHub release and Modrinth version
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ env.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-tag: ${{ env.RELEASE_TAG }}
+          github-commitish: ${{ github.sha }}
+          files: |
+            release-jars/fabric/build/libs/justlevelingfork-fabric-${{ env.MOD_VERSION }}.jar
+            release-jars/neoforge/build/libs/justlevelingfork-neoforge-${{ env.MOD_VERSION }}.jar
+          name: ${{ env.RELEASE_NAME }}
+          version: ${{ env.MOD_VERSION }}
+          version-type: ${{ env.RELEASE_TYPE }}
+          changelog: ${{ inputs.changelog }}
+          loaders: |
+            fabric
+            neoforge
+          game-versions: |
+            ${{ env.MINECRAFT_VERSION }}
+          java: |
+            21
+          fail-mode: fail
+
+      - name: Publish Fabric jar to CurseForge
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ env.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          files: release-jars/fabric/build/libs/justlevelingfork-fabric-${{ env.MOD_VERSION }}.jar
+          name: JustLevelingFork ${{ env.MOD_VERSION }} Fabric
+          version: fabric-${{ env.MOD_VERSION }}
+          version-type: ${{ env.RELEASE_TYPE }}
+          changelog: ${{ inputs.changelog }}
+          loaders: |
+            fabric
+          game-versions: |
+            ${{ env.MINECRAFT_VERSION }}
+          java: |
+            21
+          fail-mode: fail
+
+      - name: Publish NeoForge jar to CurseForge
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ env.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          files: release-jars/neoforge/build/libs/justlevelingfork-neoforge-${{ env.MOD_VERSION }}.jar
+          name: JustLevelingFork ${{ env.MOD_VERSION }} NeoForge
+          version: neoforge-${{ env.MOD_VERSION }}
+          version-type: ${{ env.RELEASE_TYPE }}
+          changelog: ${{ inputs.changelog }}
+          loaders: |
+            neoforge
+          game-versions: |
+            ${{ env.MINECRAFT_VERSION }}
+          java: |
+            21
+          fail-mode: fail

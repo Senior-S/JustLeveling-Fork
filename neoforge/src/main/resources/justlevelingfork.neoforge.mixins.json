@@ -1,0 +1,29 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.seniors.justlevelingfork.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "MixInventoryScreen",
+    "MixPlayerRenderer",
+    "MixTargetFinder"
+  ],
+  "mixins": [
+    "MixAbstractArrow",
+    "MixAbstractContainerMenu",
+    "MixItemEntity",
+    "MixItemStack",
+    "MixLivingEntity",
+    "MixPlayer",
+    "MixResultSlot",
+    "MixServerPlayer",
+    "MixPowderSnowBlock",
+    "MixShulkerBullet",
+    "MixThrownEnderpearl",
+    "MixVillager",
+    "MixCraftingMenu"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
