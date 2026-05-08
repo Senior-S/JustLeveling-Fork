@@ -4,6 +4,7 @@ build/
 run/
 **/run/
 *.log
+*.md
 *.iml
 .idea/
 .vscode/
