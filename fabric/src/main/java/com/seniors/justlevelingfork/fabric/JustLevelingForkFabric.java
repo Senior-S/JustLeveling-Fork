@@ -3,6 +3,7 @@ package com.seniors.justlevelingfork.fabric;
 import com.seniors.justlevelingfork.JustLevelingFork;
 import com.seniors.justlevelingfork.integration.TacZIntegration;
 import com.seniors.justlevelingfork.integration.ftbquests.FTBQuestsIntegration;
+import com.seniors.justlevelingfork.integration.questlog.QuestlogIntegration;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import com.seniors.justlevelingfork.network.packet.client.CommonConfigSyncCP;
 import com.seniors.justlevelingfork.network.packet.client.ConfigSyncCP;
@@ -27,6 +28,9 @@ public class JustLevelingForkFabric implements ModInitializer {
         }
         if (Platform.isModLoaded("ftbquests")) {
             FTBQuestsIntegration.load();
+        }
+        if (Platform.isModLoaded("questlog")) {
+            QuestlogIntegration.load();
         }
 
         ServerNetworking.init();

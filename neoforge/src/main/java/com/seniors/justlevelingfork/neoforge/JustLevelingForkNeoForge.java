@@ -7,6 +7,8 @@ import com.seniors.justlevelingfork.common.command.RegisterItem;
 import com.seniors.justlevelingfork.common.command.TitleCommand;
 import com.seniors.justlevelingfork.common.command.UpdateAptitudeLevelCommand;
 import com.seniors.justlevelingfork.JustLevelingFork;
+import com.seniors.justlevelingfork.integration.ftbquests.FTBQuestsIntegration;
+import com.seniors.justlevelingfork.integration.questlog.QuestlogIntegration;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import com.seniors.justlevelingfork.network.packet.client.CommonConfigSyncCP;
 import com.seniors.justlevelingfork.network.packet.client.ConfigSyncCP;
@@ -16,6 +18,7 @@ import com.seniors.justlevelingfork.handler.HandlerTrinkets;
 import com.seniors.justlevelingfork.registry.RegistryAttributes;
 import com.seniors.justlevelingfork.registry.RegistryGameplayEvents;
 import com.seniors.justlevelingfork.registry.RegistryTitles;
+import dev.architectury.platform.Platform;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.bus.api.IEventBus;
@@ -40,6 +43,12 @@ public class JustLevelingForkNeoForge {
         ServerNetworking.init();
         if (FMLEnvironment.dist.isClient()) {
             JustLevelingForkNeoForgeClient.init(modBus);
+        }
+        if (Platform.isModLoaded("ftbquests")) {
+            FTBQuestsIntegration.load();
+        }
+        if (Platform.isModLoaded("questlog")) {
+            QuestlogIntegration.load();
         }
 
         modBus.addListener(this::registerAttributes);

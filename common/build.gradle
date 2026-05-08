@@ -2,6 +2,26 @@ architectury {
     common rootProject.enabled_platforms.split(',')
 }
 
+sourceSets {
+    questlogStub {
+        java.srcDir 'src/questlogStub/java'
+    }
+}
+
+configurations {
+    questlogStubImplementation.extendsFrom implementation
+    compileOnly.extendsFrom questlogStubImplementation
+}
+
+compileJava {
+    dependsOn compileQuestlogStubJava
+    classpath += sourceSets.questlogStub.output
+}
+
+compileQuestlogStubJava {
+    classpath += sourceSets.main.compileClasspath
+}
+
 dependencies {
     // We depend on Fabric Loader here to use the Fabric @Environment annotations,
     // which get remapped to the correct annotations on each platform.

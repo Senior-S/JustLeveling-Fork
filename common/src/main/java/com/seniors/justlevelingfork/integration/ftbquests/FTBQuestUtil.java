@@ -9,35 +9,35 @@ import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import com.seniors.justlevelingfork.registry.title.Title;
 import net.minecraft.server.level.ServerPlayer;
 
-final class FTBQuestUtil {
+public final class FTBQuestUtil {
     private FTBQuestUtil() {
     }
 
-    static Aptitude getAptitude(String aptitudeName) {
+    public static Aptitude getAptitude(String aptitudeName) {
         if (aptitudeName == null || aptitudeName.isBlank()) {
             return null;
         }
         return RegistryAptitudes.getAptitude(aptitudeName.trim().toLowerCase());
     }
 
-    static Title getTitle(String titleName) {
+    public static Title getTitle(String titleName) {
         if (titleName == null || titleName.isBlank()) {
             return null;
         }
         return RegistryTitles.getTitle(titleName.trim().toLowerCase());
     }
 
-    static int clampAptitudeLevel(int level) {
+    public static int clampAptitudeLevel(int level) {
         return Math.max(1, Math.min(level, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel));
     }
 
-    static boolean hasAptitudeLevel(ServerPlayer player, String aptitudeName, int level) {
+    public static boolean hasAptitudeLevel(ServerPlayer player, String aptitudeName, int level) {
         Aptitude aptitude = getAptitude(aptitudeName);
         AptitudeCapability capability = AptitudeCapability.get(player);
         return aptitude != null && capability != null && capability.getAptitudeLevel(aptitude) >= clampAptitudeLevel(level);
     }
 
-    static boolean setAptitudeLevel(ServerPlayer player, String aptitudeName, int level, boolean onlyIncrease) {
+    public static boolean setAptitudeLevel(ServerPlayer player, String aptitudeName, int level, boolean onlyIncrease) {
         Aptitude aptitude = getAptitude(aptitudeName);
         AptitudeCapability capability = AptitudeCapability.get(player);
         if (aptitude == null || capability == null) {
@@ -53,7 +53,7 @@ final class FTBQuestUtil {
         return true;
     }
 
-    static boolean unlockTitle(ServerPlayer player, String titleName, boolean equipTitle) {
+    public static boolean unlockTitle(ServerPlayer player, String titleName, boolean equipTitle) {
         Title title = getTitle(titleName);
         AptitudeCapability capability = AptitudeCapability.get(player);
         if (title == null || capability == null) {

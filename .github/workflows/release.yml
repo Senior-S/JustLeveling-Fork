@@ -37,6 +37,8 @@ env:
   MINECRAFT_VERSION: 1.21.1
   MOD_VERSION: ${{ inputs.version }}
   RELEASE_TYPE: ${{ inputs.release_type }}
+  CHANGELOG: ${{ inputs.changelog }}
+  DRY_RUN: ${{ inputs.dry_run }}
   RELEASE_NAME: JustLevelingFork ${{ inputs.version }} for Minecraft 1.21.1
   RELEASE_TAG: v${{ inputs.version }}
   FABRIC_JAR: fabric/build/libs/justlevelingfork-fabric-${{ inputs.version }}.jar
@@ -91,7 +93,7 @@ jobs:
             ${{ env.NEOFORGE_JAR }}
 
   publish:
-    name: Publish release
+    name: Publish release with Gradle
     needs: build
     if: ${{ !inputs.dry_run }}
     runs-on: ubuntu-24.04
@@ -104,6 +106,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Validate publishing configuration
         shell: bash
         run: |
@@ -113,68 +124,8 @@ jobs:
           [[ "${HAS_MODRINTH_TOKEN}" == "true" ]] || { echo "Missing repository secret MODRINTH_TOKEN" >&2; exit 1; }
           [[ "${HAS_CURSEFORGE_TOKEN}" == "true" ]] || { echo "Missing repository secret CURSEFORGE_TOKEN" >&2; exit 1; }
 
-      - name: Download release jars
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.build.outputs.artifact-name }}
-          path: release-jars
-
-      - name: Publish GitHub release and Modrinth version
-        uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          modrinth-id: ${{ env.MODRINTH_PROJECT_ID }}
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          github-tag: ${{ env.RELEASE_TAG }}
-          github-commitish: ${{ github.sha }}
-          files: |
-            release-jars/fabric/build/libs/justlevelingfork-fabric-${{ env.MOD_VERSION }}.jar
-            release-jars/neoforge/build/libs/justlevelingfork-neoforge-${{ env.MOD_VERSION }}.jar
-          name: ${{ env.RELEASE_NAME }}
-          version: ${{ env.MOD_VERSION }}
-          version-type: ${{ env.RELEASE_TYPE }}
-          changelog: ${{ inputs.changelog }}
-          loaders: |
-            fabric
-            neoforge
-          game-versions: |
-            ${{ env.MINECRAFT_VERSION }}
-          java: |
-            21
-          fail-mode: fail
-
-      - name: Publish Fabric jar to CurseForge
-        uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          curseforge-id: ${{ env.CURSEFORGE_PROJECT_ID }}
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          files: release-jars/fabric/build/libs/justlevelingfork-fabric-${{ env.MOD_VERSION }}.jar
-          name: JustLevelingFork ${{ env.MOD_VERSION }} Fabric
-          version: fabric-${{ env.MOD_VERSION }}
-          version-type: ${{ env.RELEASE_TYPE }}
-          changelog: ${{ inputs.changelog }}
-          loaders: |
-            fabric
-          game-versions: |
-            ${{ env.MINECRAFT_VERSION }}
-          java: |
-            21
-          fail-mode: fail
-
-      - name: Publish NeoForge jar to CurseForge
-        uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          curseforge-id: ${{ env.CURSEFORGE_PROJECT_ID }}
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          files: release-jars/neoforge/build/libs/justlevelingfork-neoforge-${{ env.MOD_VERSION }}.jar
-          name: JustLevelingFork ${{ env.MOD_VERSION }} NeoForge
-          version: neoforge-${{ env.MOD_VERSION }}
-          version-type: ${{ env.RELEASE_TYPE }}
-          changelog: ${{ inputs.changelog }}
-          loaders: |
-            neoforge
-          game-versions: |
-            ${{ env.MINECRAFT_VERSION }}
-          java: |
-            21
-          fail-mode: fail
+      - name: Publish Fabric and NeoForge
+        run: ./gradlew clean publishMods -Pmod_version="${MOD_VERSION}"
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}

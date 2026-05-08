@@ -2,10 +2,72 @@ plugins {
     id 'dev.architectury.loom' version '1.11-SNAPSHOT' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT'
     id 'com.gradleup.shadow' version '8.3.6' apply false
+    id 'me.modmuss50.mod-publish-plugin' version '1.1.0'
 }
 
 architectury {
     minecraft = project.minecraft_version
+}
+
+def envOrDefault = { name, fallback ->
+    providers.environmentVariable(name).orElse(fallback)
+}
+
+publishMods {
+    def releaseType = providers.environmentVariable('RELEASE_TYPE').orElse('release').get().toLowerCase(Locale.ROOT)
+
+    changelog = envOrDefault('CHANGELOG', "Release ${rootProject.mod_version}").get()
+    displayName = envOrDefault('RELEASE_NAME', "${rootProject.mod_name} ${rootProject.mod_version} for Minecraft ${rootProject.minecraft_version}").get()
+    version = rootProject.mod_version
+    type = releaseType == 'alpha' ? ALPHA : releaseType == 'beta' ? BETA : STABLE
+    dryRun = providers.environmentVariable('DRY_RUN').map { it.toBoolean() }.orElse(false).get()
+
+    def cfOptions = curseforgeOptions {
+        accessToken = providers.environmentVariable('CURSEFORGE_TOKEN')
+        projectId = providers.environmentVariable('CURSEFORGE_PROJECT_ID')
+        minecraftVersions.add(rootProject.minecraft_version)
+        javaVersions.add(JavaVersion.VERSION_21)
+    }
+
+    def mrOptions = modrinthOptions {
+        accessToken = providers.environmentVariable('MODRINTH_TOKEN')
+        projectId = providers.environmentVariable('MODRINTH_PROJECT_ID')
+        minecraftVersions.add(rootProject.minecraft_version)
+    }
+
+    curseforge('curseforgeFabric') {
+        from cfOptions
+        file project(':fabric')
+        modLoaders.add('fabric')
+        requires('fabric-api')
+        optional('ftb-quests-fabric')
+        optional('questlog')
+    }
+
+    curseforge('curseforgeNeoForge') {
+        from cfOptions
+        file project(':neoforge')
+        modLoaders.add('neoforge')
+        optional('ftb-quests-forge')
+        optional('questlog')
+    }
+
+    modrinth('modrinthFabric') {
+        from mrOptions
+        file project(':fabric')
+        modLoaders.add('fabric')
+        requires('fabric-api')
+        optional('ftb-quests')
+        optional('questlog')
+    }
+
+    modrinth('modrinthNeoForge') {
+        from mrOptions
+        file project(':neoforge')
+        modLoaders.add('neoforge')
+        optional('ftb-quests')
+        optional('questlog')
+    }
 }
 
 allprojects {

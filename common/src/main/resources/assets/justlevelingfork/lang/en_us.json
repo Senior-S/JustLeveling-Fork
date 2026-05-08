@@ -1,4 +1,10 @@
 {
+ "attribute.name.justlevelingfork.projectile_damage" : "Projectile Damage",
+ "attribute.name.justlevelingfork.break_speed" : "Break Speed",
+ "attribute.name.justlevelingfork.beneficial_effect" : "Beneficial Effect",
+ "attribute.name.justlevelingfork.magic_resist" : "Magic Resist",
+ "attribute.name.justlevelingfork.critical_damage" : "Critical Damage",
+
  "key.justlevelingfork.title" : "Just Leveling",
  "key.justlevelingfork.open_aptitudes" : "Open Aptitudes",
  "item.justlevelingfork.leveling_book" : "Leveling Book",

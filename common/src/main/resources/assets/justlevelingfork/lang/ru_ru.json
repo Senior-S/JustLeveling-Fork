@@ -1,4 +1,10 @@
 {
+ "attribute.name.justlevelingfork.projectile_damage" : "\u0423\u0440\u043e\u043d \u043e\u0442 \u0441\u043d\u0430\u0440\u044f\u0434\u0430",
+ "attribute.name.justlevelingfork.break_speed" : "\u0421\u043a\u043e\u0440\u043e\u0441\u0442\u044c \u043b\u043e\u043c\u0430\u043d\u0438\u044f",
+ "attribute.name.justlevelingfork.beneficial_effect" : "\u041f\u043e\u043b\u043e\u0436\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u044d\u0444\u0444\u0435\u043a\u0442",
+ "attribute.name.justlevelingfork.magic_resist" : "\u0421\u043e\u043f\u0440\u043e\u0442\u0438\u0432\u043b\u0435\u043d\u0438\u0435 \u043c\u0430\u0433\u0438\u0438",
+ "attribute.name.justlevelingfork.critical_damage" : "\u041a\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0443\u0440\u043e\u043d",
+
  "key.justlevelingfork.title" : "Просто повышение уровня",
  "key.justlevelingfork.open_aptitudes" : "Открыть прокачку",
  "item.justlevelingfork.leveling_book" : "Книга прокачки",
