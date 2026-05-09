@@ -55,6 +55,7 @@ public class JustLevelingForkNeoForge {
         NeoForge.EVENT_BUS.addListener(this::serverStarted);
         NeoForge.EVENT_BUS.addListener(this::serverStopped);
         NeoForge.EVENT_BUS.addListener(this::playerLoggedIn);
+        NeoForge.EVENT_BUS.addListener(this::playerRespawned);
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
         NeoForge.EVENT_BUS.addListener(this::livingDeath);
         NeoForge.EVENT_BUS.addListener(this::attackEntity);
@@ -87,6 +88,12 @@ public class JustLevelingForkNeoForge {
             CommonConfigSyncCP.sendToPlayer(player);
             DynamicConfigSyncCP.sendToPlayer(player);
             SyncAptitudeCapabilityCP.send(player);
+        }
+    }
+
+    private void playerRespawned(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer player) {
+            player.server.execute(() -> SyncAptitudeCapabilityCP.send(player));
         }
     }
 

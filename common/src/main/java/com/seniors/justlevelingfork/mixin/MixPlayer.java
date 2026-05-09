@@ -6,7 +6,6 @@ import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.network.packet.client.PlayerMessagesCP;
 import com.seniors.justlevelingfork.registry.RegistryAttributes;
 import com.seniors.justlevelingfork.registry.RegistrySkills;
-import com.seniors.justlevelingfork.registry.RegistryTags;
 import com.seniors.justlevelingfork.registry.RegistryTitles;
 import com.seniors.justlevelingfork.registry.title.Title;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -21,19 +20,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
-import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Player.class)
 public abstract class MixPlayer extends LivingEntity implements AptitudeCapabilityHolder {
@@ -62,26 +55,6 @@ public abstract class MixPlayer extends LivingEntity implements AptitudeCapabili
             return (int) (300.0D * RegistrySkills.ATHLETICS.get().getValue()[0]);
         }
         return 300;
-    }
-
-    @Inject(method = "getDestroySpeed(Lnet/minecraft/world/level/block/state/BlockState;)F", at = @At("RETURN"), cancellable = true)
-    private void justlevelingfork$modifyDestroySpeed(BlockState state, CallbackInfoReturnable<Float> cir) {
-        float original = cir.getReturnValue();
-        ItemStack mainHand = this.this$class.getMainHandItem();
-        if (!(mainHand.getItem() instanceof PickaxeItem || mainHand.getItem() instanceof ShovelItem || mainHand.getItem() instanceof AxeItem)) {
-            return;
-        }
-
-        float modifier = original * (1.0F + (float) this.this$class.getAttributeValue(RegistryAttributes.BREAK_SPEED.get()));
-        if (mainHand.getItem() instanceof PickaxeItem && state.is(RegistryTags.Blocks.OBSIDIAN)) {
-            if (RegistrySkills.OBSIDIAN_SMASHER != null && RegistrySkills.OBSIDIAN_SMASHER.get().isEnabled(this.this$class)) {
-                cir.setReturnValue((float) (original * RegistrySkills.OBSIDIAN_SMASHER.get().getValue()[0]) + modifier);
-                return;
-            }
-            return;
-        }
-
-        cir.setReturnValue(original + modifier);
     }
 
     @Inject(method = "attack(Lnet/minecraft/world/entity/Entity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;resetAttackStrengthTicker()V"))

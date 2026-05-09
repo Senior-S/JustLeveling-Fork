@@ -13,6 +13,7 @@ import com.seniors.justlevelingfork.registry.RegistryArguments;
 import com.seniors.justlevelingfork.registry.RegistryFabricEvents;
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
@@ -42,5 +43,7 @@ public class JustLevelingForkFabric implements ModInitializer {
             DynamicConfigSyncCP.sendToPlayer(handler.player);
             SyncAptitudeCapabilityCP.send(handler.player);
         });
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) ->
+                newPlayer.server.execute(() -> SyncAptitudeCapabilityCP.send(newPlayer)));
     }
 }

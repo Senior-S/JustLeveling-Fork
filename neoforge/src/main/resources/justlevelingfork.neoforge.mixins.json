@@ -10,6 +10,7 @@
   ],
   "mixins": [
     "MixAbstractArrow",
+    "MixBlockBehaviour",
     "MixAbstractContainerMenu",
     "MixItemEntity",
     "MixItemStack",

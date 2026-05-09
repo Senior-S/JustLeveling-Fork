@@ -177,7 +177,7 @@ public class HandlerCommonConfig {
     public float breakSpeedValue = 0.5f;
 
     @SerialEntry(comment = "Break speed passive levels. Don't modify the length of the array!")
-    public int[] breakSpeedPassiveLevels = new int[]{8, 14, 20, 26, 3};
+    public int[] breakSpeedPassiveLevels = new int[]{8, 14, 20, 26, 32};
 
     @SerialEntry(comment = "Beneficial Effect passive value at max level")
     @AutoGen(category = "common", group = "passives")
