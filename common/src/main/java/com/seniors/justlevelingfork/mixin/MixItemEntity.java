@@ -1,6 +1,7 @@
 package com.seniors.justlevelingfork.mixin;
 
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +17,9 @@ public abstract class MixItemEntity {
 
     @Inject(method = "playerTouch", at = @At("HEAD"), cancellable = true)
     private void justlevelingfork$preventLockedPickup(Player player, CallbackInfo ci) {
-        if (player.isCreative() || player.isSpectator()) {
+        if (HandlerCommonConfig.HANDLER.instance().allowLockedItemPickup
+                || player.isCreative()
+                || player.isSpectator()) {
             return;
         }
 

@@ -2,12 +2,10 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.seniors.justlevelingfork.mixin",
-  "plugin": "com.seniors.justlevelingfork.mixin.JustLevelingForkMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "client": [
     "MixInventoryScreen",
-    "MixPlayerRenderer",
-    "MixTargetFinder"
+    "MixPlayerRenderer"
   ],
   "mixins": [
     "MixAbstractArrow",

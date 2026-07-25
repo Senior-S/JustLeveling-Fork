@@ -55,6 +55,11 @@ public class HandlerCommonConfig {
     @Boolean(formatter = Boolean.Formatter.ON_OFF)
     public boolean dropLockedItems = false;
 
+    @SerialEntry(comment = "If true, players may pick up locked items and keep them in their inventory. Usage and equipment restrictions still apply.")
+    @AutoGen(category = "common", group = "general")
+    @Boolean(formatter = Boolean.Formatter.ON_OFF)
+    public boolean allowLockedItemPickup = true;
+
     @SerialEntry(comment = "If true, item usage requirements are hidden from tooltips after the player reaches the required aptitude levels.")
     @AutoGen(category = "common", group = "general")
     @Boolean(formatter = Boolean.Formatter.ON_OFF)

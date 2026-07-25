@@ -7,6 +7,7 @@ import dev.architectury.platform.Platform;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public class Configuration {
 
@@ -37,7 +38,20 @@ public class Configuration {
         migrateLegacyConfig("justleveling-fork.common.json5");
         migrateLegacyConfig("justleveling-fork.lockItems.json5");
         HandlerCommonConfig.HANDLER.load();
+        migrateKnownCommonConfigTypos();
         HandlerLockItemsConfig.HANDLER.load();
+    }
+
+    private static void migrateKnownCommonConfigTypos() {
+        HandlerCommonConfig config = HandlerCommonConfig.HANDLER.instance();
+        int[] legacyBreakSpeedLevels = new int[]{8, 14, 20, 26, 3};
+        if (!Arrays.equals(config.breakSpeedPassiveLevels, legacyBreakSpeedLevels)) {
+            return;
+        }
+
+        config.breakSpeedPassiveLevels = new int[]{8, 14, 20, 26, 32};
+        HandlerCommonConfig.HANDLER.save();
+        JustLevelingFork.getLOGGER().info("Migrated the legacy Break Speed level-5 requirement from Building 3 to Building 32.");
     }
 
     private static void migrateLegacyConfig(String fileName) {

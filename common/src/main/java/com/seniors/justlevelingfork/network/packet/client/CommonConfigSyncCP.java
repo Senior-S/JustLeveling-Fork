@@ -24,6 +24,7 @@ public class CommonConfigSyncCP implements JustLevelingPacket {
 
     private final int aptitudeFirstCostLevel;
     private final boolean dropLockedItems;
+    private final boolean allowLockedItemPickup;
     private final boolean hideMetUsageRequirements;
     private final boolean displayTitlesAsPrefix;
 
@@ -79,6 +80,7 @@ public class CommonConfigSyncCP implements JustLevelingPacket {
     public CommonConfigSyncCP() {
         aptitudeFirstCostLevel = HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel;
         dropLockedItems = HandlerCommonConfig.HANDLER.instance().dropLockedItems;
+        allowLockedItemPickup = HandlerCommonConfig.HANDLER.instance().allowLockedItemPickup;
         hideMetUsageRequirements = HandlerCommonConfig.HANDLER.instance().hideMetUsageRequirements;
         displayTitlesAsPrefix = HandlerCommonConfig.HANDLER.instance().displayTitlesAsPrefix;
         attackDamageValue = HandlerCommonConfig.HANDLER.instance().attackDamageValue;
@@ -132,6 +134,7 @@ public class CommonConfigSyncCP implements JustLevelingPacket {
     public CommonConfigSyncCP(FriendlyByteBuf buffer) {
         aptitudeFirstCostLevel = buffer.readInt();
         dropLockedItems = buffer.readBoolean();
+        allowLockedItemPickup = buffer.readBoolean();
         hideMetUsageRequirements = buffer.readBoolean();
         displayTitlesAsPrefix = buffer.readBoolean();
         attackDamageValue = buffer.readFloat();
@@ -209,6 +212,7 @@ public class CommonConfigSyncCP implements JustLevelingPacket {
     public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeInt(this.aptitudeFirstCostLevel);
         buffer.writeBoolean(this.dropLockedItems);
+        buffer.writeBoolean(this.allowLockedItemPickup);
         buffer.writeBoolean(this.hideMetUsageRequirements);
         buffer.writeBoolean(this.displayTitlesAsPrefix);
         buffer.writeFloat(this.attackDamageValue);
@@ -282,6 +286,7 @@ public class CommonConfigSyncCP implements JustLevelingPacket {
             if(ClientHooks.hasClientPlayer()){
                 HandlerCommonConfig.HANDLER.instance().aptitudeFirstCostLevel = this.aptitudeFirstCostLevel;
                 HandlerCommonConfig.HANDLER.instance().dropLockedItems = this.dropLockedItems;
+                HandlerCommonConfig.HANDLER.instance().allowLockedItemPickup = this.allowLockedItemPickup;
                 HandlerCommonConfig.HANDLER.instance().hideMetUsageRequirements = this.hideMetUsageRequirements;
                 HandlerCommonConfig.HANDLER.instance().displayTitlesAsPrefix = displayTitlesAsPrefix;
                 HandlerCommonConfig.HANDLER.instance().attackDamageValue = this.attackDamageValue;

@@ -7,6 +7,7 @@ import com.seniors.justlevelingfork.client.screen.JustLevelingScreen;
 import com.seniors.justlevelingfork.client.core.ClientConfigurationSync;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.handler.HandlerConfigClient;
+import com.seniors.justlevelingfork.integration.fabric.BetterCombatIntegration;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import com.seniors.justlevelingfork.registry.RegistryClientEvents;
 import net.fabricmc.api.ClientModInitializer;
@@ -14,6 +15,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 
@@ -27,6 +29,9 @@ public class JustLevelingClient implements ClientModInitializer {
         ClientConfigurationSync.restoreLocalConfiguration();
         ServerNetworking.initClient();
         RegistryClientEvents.load();
+        if (FabricLoader.getInstance().isModLoaded("bettercombat")) {
+            BetterCombatIntegration.register();
+        }
         KeyBindingHelper.registerKeyBinding(OPEN_JUSTLEVELING_SCREEN);
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientConfigurationSync.restoreLocalConfiguration());
 

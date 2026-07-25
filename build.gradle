@@ -15,6 +15,10 @@ def envOrDefault = { name, fallback ->
 
 publishMods {
     def releaseType = providers.environmentVariable('RELEASE_TYPE').orElse('release').get().toLowerCase(Locale.ROOT)
+    def fabricReleaseJar = project(':fabric').layout.buildDirectory.file(
+            "libs/${rootProject.archives_name}-fabric-${rootProject.mod_version}.jar")
+    def neoForgeReleaseJar = project(':neoforge').layout.buildDirectory.file(
+            "libs/${rootProject.archives_name}-neoforge-${rootProject.mod_version}.jar")
 
     changelog = envOrDefault('CHANGELOG', "Release ${rootProject.mod_version}").get()
     displayName = envOrDefault('RELEASE_NAME', "${rootProject.mod_name} ${rootProject.mod_version} for Minecraft ${rootProject.minecraft_version}").get()
@@ -39,7 +43,7 @@ publishMods {
 
     curseforge('curseforgeFabric') {
         from cfOptions
-        file project(':fabric')
+        file = fabricReleaseJar
         modLoaders.add('fabric')
         requires('fabric-api')
         requires('architectury-api')
@@ -52,7 +56,7 @@ publishMods {
 
     curseforge('curseforgeNeoForge') {
         from cfOptions
-        file project(':neoforge')
+        file = neoForgeReleaseJar
         modLoaders.add('neoforge')
         requires('architectury-api')
         requires('yacl')
@@ -63,7 +67,7 @@ publishMods {
 
     modrinth('modrinthFabric') {
         from mrOptions
-        file project(':fabric')
+        file = fabricReleaseJar
         modLoaders.add('fabric')
         requires('fabric-api')
         requires('architectury-api')
@@ -76,7 +80,7 @@ publishMods {
 
     modrinth('modrinthNeoForge') {
         from mrOptions
-        file project(':neoforge')
+        file = neoForgeReleaseJar
         modLoaders.add('neoforge')
         requires('architectury-api')
         requires('yacl')
@@ -84,6 +88,24 @@ publishMods {
         optional('ftb-quests')
         optional('questlog')
     }
+}
+
+tasks.matching {
+    it.name in ['publishCurseforgeFabric', 'publishModrinthFabric']
+}.configureEach {
+    dependsOn('cleanPublishStaging')
+    dependsOn(':fabric:remapJar')
+}
+
+tasks.matching {
+    it.name in ['publishCurseforgeNeoForge', 'publishModrinthNeoForge']
+}.configureEach {
+    dependsOn('cleanPublishStaging')
+    dependsOn(':neoforge:remapJar')
+}
+
+tasks.register('cleanPublishStaging', Delete) {
+    delete(layout.buildDirectory.dir('publishMods'))
 }
 
 allprojects {
