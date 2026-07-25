@@ -248,6 +248,6 @@ public class RegistryGameplayEvents {
     }
 
     private static boolean shouldSkipLockCheck(Player player) {
-        return player == null || player.isCreative() || player.isSpectator();
+        return player == null || player.isCreative() || player.isSpectator() || player.getClass().getSimpleName().equals("FakePlayer");
     }
 }
