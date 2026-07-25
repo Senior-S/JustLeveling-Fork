@@ -27,6 +27,8 @@ publishMods {
         projectId = providers.environmentVariable('CURSEFORGE_PROJECT_ID')
         minecraftVersions.add(rootProject.minecraft_version)
         javaVersions.add(JavaVersion.VERSION_21)
+        clientRequired = true
+        serverRequired = true
     }
 
     def mrOptions = modrinthOptions {
