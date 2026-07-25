@@ -8,6 +8,7 @@ import com.seniors.justlevelingfork.integration.MiapiIntegration;
 import com.seniors.justlevelingfork.network.packet.common.CounterAttackSP;
 import com.seniors.justlevelingfork.network.packet.client.PlayerMessagesCP;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
+import com.seniors.justlevelingfork.platform.PlatformHelper;
 import com.seniors.justlevelingfork.registry.skills.TreasureHunterSkill;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.BlockPos;
@@ -248,6 +249,6 @@ public class RegistryGameplayEvents {
     }
 
     private static boolean shouldSkipLockCheck(Player player) {
-        return player == null || player.isCreative() || player.isSpectator() || player.getClass().getSimpleName().equals("FakePlayer");
+        return player == null || player.isCreative() || player.isSpectator() || PlatformHelper.isFakePlayer(player);
     }
 }

@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.lang.reflect.Constructor;
 import java.util.Comparator;
 import java.util.List;
 
@@ -66,7 +67,24 @@ public abstract class MixTargetFinder {
         entities = collisionFilter.filter(entities);
         TargetFinder.RadialFilter radialFilter = new TargetFinder.RadialFilter(origin, obb.axisZ, attackRange, attack.angle());
         entities = radialFilter.filter(entities);
-        info.setReturnValue(new TargetFinder.TargetResult(entities, obb));
+        info.setReturnValue(create$TargetResult(cursorTarget, entities, obb));
+    }
+
+    @Unique
+    private static TargetFinder.TargetResult create$TargetResult(Entity cursorTarget, List<Entity> entities, OrientedBoundingBox obb) {
+        try {
+            Constructor<TargetFinder.TargetResult> constructor = TargetFinder.TargetResult.class.getConstructor(Entity.class, List.class, OrientedBoundingBox.class);
+            return constructor.newInstance(cursorTarget, entities, obb);
+        } catch (NoSuchMethodException ignored) {
+            try {
+                Constructor<TargetFinder.TargetResult> constructor = TargetFinder.TargetResult.class.getConstructor(List.class, OrientedBoundingBox.class);
+                return constructor.newInstance(entities, obb);
+            } catch (ReflectiveOperationException exception) {
+                throw new IllegalStateException("Could not create BetterCombat target result", exception);
+            }
+        } catch (ReflectiveOperationException exception) {
+            throw new IllegalStateException("Could not create BetterCombat target result", exception);
+        }
     }
 
     @Unique

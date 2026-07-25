@@ -32,17 +32,22 @@ public class ToggleSkillSP implements JustLevelingPacket {
     }
 
     public void handle(ServerPlayer sender) {
-            ServerPlayer player = sender;
+        if (sender == null) {
+            return;
+        }
 
-            if (player != null) {
-                AptitudeCapability capability = AptitudeCapability.get(player);
+        AptitudeCapability capability = AptitudeCapability.get(sender);
+        Skill skill = RegistrySkills.getSkill(this.skill);
+        if (capability == null || skill == null) {
+            return;
+        }
 
-                Skill skill = RegistrySkills.getSkill(this.skill);
-                if (capability != null && RegistrySkills.isEnabled(skill)) {
-                    capability.setToggleSkill(skill, this.toggle);
-                    SyncAptitudeCapabilityCP.send(player);
-                }
-            }
+        if (this.toggle && !skill.getToggle(sender)) {
+            return;
+        }
+
+        capability.setToggleSkill(skill, this.toggle);
+        SyncAptitudeCapabilityCP.send(sender);
     }
 
     public static void send(Skill skill, boolean toggle) {

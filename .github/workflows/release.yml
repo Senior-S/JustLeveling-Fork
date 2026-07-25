@@ -17,7 +17,7 @@ on:
           - beta
           - alpha
       changelog:
-        description: "Release notes shown on Modrinth, CurseForge, and GitHub"
+        description: "Release notes shown on Modrinth and CurseForge"
         required: true
         type: string
       dry_run:
@@ -27,20 +27,18 @@ on:
         type: boolean
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release-${{ inputs.version }}
   cancel-in-progress: false
 
 env:
-  MINECRAFT_VERSION: 1.21.1
   MOD_VERSION: ${{ inputs.version }}
   RELEASE_TYPE: ${{ inputs.release_type }}
   CHANGELOG: ${{ inputs.changelog }}
   DRY_RUN: ${{ inputs.dry_run }}
   RELEASE_NAME: JustLevelingFork ${{ inputs.version }} for Minecraft 1.21.1
-  RELEASE_TAG: v${{ inputs.version }}
   FABRIC_JAR: fabric/build/libs/justlevelingfork-fabric-${{ inputs.version }}.jar
   NEOFORGE_JAR: neoforge/build/libs/justlevelingfork-neoforge-${{ inputs.version }}.jar
 
@@ -124,8 +122,19 @@ jobs:
           [[ "${HAS_MODRINTH_TOKEN}" == "true" ]] || { echo "Missing repository secret MODRINTH_TOKEN" >&2; exit 1; }
           [[ "${HAS_CURSEFORGE_TOKEN}" == "true" ]] || { echo "Missing repository secret CURSEFORGE_TOKEN" >&2; exit 1; }
 
+      - name: Build release jars
+        run: ./gradlew clean :fabric:build :neoforge:build -Pmod_version="${MOD_VERSION}"
+
+      - name: Verify release jars
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "${FABRIC_JAR}"
+          test -f "${NEOFORGE_JAR}"
+          ls -lh "${FABRIC_JAR}" "${NEOFORGE_JAR}"
+
       - name: Publish Fabric and NeoForge
-        run: ./gradlew clean publishMods -Pmod_version="${MOD_VERSION}"
+        run: ./gradlew publishMods -Pmod_version="${MOD_VERSION}"
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}

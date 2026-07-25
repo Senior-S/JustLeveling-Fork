@@ -128,9 +128,38 @@ public class RegistrySkills {
     }
 
     public static void load() {
+        refreshFromConfig();
         if (migratedLegacyDisabledSkills) {
             HandlerCommonConfig.HANDLER.save();
         }
+    }
+
+    public static void refreshFromConfig() {
+        HandlerCommonConfig config = HandlerCommonConfig.HANDLER.instance();
+        ONE_HANDED.get().rebind(config.oneHandedRequiredLevel, new Value(ValueType.AMPLIFIER, config.oneHandedAmplifier));
+        FIGHTING_SPIRIT.get().rebind(config.fightingSpiritRequiredLevel, new Value(ValueType.BOOST, config.fightingSpiritBoost), new Value(ValueType.DURATION, config.fightingSpiritDuration));
+        BERSERKER.get().rebind(config.berserkerRequiredLevel, new Value(ValueType.PERCENT, config.berserkerPercent));
+        ATHLETICS.get().rebind(config.athleticsRequiredLevel, new Value(ValueType.MODIFIER, config.athleticsModifier));
+        TURTLE_SHIELD.get().rebind(config.turtleShieldRequiredLevel);
+        LION_HEART.get().rebind(config.lionHeartRequiredLevel, new Value(ValueType.PERCENT, config.lionHeartPercent));
+        QUICK_REPOSITION.get().rebind(config.quickRepositionRequiredLevel, new Value(ValueType.BOOST, config.quickRepositionBoost), new Value(ValueType.DURATION, config.quickRepositionDuration));
+        STEALTH_MASTERY.get().rebind(config.stealthMasteryRequiredLevel, new Value(ValueType.PERCENT, config.stealthMasteryUnSneakPercent), new Value(ValueType.PERCENT, config.stealthMasterySneakPercent), new Value(ValueType.MODIFIER, config.stealthMasteryModifier));
+        CAT_EYES.get().rebind(config.catEyesRequiredLevel);
+        SNOW_WALKER.get().rebind(config.snowWalkerRequiredLevel);
+        COUNTER_ATTACK.get().rebind(config.counterattackRequiredLevel, new Value(ValueType.DURATION, config.counterAttackDuration), new Value(ValueType.PERCENT, config.counterAttackPercent));
+        DIAMOND_SKIN.get().rebind(config.diamondSkinRequiredLevel, new Value(ValueType.BOOST, config.diamondSkinBoost), new Value(ValueType.AMPLIFIER, config.diamondSkinSneakAmplifier));
+        SCHOLAR.get().rebind(config.scholarRequiredLevel);
+        HAGGLER.get().rebind(config.hagglerRequiredLevel, new Value(ValueType.PERCENT, config.hagglerPercent));
+        ALCHEMY_MANIPULATION.get().rebind(config.alchemyManipulationRequiredLevel, new Value(ValueType.AMPLIFIER, config.alchemyManipulationAmplifier));
+        OBSIDIAN_SMASHER.get().rebind(config.obsidianSmasherRequiredLevel, new Value(ValueType.MODIFIER, config.obsidianSmasherModifier));
+        TREASURE_HUNTER.get().rebind(config.treasureHunterRequiredLevel, new Value(ValueType.PROBABILITY, config.treasureHunterProbability));
+        CONVERGENCE.get().rebind(config.convergenceRequiredLevel, new Value(ValueType.PROBABILITY, config.convergenceProbability));
+        SAFE_PORT.get().rebind(config.safePortRequiredLevel);
+        LIFE_EATER.get().rebind(config.lifeEaterRequiredLevel, new Value(ValueType.AMPLIFIER, config.lifeEaterModifier));
+        WORMHOLE_STORAGE.get().rebind(config.wornholeStorageRequiredLevel);
+        CRITICAL_ROLL.get().rebind(config.criticalRollRequiredLevel, new Value(ValueType.MODIFIER, config.criticalRoll6Modifier), new Value(ValueType.PROBABILITY, config.criticalRoll1Probability));
+        LUCKY_DROP.get().rebind(config.luckyDropRequiredLevel, new Value(ValueType.PROBABILITY, config.luckyDropProbability), new Value(ValueType.MODIFIER, config.luckyDropModifier));
+        LIMIT_BREAKER.get().rebind(config.limitBreakerRequiredLevel, new Value(ValueType.PROBABILITY, config.limitBreakerProbability), new Value(ValueType.AMPLIFIER, config.limitBreakerAmplifier));
     }
 
     public static Skill getSkill(String skillName) {

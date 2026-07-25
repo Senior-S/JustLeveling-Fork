@@ -28,8 +28,8 @@ public class Passive {
     public final ResourceLocation texture;
     private final Supplier<Holder<Attribute>> attribute;
     public final String attributeUuid;
-    public final Object attributeValue;
-    public final int[] levelsRequired;
+    public Object attributeValue;
+    public int[] levelsRequired;
 
     public Passive(ResourceLocation passiveKey, Aptitude aptitude, ResourceLocation passiveTexture, Holder<Attribute> attribute, String attributeUuid, Object attributeValue, int... levelsRequired) {
         this(passiveKey, aptitude, passiveTexture, () -> attribute, attributeUuid, attributeValue, levelsRequired);
@@ -43,6 +43,11 @@ public class Passive {
         this.attributeUuid = attributeUuid;
         this.attributeValue = attributeValue;
         this.levelsRequired = levelsRequired;
+    }
+
+    public void rebind(Object value, int... requiredLevels) {
+        this.attributeValue = value;
+        this.levelsRequired = requiredLevels.clone();
     }
 
     public static Passive add(String passiveName, String aptitudeName, String texture, Holder<Attribute> attribute, String attributeUUID, Object attributeValue, int... levelsRequired){

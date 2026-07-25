@@ -29,15 +29,19 @@ public class SetPlayerTitleSP implements JustLevelingPacket {
     }
 
     public void handle(ServerPlayer sender) {
-            ServerPlayer player = sender;
+        if (sender == null) {
+            return;
+        }
 
-            if (player != null) {
-                AptitudeCapability capability = AptitudeCapability.get(player);
-                Title title = RegistryTitles.getTitle(this.title);
-                capability.setPlayerTitle(title);
-                player.setCustomName(Component.translatable(title.getKey()));
-                SyncAptitudeCapabilityCP.send(player);
-            }
+        AptitudeCapability capability = AptitudeCapability.get(sender);
+        Title title = RegistryTitles.getTitle(this.title);
+        if (capability == null || title == null || !Boolean.TRUE.equals(capability.unlockTitle.get(title.getName()))) {
+            return;
+        }
+
+        capability.setPlayerTitle(title);
+        sender.setCustomName(Component.translatable(title.getKey()));
+        SyncAptitudeCapabilityCP.send(sender);
     }
 
     public static void send(Title title) {

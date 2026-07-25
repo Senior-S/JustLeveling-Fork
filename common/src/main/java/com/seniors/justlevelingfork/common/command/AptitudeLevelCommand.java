@@ -18,6 +18,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 public class AptitudeLevelCommand {
+    private static final int MAX_COMMAND_LEVEL = 1000;
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 (Commands.literal("aptitudes").requires(source -> source.hasPermission(2)))
@@ -28,16 +30,16 @@ public class AptitudeLevelCommand {
                                         .executes(source -> getAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class)))
                                 )
                                 .then(Commands.literal("set")
-                                        .then(Commands.argument("level", IntegerArgumentType.integer(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel))
+                                        .then(Commands.argument("level", IntegerArgumentType.integer(1, MAX_COMMAND_LEVEL))
                                             .executes(source -> setAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class), IntegerArgumentType.getInteger(source, "level")))
                                         )
                                 )
                                 .then(Commands.literal(("add"))
-                                        .then(Commands.argument("level", IntegerArgumentType.integer(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel))
+                                        .then(Commands.argument("level", IntegerArgumentType.integer(1, MAX_COMMAND_LEVEL))
                                                 .executes(source -> addAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class), IntegerArgumentType.getInteger(source, "level"))))
                                 )
                                 .then(Commands.literal(("subtract"))
-                                        .then(Commands.argument("level", IntegerArgumentType.integer(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel))
+                                        .then(Commands.argument("level", IntegerArgumentType.integer(1, MAX_COMMAND_LEVEL))
                                                 .executes(source -> subtractAptitude(source, EntityArgument.getPlayer(source, "player"), source.getArgument("aptitude", String.class), IntegerArgumentType.getInteger(source, "level")))
                                         )
                                 )
@@ -70,6 +72,14 @@ public class AptitudeLevelCommand {
         Aptitude aptitude = RegistryAptitudes.getAptitude(aptitudeKey);
 
         if (player != null && aptitude != null) {
+            int configuredMax = HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel;
+            if (setLevel > configuredMax) {
+                source.getSource().sendFailure(Component.literal(
+                        "Aptitude level cannot exceed the configured maximum of " + configuredMax + "."
+                ));
+                return 0;
+            }
+
             AptitudeCapability capability = AptitudeCapability.get(player);
             if (capability == null) {
                 source.getSource().sendFailure(Component.translatable("commands.message.capability.not_found"));

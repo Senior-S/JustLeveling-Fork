@@ -2,6 +2,7 @@ package com.seniors.justlevelingfork.network.packet.client;
 
 import com.seniors.justlevelingfork.network.packet.JustLevelingPacket;
 
+import com.seniors.justlevelingfork.client.core.ClientConfigurationSync;
 import com.seniors.justlevelingfork.client.core.ClientHooks;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.network.ServerNetworking;
@@ -268,8 +269,7 @@ public class DynamicConfigSyncCP implements JustLevelingPacket {
                 HandlerCommonConfig.HANDLER.instance().limitBreakerRequiredLevel = this.limitBreakerRequiredLevel;
                 HandlerCommonConfig.HANDLER.instance().disabledSkills = this.disabledSkills;
                 HandlerCommonConfig.HANDLER.instance().disabledPassives = this.disabledPassives;
-
-                HandlerCommonConfig.HANDLER.save();
+                ClientConfigurationSync.refreshRegistryModels();
             }
     }
 

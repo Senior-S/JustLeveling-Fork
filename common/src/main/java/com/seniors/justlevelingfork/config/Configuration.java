@@ -1,9 +1,11 @@
 package com.seniors.justlevelingfork.config;
 
 import com.seniors.justlevelingfork.handler.*;
+import com.seniors.justlevelingfork.JustLevelingFork;
 import dev.architectury.platform.Platform;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Configuration {
@@ -26,21 +28,30 @@ public class Configuration {
     }
 
     private static void ManageOldConfig() {
-        // Move old configuration files to the new folder.
-        File oldCommonConfig = Platform.getConfigFolder().resolve("justleveling-fork.common.json5").toFile();
-        File oldLockItems = Platform.getConfigFolder().resolve("justleveling-fork.lockItems.json5").toFile();
-
-        if (oldCommonConfig.exists()) {
-            oldCommonConfig.renameTo(_absoluteDirectory.resolve("justleveling-fork.common.json5").toFile());
-            HandlerCommonConfig.HANDLER.load();
+        try {
+            Files.createDirectories(_absoluteDirectory);
+        } catch (IOException exception) {
+            JustLevelingFork.getLOGGER().error("Could not create configuration directory {}", _absoluteDirectory, exception);
         }
 
-        if (oldLockItems.exists()) {
-            oldLockItems.renameTo(_absoluteDirectory.resolve("justleveling-fork.lockItems.json5").toFile());
-            HandlerLockItemsConfig.HANDLER.load();
-        }
+        migrateLegacyConfig("justleveling-fork.common.json5");
+        migrateLegacyConfig("justleveling-fork.lockItems.json5");
         HandlerCommonConfig.HANDLER.load();
         HandlerLockItemsConfig.HANDLER.load();
+    }
+
+    private static void migrateLegacyConfig(String fileName) {
+        Path legacyPath = Platform.getConfigFolder().resolve(fileName);
+        Path targetPath = _absoluteDirectory.resolve(fileName);
+        if (Files.notExists(legacyPath) || Files.exists(targetPath)) {
+            return;
+        }
+
+        try {
+            Files.move(legacyPath, targetPath);
+        } catch (IOException exception) {
+            JustLevelingFork.getLOGGER().error("Could not migrate legacy configuration {} to {}", legacyPath, targetPath, exception);
+        }
     }
 }
 

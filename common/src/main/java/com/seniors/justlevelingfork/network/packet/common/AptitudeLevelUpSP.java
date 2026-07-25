@@ -2,8 +2,6 @@ package com.seniors.justlevelingfork.network.packet.common;
 
 import com.seniors.justlevelingfork.network.packet.JustLevelingPacket;
 
-import com.seniors.justlevelingfork.JustLevelingFork;
-import com.seniors.justlevelingfork.client.core.Utils;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.network.ServerNetworking;
@@ -31,29 +29,33 @@ public class AptitudeLevelUpSP implements JustLevelingPacket {
     }
 
     public void handle(ServerPlayer sender) {
-            ServerPlayer player = sender;
-            if (player != null) {
-                AptitudeCapability capability = AptitudeCapability.get(player);
-                Aptitude aptitudePlayer = RegistryAptitudes.getAptitude(this.aptitude);
-                int aptitudeLevel = capability.getAptitudeLevel(aptitudePlayer);
+        if (sender == null) {
+            return;
+        }
 
-                boolean canLevelUpAptitude = (player.isCreative()
-                        || AptitudeLevelUpSP.requiredPoints(aptitudeLevel) <= player.totalExperience
-                        || AptitudeLevelUpSP.requiredExperienceLevels(aptitudeLevel) <= player.experienceLevel);
+        AptitudeCapability capability = AptitudeCapability.get(sender);
+        Aptitude aptitudePlayer = RegistryAptitudes.getAptitude(this.aptitude);
+        if (capability == null || aptitudePlayer == null) {
+            return;
+        }
 
-                if (!canLevelUpAptitude){
-                    JustLevelingFork.getLOGGER().info("Received level up packet without the required EXP needed to level up, skipping packet...");
-                    return;
-                }
+        int aptitudeLevel = capability.getAptitudeLevel(aptitudePlayer);
+        if (aptitudeLevel < 1
+                || aptitudeLevel >= HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel
+                || capability.getGlobalLevel() >= HandlerCommonConfig.HANDLER.instance().playersMaxGlobalLevel) {
+            return;
+        }
 
-                int requiredPoints = requiredPoints(aptitudeLevel);
+        int requiredPoints = requiredPoints(aptitudeLevel);
+        if (requiredPoints < 0 || (!sender.isCreative() && getPlayerXP(sender) < requiredPoints)) {
+            return;
+        }
 
-                capability.addAptitudeLevel(aptitudePlayer, 1);
-                SyncAptitudeCapabilityCP.send(player);
-                if (!player.isCreative()) {
-                    addPlayerXP(player, requiredPoints * -1);
-                }
-            }
+        capability.addAptitudeLevel(aptitudePlayer, 1);
+        if (!sender.isCreative()) {
+            addPlayerXP(sender, -requiredPoints);
+        }
+        SyncAptitudeCapabilityCP.send(sender);
     }
 
     public static int getPlayerXP(Player player) {
@@ -71,7 +73,7 @@ public class AptitudeLevelUpSP implements JustLevelingPacket {
     }
 
     public static void addPlayerXP(Player player, int amount) {
-        int experience = getPlayerXP(player) + amount;
+        int experience = Math.max(0, getPlayerXP(player) + amount);
         player.totalExperience = experience;
         player.experienceLevel = getLevelForExperience(experience);
         int expForLevel = getExperienceForLevel(player.experienceLevel);

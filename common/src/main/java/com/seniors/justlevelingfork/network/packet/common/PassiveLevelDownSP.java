@@ -28,17 +28,18 @@ public class PassiveLevelDownSP implements JustLevelingPacket {
     }
 
     public void handle(ServerPlayer sender) {
-            ServerPlayer player = sender;
+        if (sender == null) {
+            return;
+        }
 
-            if (player != null) {
-                AptitudeCapability capability = AptitudeCapability.get(player);
+        AptitudeCapability capability = AptitudeCapability.get(sender);
+        Passive passive = RegistryPassives.getPassive(this.passive);
+        if (capability == null || passive == null || !RegistryPassives.isEnabled(passive)) {
+            return;
+        }
 
-                Passive passive = RegistryPassives.getPassive(this.passive);
-                if (capability != null && RegistryPassives.isEnabled(passive)) {
-                    capability.subPassiveLevel(passive, 1);
-                    SyncAptitudeCapabilityCP.send(player);
-                }
-            }
+        capability.subPassiveLevel(passive, 1);
+        SyncAptitudeCapabilityCP.send(sender);
     }
 
     public static void send(Passive passive) {

@@ -6,6 +6,7 @@ import com.seniors.justlevelingfork.client.gui.OverlayAptitudeGui;
 import com.seniors.justlevelingfork.client.gui.OverlayTitleGui;
 import com.seniors.justlevelingfork.client.screen.JustLevelingScreen;
 import com.seniors.justlevelingfork.client.core.Aptitudes;
+import com.seniors.justlevelingfork.client.core.ClientConfigurationSync;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerAptitude;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
@@ -22,6 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
@@ -43,11 +45,13 @@ public class JustLevelingForkNeoForgeClient {
 
     public static void init(IEventBus modBus) {
         HandlerConfigClient.load();
+        ClientConfigurationSync.restoreLocalConfiguration();
         ServerNetworking.initClient();
 
         modBus.addListener(JustLevelingForkNeoForgeClient::registerKeyMappings);
         modBus.addListener(JustLevelingForkNeoForgeClient::registerGuiLayers);
         NeoForge.EVENT_BUS.addListener(JustLevelingForkNeoForgeClient::clientTick);
+        NeoForge.EVENT_BUS.addListener(JustLevelingForkNeoForgeClient::clientLoggedOut);
         NeoForge.EVENT_BUS.addListener(JustLevelingForkNeoForgeClient::itemTooltip);
     }
 
@@ -64,6 +68,10 @@ public class JustLevelingForkNeoForgeClient {
         }
         OverlayAptitudeGui.clientTick();
         OverlayTitleGui.clientTick();
+    }
+
+    private static void clientLoggedOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        ClientConfigurationSync.restoreLocalConfiguration();
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {

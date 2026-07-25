@@ -1,7 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "[4,)"
 #issueTrackerURL = ""
-license = "APACHE"
+license = "Apache-2.0"
 
 [[mods]]
 modId = "justlevelingfork"
@@ -16,21 +16,35 @@ JustLevelingFork
 [[dependencies.justlevelingfork]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.1,)"
+versionRange = "[21.1.215,21.2)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.justlevelingfork]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.1,)"
+versionRange = "[1.21.1,1.21.2)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.justlevelingfork]]
 modId = "architectury"
 type = "required"
-versionRange = "[13.0.8,)"
+versionRange = "[13.0.8,14.0.0)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.justlevelingfork]]
+modId = "yet_another_config_lib_v3"
+type = "required"
+versionRange = "[3.6.6,4.0.0)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.justlevelingfork]]
+modId = "cloth_config"
+type = "required"
+versionRange = "[15.0.140,16.0.0)"
 ordering = "AFTER"
 side = "BOTH"
 

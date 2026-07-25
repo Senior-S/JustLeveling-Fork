@@ -40,6 +40,10 @@ publishMods {
         file project(':fabric')
         modLoaders.add('fabric')
         requires('fabric-api')
+        requires('architectury-api')
+        requires('trinkets')
+        requires('yacl')
+        requires('cloth-config')
         optional('ftb-quests-fabric')
         optional('questlog')
     }
@@ -48,6 +52,9 @@ publishMods {
         from cfOptions
         file project(':neoforge')
         modLoaders.add('neoforge')
+        requires('architectury-api')
+        requires('yacl')
+        requires('cloth-config')
         optional('ftb-quests-forge')
         optional('questlog')
     }
@@ -57,6 +64,10 @@ publishMods {
         file project(':fabric')
         modLoaders.add('fabric')
         requires('fabric-api')
+        requires('architectury-api')
+        requires('trinkets')
+        requires('yacl')
+        requires('cloth-config')
         optional('ftb-quests')
         optional('questlog')
     }
@@ -65,6 +76,9 @@ publishMods {
         from mrOptions
         file project(':neoforge')
         modLoaders.add('neoforge')
+        requires('architectury-api')
+        requires('yacl')
+        requires('cloth-config')
         optional('ftb-quests')
         optional('questlog')
     }

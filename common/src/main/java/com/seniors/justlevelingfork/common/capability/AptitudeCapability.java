@@ -7,12 +7,14 @@ import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.integration.MiapiIntegration;
 import com.seniors.justlevelingfork.network.packet.common.AptitudeLevelUpSP;
 import com.seniors.justlevelingfork.network.packet.client.AptitudeOverlayCP;
+import com.seniors.justlevelingfork.platform.PlatformHelper;
 import com.seniors.justlevelingfork.registry.*;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import com.seniors.justlevelingfork.registry.passive.Passive;
 import com.seniors.justlevelingfork.registry.skills.Skill;
 import com.seniors.justlevelingfork.registry.title.Title;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -246,6 +248,10 @@ public class AptitudeCapability {
     }
 
     private boolean canUse(Player player, ResourceLocation resource) {
+        if (PlatformHelper.isFakePlayer(player)) {
+            return true;
+        }
+
         List<Aptitudes> aptitude = HandlerAptitude.getValue(resource.toString());
         if (aptitude != null) {
             for (Aptitudes aptitudes : aptitude) {
@@ -273,6 +279,10 @@ public class AptitudeCapability {
     }
 
     private boolean canUse(Player player, String restrictionID) {
+        if (PlatformHelper.isFakePlayer(player)) {
+            return true;
+        }
+
         List<Aptitudes> aptitude = HandlerAptitude.getValue(restrictionID);
         if (aptitude != null) {
             for (Aptitudes aptitudes : aptitude) {
@@ -309,22 +319,53 @@ public class AptitudeCapability {
 
     public void deserializeNBT(CompoundTag nbt) {
         for (Aptitude aptitude : RegistryAptitudes.APTITUDES_REGISTRY.getValues().stream().toList()){
-            this.aptitudeLevel.put(aptitude.getName(), nbt.getInt("aptitude." + aptitude.getName()));
+            String key = "aptitude." + aptitude.getName();
+            if (nbt.contains(key, Tag.TAG_INT)) {
+                this.aptitudeLevel.put(aptitude.getName(), clampAptitudeLevel(nbt.getInt(key)));
+            }
         }
         for (Passive passive : RegistryPassives.PASSIVES_REGISTRY.getValues().stream().toList()){
-            this.passiveLevel.put(passive.getName(), nbt.getInt("passive." + passive.getName()));
+            String key = "passive." + passive.getName();
+            if (nbt.contains(key, Tag.TAG_INT)) {
+                this.passiveLevel.put(passive.getName(), Math.max(0, Math.min(nbt.getInt(key), passive.levelsRequired.length)));
+            }
         }
         for (Skill skill : RegistrySkills.SKILLS_REGISTRY.getValues().stream().toList()){
-            this.toggleSkill.put(skill.getName(), nbt.getBoolean("skill." + skill.getName()));
+            String key = "skill." + skill.getName();
+            if (nbt.contains(key, Tag.TAG_BYTE)) {
+                this.toggleSkill.put(skill.getName(), nbt.getBoolean(key));
+            }
         }
         for (Title title : RegistryTitles.TITLES_REGISTRY.getValues().stream().toList()){
-            this.unlockTitle.put(title.getName(), nbt.getBoolean("title." + title.getName()));
+            String key = "title." + title.getName();
+            if (nbt.contains(key, Tag.TAG_BYTE)) {
+                this.unlockTitle.put(title.getName(), nbt.getBoolean(key));
+            }
         }
 
-        this.counterAttackTimer = nbt.getInt("counterAttackTimer");
-        this.counterAttack = nbt.getBoolean("counterAttack");
-        this.playerTitle = nbt.getString("playerTitle");
-        this.betterCombatEntityRange = nbt.getDouble("betterCombatEntityRange");
+        if (nbt.contains("counterAttackTimer", Tag.TAG_INT)) {
+            this.counterAttackTimer = Math.max(0, nbt.getInt("counterAttackTimer"));
+        }
+        if (nbt.contains("counterAttack", Tag.TAG_BYTE)) {
+            this.counterAttack = nbt.getBoolean("counterAttack");
+        }
+        if (nbt.contains("playerTitle", Tag.TAG_STRING)) {
+            String savedTitle = nbt.getString("playerTitle");
+            if (RegistryTitles.getTitle(savedTitle) != null) {
+                this.playerTitle = savedTitle;
+            }
+        }
+        if (nbt.contains("betterCombatEntityRange", Tag.TAG_DOUBLE)) {
+            double savedRange = nbt.getDouble("betterCombatEntityRange");
+            if (Double.isFinite(savedRange) && savedRange >= 0.0D) {
+                this.betterCombatEntityRange = savedRange;
+            }
+        }
+    }
+
+    private static int clampAptitudeLevel(int level) {
+        int maxLevel = Math.max(1, HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel);
+        return Math.max(1, Math.min(level, maxLevel));
     }
 
     public void copyFrom(AptitudeCapability source) {

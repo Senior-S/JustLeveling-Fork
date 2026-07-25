@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.seniors.justlevelingfork.client.gui.OverlayAptitudeGui;
 import com.seniors.justlevelingfork.client.gui.OverlayTitleGui;
 import com.seniors.justlevelingfork.client.screen.JustLevelingScreen;
+import com.seniors.justlevelingfork.client.core.ClientConfigurationSync;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.handler.HandlerConfigClient;
 import com.seniors.justlevelingfork.network.ServerNetworking;
@@ -11,6 +12,7 @@ import com.seniors.justlevelingfork.registry.RegistryClientEvents;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -22,9 +24,11 @@ public class JustLevelingClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         HandlerConfigClient.load();
+        ClientConfigurationSync.restoreLocalConfiguration();
         ServerNetworking.initClient();
         RegistryClientEvents.load();
         KeyBindingHelper.registerKeyBinding(OPEN_JUSTLEVELING_SCREEN);
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientConfigurationSync.restoreLocalConfiguration());
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (OPEN_JUSTLEVELING_SCREEN.consumeClick()) {

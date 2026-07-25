@@ -25,9 +25,9 @@ import java.util.Objects;
 public class Skill {
     public final ResourceLocation key;
     public final Aptitude aptitude;
-    public final int requiredLevel;
+    public int requiredLevel;
     public final ResourceLocation texture;
-    private final Value[] configValues;
+    private Value[] configValues;
 
     public Skill(ResourceLocation skillKey, Aptitude aptitude, int levelRequirement, ResourceLocation skillTexture, Value... skillValues) {
         this.key = skillKey;
@@ -35,6 +35,11 @@ public class Skill {
         this.requiredLevel = levelRequirement;
         this.texture = skillTexture;
         this.configValues = skillValues;
+    }
+
+    public void rebind(int levelRequirement, Value... skillValues) {
+        this.requiredLevel = levelRequirement;
+        this.configValues = skillValues.clone();
     }
 
     public static Skill add(String skillName, String aptitudeName, int levelRequirement, String texture, Value... skillValues){

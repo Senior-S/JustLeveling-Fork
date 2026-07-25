@@ -1,37 +1,67 @@
 # JustLeveling Fork
-This repo is a fork of the [JustLeveling](https://www.curseforge.com/minecraft/mc-mods/just-leveling) mod for minecraft forge 1.20.1
 
-The idea behind this fork is fixing some bugs, performance issues and allow other persons to contribute onto it, so we can get a good mod (:
+JustLeveling Fork is a community-maintained fork of [JustLeveling](https://www.curseforge.com/minecraft/mc-mods/just-leveling), providing configurable aptitudes, skills, passives, titles, and item requirements.
 
-[![](https://dcbadge.limes.pink/api/server/https://discord.gg/6c6cDU2mKj)](https://discord.gg/6c6cDU2mKj)
+## Supported version and loaders
 
-## Download
-[**CurseForge Page**](https://www.curseforge.com/minecraft/mc-mods/justleveling-fork)<br>
-[**Modrinth Page**](https://modrinth.com/mod/justleveling-fork)
+Release `1.2.6` supports **Minecraft Java Edition 1.21.1** on:
 
-## FAQ
-[Click here.](https://github.com/Senior-S/JustLeveling-Fork/wiki/FAQ)
+- Fabric
+- NeoForge
+
+It does not support Minecraft 1.21.11. Download the jar matching both your loader and Minecraft 1.21.1.
 
 ## Installation
-The mod requires the next libraries:<br>
-[ClothConfig](https://www.curseforge.com/minecraft/mc-mods/cloth-config)<br>
-[Curios API](https://www.curseforge.com/minecraft/mc-mods/curios)<br>
-[YetAnotherConfigLib](https://modrinth.com/mod/yacl/version/3.4.2+1.20.1-forge) (3.4.2 VERSION ONLY! NEW VERSIONS OF THE LIB MIGHT CRASH YOUR GAME)<br>
-If you're using BetterCombat you require the next library:<br>
-[PlayerAnimator](https://modrinth.com/mod/playeranimator)
 
-Once you have all the libraries installed you can download the latest version for Forge 1.20.1 [**HERE**](https://github.com/Senior-S/JustLeveling-Fork/releases)
+Install JustLeveling Fork and its required dependencies for the loader you use.
 
-## How to contribute
-If you have ideas for the project you can open a issue [**here**](https://github.com/Senior-S/JustLeveling-Fork/issues).
-If you know how to code feel free to clone the project and do a pull request. ^^
+### Fabric
 
-## Why the fork?
-The original mod does have a lot of great features, but sadly it has a lot of performance issues and bugs too, when searching for new versions or news about a future update I found out that it wasn't happening due to the original creator `Dplayend` loosing the source code for the original mod, that's why I took on the task of decompiling the code shipped on the .dll, then fixed performance issues along with some bugs and released it to the public so anyone searching for a new version of this mod can use this.
-Feel free to contribute to it, so we can make this fork a better version of what originally was ^^
+- Fabric Loader `0.16.14` or newer
+- [Fabric API](https://modrinth.com/mod/fabric-api)
+- [Architectury API](https://modrinth.com/mod/architectury-api) `13.0.8` or newer
+- [Trinkets](https://modrinth.com/mod/trinkets) `3.10.0` or newer
+- [YetAnotherConfigLib v3](https://modrinth.com/mod/yacl) `3.6.6` or newer
+- [Cloth Config API](https://modrinth.com/mod/cloth-config)
 
-Screenshot of last message of the creator in his own discord.
-![Screenshot 2024-07-24 222909](https://github.com/user-attachments/assets/d1b7b079-1a0d-428c-b61b-3e72d79e2f98)
+### NeoForge
 
-### Credits
-`DPlayend` for originally making the mod.
+- NeoForge `21.1.215` or a compatible `21.1.x` release for Minecraft 1.21.1
+- [Architectury API](https://modrinth.com/mod/architectury-api) `13.0.8` or newer
+- [YetAnotherConfigLib v3](https://modrinth.com/mod/yacl) `3.6.6` or newer
+- [Cloth Config API](https://modrinth.com/mod/cloth-config) `15.0.140` or newer
+
+Optional integrations are available for FTB Quests and Questlog when their compatible loader-specific versions are installed. Better Combat integration is available on Fabric and uses Better Combat's Player Animator dependency.
+
+Downloads are published on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/justleveling-fork) and [Modrinth](https://modrinth.com/mod/justleveling-fork).
+
+## Configuration
+
+The mod writes its configuration under the instance's `config/JLFork` directory. Existing `justleveling-fork.common.json5` and `justleveling-fork.lockItems.json5` files are migrated into that directory on startup. Back up server configuration before upgrading a production instance.
+
+## Building
+
+Use a 64-bit JDK 21. Build both distribution jars with:
+
+```powershell
+.\gradlew.bat clean :fabric:build :neoforge:build
+```
+
+The release jars are created at:
+
+- `fabric/build/libs/justlevelingfork-fabric-<version>.jar`
+- `neoforge/build/libs/justlevelingfork-neoforge-<version>.jar`
+
+## Releasing
+
+The GitHub Actions **Release** workflow accepts a mod version, release channel, changelog, and a dry-run option. A dry run builds and verifies both jars without publishing. A publish run requires the `MODRINTH_TOKEN` and `CURSEFORGE_TOKEN` secrets plus the matching project-ID repository variables.
+
+Before starting a release, keep `gradle.properties` (`mod_version`) and `VERSION` synchronized, run the build command above, and smoke-test both loaders in client and dedicated-server environments with their required dependencies installed.
+
+## Contributing
+
+Report issues or open pull requests at [Senior-S/JustLeveling-Fork](https://github.com/Senior-S/JustLeveling-Fork). The original project was created by DPlayend; this fork exists to maintain and improve it with community contributions.
+
+## License
+
+This repository is licensed under the [Apache License 2.0](LICENSE).

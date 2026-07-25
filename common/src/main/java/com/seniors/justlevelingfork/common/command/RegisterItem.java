@@ -7,7 +7,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.seniors.justlevelingfork.common.command.arguments.AptitudeArgument;
 import com.seniors.justlevelingfork.config.models.LockItem;
+import com.seniors.justlevelingfork.handler.HandlerAptitude;
+import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.handler.HandlerLockItemsConfig;
+import com.seniors.justlevelingfork.network.packet.client.ConfigSyncCP;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,12 +24,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class RegisterItem {
+    private static final int REMOVE_REQUIREMENT_LEVEL = 0;
+    private static final int MAX_REQUIREMENT_LEVEL = 1000;
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register((Commands.literal("registeritem")
                 .requires((source) -> source.hasPermission(2)))
                 .then(Commands.argument("aptitude", AptitudeArgument.getArgument())
-                        .then(Commands.argument("level", IntegerArgumentType.integer())
+                        .then(Commands.argument("level", IntegerArgumentType.integer(REMOVE_REQUIREMENT_LEVEL, MAX_REQUIREMENT_LEVEL))
                                 .executes(RegisterItem::execute))
                 )
         );
@@ -42,12 +47,22 @@ public class RegisterItem {
             ResourceLocation location = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(stack.getItem()));
             String aptitudeName = command.getArgument("aptitude", String.class);
             Integer level = command.getArgument("level", Integer.class);
+            if (level > HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel) {
+                command.getSource().sendFailure(Component.literal(
+                        "Item requirement level cannot exceed the configured aptitude maximum of "
+                                + HandlerCommonConfig.HANDLER.instance().aptitudeMaxLevel + "."
+                ));
+                return 0;
+            }
+
+            HandlerLockItemsConfig.HANDLER.instance().lockItemList = new ArrayList<>(HandlerLockItemsConfig.HANDLER.instance().lockItemList);
 
             Optional<LockItem> optionalLockItem = HandlerLockItemsConfig.HANDLER.instance().lockItemList.stream().filter(c -> c.Item.equalsIgnoreCase(location.toString())).findFirst();
             if (optionalLockItem.isPresent()) {
                 LockItem lockItem = optionalLockItem.get();
+                lockItem.Aptitudes = new ArrayList<>(lockItem.Aptitudes);
                 int index = HandlerLockItemsConfig.HANDLER.instance().lockItemList.indexOf(lockItem);
-                if (level < 1) {
+                if (level == REMOVE_REQUIREMENT_LEVEL) {
                     if (lockItem.Aptitudes.size() <= 1) {
                         HandlerLockItemsConfig.HANDLER.instance().lockItemList.remove(index);
                         player.sendSystemMessage(Component.literal("Removing item from lockItemList..."));
@@ -60,7 +75,7 @@ public class RegisterItem {
                         player.sendSystemMessage(Component.literal("Removing aptitude from item..."));
                     }
 
-                    HandlerLockItemsConfig.HANDLER.save();
+                    saveAndSyncLockItems();
                     return Command.SINGLE_SUCCESS;
                 }
 
@@ -69,7 +84,7 @@ public class RegisterItem {
                 lockItem.Aptitudes.add(new LockItem.Aptitude(aptitudeName, level));
 
                 HandlerLockItemsConfig.HANDLER.instance().lockItemList.set(index, lockItem);
-                HandlerLockItemsConfig.HANDLER.save();
+                saveAndSyncLockItems();
 
                 player.sendSystemMessage(Component.literal("Item already in lockItemList, adding extra aptitude..."));
                 return Command.SINGLE_SUCCESS;
@@ -80,11 +95,17 @@ public class RegisterItem {
             lockItem.Aptitudes.add(new LockItem.Aptitude(aptitudeName, level));
 
             HandlerLockItemsConfig.HANDLER.instance().lockItemList.add(lockItem);
-            HandlerLockItemsConfig.HANDLER.save();
+            saveAndSyncLockItems();
 
             player.sendSystemMessage(Component.literal("Item added into lockItemList..."));
         }
 
         return Command.SINGLE_SUCCESS;
+    }
+
+    private static void saveAndSyncLockItems() {
+        HandlerLockItemsConfig.HANDLER.save();
+        HandlerAptitude.ForceRefresh();
+        ConfigSyncCP.sendToAllPlayers();
     }
 }

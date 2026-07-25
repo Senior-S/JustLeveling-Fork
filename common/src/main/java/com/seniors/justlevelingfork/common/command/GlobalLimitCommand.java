@@ -11,12 +11,14 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 
 public class GlobalLimitCommand {
+    private static final int MIN_GLOBAL_LEVEL = 32;
+    private static final int MAX_GLOBAL_LEVEL = 99_999;
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register((
                 Commands.literal("globallimit")
                         .requires((source) -> source.hasPermission(2))
-                        .then(Commands.argument("level", IntegerArgumentType.integer())
+                        .then(Commands.argument("level", IntegerArgumentType.integer(MIN_GLOBAL_LEVEL, MAX_GLOBAL_LEVEL))
                                 .executes(GlobalLimitCommand::execute)
                         )
         ));
@@ -24,6 +26,10 @@ public class GlobalLimitCommand {
 
     private static int execute(CommandContext<CommandSourceStack> command) {
         int globalLimitLevel = command.getArgument("level", Integer.class);
+        if (globalLimitLevel < MIN_GLOBAL_LEVEL || globalLimitLevel > MAX_GLOBAL_LEVEL) {
+            command.getSource().sendFailure(Component.literal(String.format("Global level limit must be between %d and %d.", MIN_GLOBAL_LEVEL, MAX_GLOBAL_LEVEL)));
+            return 0;
+        }
 
         HandlerCommonConfig.HANDLER.instance().playersMaxGlobalLevel = globalLimitLevel;
         HandlerCommonConfig.HANDLER.save();

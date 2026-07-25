@@ -24,10 +24,6 @@ public class HandlerCommonConfig {
                     .build())
             .build();
 
-    @SerialEntry(comment = "Should the mod automatically check for updates on load?")
-    @Boolean(formatter = Boolean.Formatter.ON_OFF)
-    public boolean checkForUpdates = true;
-
     // General options
     @SerialEntry(comment = "Aptitudes Max Level")
     @AutoGen(category = "common", group = "general")

@@ -19,13 +19,13 @@ public class OpenEnderChestSP implements JustLevelingPacket {
     }
 
     public void handle(ServerPlayer sender) {
-            ServerPlayer player = sender;
+        if (sender == null || RegistrySkills.WORMHOLE_STORAGE == null || !RegistrySkills.WORMHOLE_STORAGE.get().isEnabled(sender)) {
+            return;
+        }
 
-            if (player != null) {
-                PlayerEnderChestContainer enderChest = player.getEnderChestInventory();
-                SimpleMenuProvider enderChestContainer = new SimpleMenuProvider((id, pl, b) -> ChestMenu.threeRows(id, pl, enderChest), Component.translatable(RegistrySkills.WORMHOLE_STORAGE.get().getKey()));
-                player.openMenu(enderChestContainer);
-            }
+        PlayerEnderChestContainer enderChest = sender.getEnderChestInventory();
+        SimpleMenuProvider enderChestContainer = new SimpleMenuProvider((id, pl, b) -> ChestMenu.threeRows(id, pl, enderChest), Component.translatable(RegistrySkills.WORMHOLE_STORAGE.get().getKey()));
+        sender.openMenu(enderChestContainer);
     }
 
     public OpenEnderChestSP(FriendlyByteBuf buffer) {

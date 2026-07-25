@@ -3,6 +3,7 @@ package com.seniors.justlevelingfork.network.packet.client;
 import com.seniors.justlevelingfork.network.packet.JustLevelingPacket;
 
 import com.seniors.justlevelingfork.JustLevelingFork;
+import com.seniors.justlevelingfork.client.core.ClientConfigurationSync;
 import com.seniors.justlevelingfork.client.core.ClientHooks;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.handler.HandlerConvergenceItemsConfig;
@@ -328,8 +329,7 @@ public class CommonConfigSyncCP implements JustLevelingPacket {
                 HandlerCommonConfig.HANDLER.instance().luckyDropProbability = this.luckyDropProbability;
                 HandlerCommonConfig.HANDLER.instance().limitBreakerAmplifier = this.limitBreakerAmplifier;
                 HandlerCommonConfig.HANDLER.instance().limitBreakerProbability = this.limitBreakerProbability;
-
-                HandlerCommonConfig.HANDLER.save();
+                ClientConfigurationSync.refreshRegistryModels();
             }
     }
 

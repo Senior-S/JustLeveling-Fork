@@ -49,6 +49,27 @@ public class RegistryPassives {
     }
 
     public static void load() {
+        refreshFromConfig();
+    }
+
+    public static void refreshFromConfig() {
+        HandlerCommonConfig config = HandlerCommonConfig.HANDLER.instance();
+        ATTACK_DAMAGE.get().rebind(config.attackDamageValue, config.attackPassiveLevels);
+        ATTACK_KNOCKBACK.get().rebind(config.attackKnockbackValue, config.attackKnockbackPassiveLevels);
+        MAX_HEALTH.get().rebind(config.maxHealthValue, config.maxHealthPassiveLevels);
+        KNOCKBACK_RESISTANCE.get().rebind(config.knockbackResistanceValue, config.knockbackResistancePassiveLevels);
+        MOVEMENT_SPEED.get().rebind(config.movementSpeedValue, config.movementSpeedPassiveLevels);
+        PROJECTILE_DAMAGE.get().rebind(config.projectileDamageValue, config.projectileDamagePassiveLevels);
+        ARMOR.get().rebind(config.armorValue, config.armorPassiveLevels);
+        ARMOR_TOUGHNESS.get().rebind(config.armorToughnessValue, config.armorToughnessPassiveLevels);
+        ATTACK_SPEED.get().rebind(config.attackSpeedValue, config.attackSpeedPassiveLevels);
+        ENTITY_REACH.get().rebind(config.entityReachValue, config.entityReachPassiveLevels);
+        BLOCK_REACH.get().rebind(config.blockReachValue, config.blockReachPassiveLevels);
+        BREAK_SPEED.get().rebind(config.breakSpeedValue, config.breakSpeedPassiveLevels);
+        BENEFICIAL_EFFECT.get().rebind(config.beneficialEffectValue, config.beneficialEffectPassiveLevels);
+        MAGIC_RESIST.get().rebind(config.magicResistValue, config.magicResistPassiveLevels);
+        CRITICAL_DAMAGE.get().rebind(config.criticalDamageValue, config.criticalDamagePassiveLevels);
+        LUCK.get().rebind(config.luckValue, config.luckPassiveLevels);
     }
 
     public static Passive getPassive(String passiveName) {
