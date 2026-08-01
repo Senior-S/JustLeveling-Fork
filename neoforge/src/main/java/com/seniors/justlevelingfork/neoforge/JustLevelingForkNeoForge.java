@@ -51,6 +51,7 @@ public class JustLevelingForkNeoForge {
             QuestlogIntegration.load();
         }
 
+        modBus.addListener(NeoForgeCustomRegistries::register);
         modBus.addListener(this::registerAttributes);
         NeoForge.EVENT_BUS.addListener(this::serverStarted);
         NeoForge.EVENT_BUS.addListener(this::serverStopped);

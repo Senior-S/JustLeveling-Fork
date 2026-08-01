@@ -1,0 +1,1 @@
+com.seniors.justlevelingfork.neoforge.kubejs.JustLevelingKubeJSPlugin

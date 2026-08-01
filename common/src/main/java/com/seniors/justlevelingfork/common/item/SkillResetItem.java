@@ -4,7 +4,10 @@ import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.handler.HandlerCommonConfig;
 import com.seniors.justlevelingfork.network.packet.common.AptitudeLevelUpSP;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
+import com.seniors.justlevelingfork.platform.SkillToggleEventBridge;
 import com.seniors.justlevelingfork.registry.RegistryAttributes;
+import com.seniors.justlevelingfork.registry.RegistrySkills;
+import com.seniors.justlevelingfork.registry.skills.Skill;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -13,6 +16,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 public class SkillResetItem extends Item {
     public SkillResetItem(Properties properties) {
@@ -34,7 +39,13 @@ public class SkillResetItem extends Item {
         int refundedExperience = HandlerCommonConfig.HANDLER.instance().skillResetRefundsSpentLevels
                 ? capability.getSpentAptitudeExperience()
                 : 0;
+        List<Skill> enabledSkills = RegistrySkills.SKILLS_REGISTRY.getValues().stream()
+                .filter(capability::getToggleSkill)
+                .toList();
         capability.resetSkills();
+        if (player instanceof ServerPlayer serverPlayer) {
+            enabledSkills.forEach(skill -> SkillToggleEventBridge.post(serverPlayer, skill, false));
+        }
         if (refundedExperience > 0 && !player.getAbilities().instabuild) {
             AptitudeLevelUpSP.addPlayerXP(player, refundedExperience);
         }

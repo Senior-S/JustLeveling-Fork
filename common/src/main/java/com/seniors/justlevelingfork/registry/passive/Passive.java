@@ -10,6 +10,7 @@ import com.seniors.justlevelingfork.registry.RegistryPassives;
 import com.seniors.justlevelingfork.registry.aptitude.Aptitude;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -20,6 +21,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class Passive {
@@ -40,8 +42,11 @@ public class Passive {
         this.aptitude = aptitude;
         this.texture = passiveTexture;
         this.attribute = attribute;
-        this.attributeUuid = attributeUuid;
+        this.attributeUuid = UUID.fromString(attributeUuid).toString();
         this.attributeValue = attributeValue;
+        if (levelsRequired.length == 0) {
+            throw new IllegalArgumentException("Passive '" + passiveKey + "' must have at least one required level");
+        }
         this.levelsRequired = levelsRequired;
     }
 
@@ -50,12 +55,28 @@ public class Passive {
         this.levelsRequired = requiredLevels.clone();
     }
 
-    public static Passive add(String passiveName, String aptitudeName, String texture, Holder<Attribute> attribute, String attributeUUID, Object attributeValue, int... levelsRequired){
+    /**
+     * Script-friendly factory retained for compatibility with the documented
+     * KubeJS API. Both resource locations ({@code minecraft:generic.attack_speed})
+     * and legacy attribute names ({@code generic.attack_speed}) are accepted.
+     */
+    public static Passive add(String passiveName, String aptitudeName, String texture, String attributeName, String attributeUUID, Object attributeValue, int... levelsRequired) {
         Aptitude aptitude = RegistryAptitudes.getAptitude(aptitudeName);
-        if (aptitude == null){
+        if (aptitude == null) {
             throw new IllegalArgumentException("Aptitude name doesn't exist: " + aptitudeName);
         }
+        if (attributeName == null || attributeName.isBlank()) {
+            throw new IllegalArgumentException("Attribute name can't be empty");
+        }
 
+        ResourceLocation attributeId = attributeName.indexOf(':') >= 0
+                ? ResourceLocation.tryParse(attributeName)
+                : ResourceLocation.tryParse("minecraft:" + attributeName);
+        if (attributeId == null) {
+            throw new IllegalArgumentException("Invalid attribute name: " + attributeName);
+        }
+        Holder<Attribute> attribute = BuiltInRegistries.ATTRIBUTE.getHolder(attributeId)
+                .orElseThrow(() -> new IllegalArgumentException("Attribute doesn't exist: " + attributeName));
         ResourceLocation key = ResourceLocation.fromNamespaceAndPath(JustLevelingFork.MOD_ID, passiveName);
         return new Passive(key, aptitude, HandlerResources.create(texture), attribute, attributeUUID, attributeValue, levelsRequired);
     }

@@ -42,6 +42,7 @@ dependencies {
     implementation("curse.maven:cloth-config-348521:$rootProject.cloth_config_neoforge_version") {
         transitive = false
     }
+    modCompileOnly "dev.latvian.mods:kubejs-neoforge:$rootProject.kubejs_version"
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')

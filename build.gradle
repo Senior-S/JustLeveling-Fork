@@ -63,6 +63,7 @@ publishMods {
         requires('cloth-config')
         optional('ftb-quests-forge')
         optional('questlog')
+        optional('kubejs')
     }
 
     modrinth('modrinthFabric') {
@@ -87,6 +88,7 @@ publishMods {
         requires('cloth-config')
         optional('ftb-quests')
         optional('questlog')
+        optional('kubejs')
     }
 }
 

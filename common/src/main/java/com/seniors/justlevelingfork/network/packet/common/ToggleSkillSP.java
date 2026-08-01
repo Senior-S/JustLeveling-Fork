@@ -5,6 +5,7 @@ import com.seniors.justlevelingfork.network.packet.JustLevelingPacket;
 import com.seniors.justlevelingfork.common.capability.AptitudeCapability;
 import com.seniors.justlevelingfork.network.ServerNetworking;
 import com.seniors.justlevelingfork.network.packet.client.SyncAptitudeCapabilityCP;
+import com.seniors.justlevelingfork.platform.SkillToggleEventBridge;
 import com.seniors.justlevelingfork.registry.RegistrySkills;
 import com.seniors.justlevelingfork.registry.skills.Skill;
 
@@ -46,7 +47,12 @@ public class ToggleSkillSP implements JustLevelingPacket {
             return;
         }
 
+        boolean wasEnabled = capability.getToggleSkill(skill);
         capability.setToggleSkill(skill, this.toggle);
+        boolean isEnabled = capability.getToggleSkill(skill);
+        if (wasEnabled != isEnabled) {
+            SkillToggleEventBridge.post(sender, skill, isEnabled);
+        }
         SyncAptitudeCapabilityCP.send(sender);
     }
 
