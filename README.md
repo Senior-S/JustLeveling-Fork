@@ -4,7 +4,7 @@ JustLeveling Fork is a community-maintained fork of [JustLeveling](https://www.c
 
 ## Supported version and loaders
 
-Release `1.2.6` supports **Minecraft Java Edition 1.21.1** on:
+Release `1.2.9` supports **Minecraft Java Edition 1.21.1** on:
 
 - Fabric
 - NeoForge
