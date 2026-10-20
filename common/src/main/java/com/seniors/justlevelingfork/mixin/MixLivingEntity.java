@@ -57,7 +57,7 @@ public abstract class MixLivingEntity {
             duration += (int) (player.getAttributeValue(RegistryAttributes.BENEFICIAL_EFFECT.get()) * 20.0D);
         }
 
-        return new MobEffectInstance(effect.getEffect(), Math.max(0, duration), amplifier, effect.isAmbient(), effect.isVisible(), effect.showIcon());
+        return new MobEffectInstance(effect.getEffect(), Math.max(MobEffectInstance.INFINITE_DURATION, duration), amplifier, effect.isAmbient(), effect.isVisible(), effect.showIcon());
     }
 
     @Inject(method = "hurt", at = @At("RETURN"))
